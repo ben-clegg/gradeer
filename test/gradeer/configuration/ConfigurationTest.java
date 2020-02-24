@@ -1,24 +1,27 @@
 package gradeer.configuration;
 
+import gradeer.TestGlobals;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class ConfigurationTest
 {
     @Test
-    public void testGenerateConfiguration()
+    public void testGenerateConfigurationJSON()
     {
         try
         {
-            File jsonFile = new File(System.getProperty("user.dir") + "/test/resources/testConfig.json");
-            System.out.println(jsonFile);
-            ConfigurationJSON json = ConfigurationJSON.loadJSON(jsonFile);
+            System.out.println(TestGlobals.JSON_CONFIG);
+            ConfigurationJSON json = ConfigurationJSON.loadJSON(TestGlobals.JSON_CONFIG);
             System.out.println(json.rootDirPath);
             System.out.println(json.studentSolutionsDirPath);
+            System.out.println(json.modelSolutionsDirPath);
         }
         catch (IOException ioEx)
         {
@@ -27,11 +30,11 @@ class ConfigurationTest
         }
     }
     @Test
-    public void testGenerateConfigurationBadFile()
+    public void testGenerateConfigurationJSONBadFile()
     {
         try
         {
-            ConfigurationJSON.loadJSON(new File("test/resources/notARealFile.json"));
+            ConfigurationJSON.loadJSON(Paths.get("test/resources/notARealFile.json"));
         }
         catch (IOException ioEx)
         {

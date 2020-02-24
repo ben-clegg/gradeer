@@ -8,7 +8,7 @@
       <sourceFolder url="file://$MODULE_DIR$/../gradeer/test" isTestSource="true" />
       <excludeFolder url="file://$MODULE_DIR$/../gradeer/target" />
     </content>
-    <orderEntry type="inheritedJdk" />
+    <orderEntry type="jdk" jdkName="1.8" jdkType="JavaSDK" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="Maven: com.google.code.gson:gson:2.8.6" level="project" />
     <orderEntry type="library" name="Maven: commons-cli:commons-cli:1.4" level="project" />

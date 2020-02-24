@@ -1,4 +1,5 @@
 {
   "rootDirPath": null,
-  "studentSolutionsDirPath": "studentSolutions"
+  "studentSolutionsDirPath": "studentSolutions",
+  "modelSolutionsDirPath": "modelSolutions"
 }
