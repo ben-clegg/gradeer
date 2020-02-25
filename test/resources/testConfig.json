@@ -1,5 +1,6 @@
 {
   "rootDirPath": null,
   "studentSolutionsDirPath": "studentSolutions",
-  "modelSolutionsDirPath": "modelSolutions"
+  "modelSolutionsDirPath": "modelSolutions",
+  "testsDirPath": "unittests"
 }

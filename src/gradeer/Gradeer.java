@@ -1,6 +1,9 @@
 package gradeer;
 
 import gradeer.configuration.Configuration;
+import gradeer.configuration.Environment;
+import gradeer.execution.junit.UnitTest;
+import gradeer.execution.junit.UnitTestLoader;
 import gradeer.misc.ErrorCode;
 import gradeer.solution.Solution;
 import org.apache.logging.log4j.LogManager;
@@ -20,6 +23,8 @@ public class Gradeer
     private static Logger logger = LogManager.getLogger(Gradeer.class);
 
     private Configuration configuration;
+
+    private Collection<UnitTest> unitTests;
     private Collection<Solution> studentSolutions;
     private Collection<Solution> modelSolutions;
 
@@ -27,7 +32,7 @@ public class Gradeer
     public static void main(String[] args)
     {
         Path configJSON = Paths.get(args[0]);
-        if(!configJSON.toFile().exists())
+        if(Files.notExists(configJSON))
         {
             logger.error("Config JSON file " + configJSON.toString() + " does not exist!");
             System.exit(ErrorCode.NO_CONFIG_FILE.getCode());
@@ -40,15 +45,29 @@ public class Gradeer
 
     private void init()
     {
-        // TODO load checks
-        // Load solutions
+        loadModelSolutions();
+
+        loadUnitTests();
+
+        // TODO Load checks
+
+        loadStudentSolutions();
+    }
+
+    private void loadUnitTests()
+    {
+        unitTests = new UnitTestLoader(configuration.getTestsDir()).getUnitTests();
+    }
+
+    private void loadStudentSolutions()
+    {
         try
         {
             studentSolutions = new ArrayList<>();
             Files.newDirectoryStream(configuration.getStudentSolutionsDir()).forEach(
                     p -> {
-                        if(p.toFile().isDirectory())
-                            studentSolutions.add(new Solution(p.toFile()));
+                        if(Files.isDirectory(p))
+                            studentSolutions.add(new Solution(p));
                     });
         }
         catch (IOException ioEx)
@@ -58,14 +77,55 @@ public class Gradeer
         }
     }
 
+    private void loadModelSolutions()
+    {
+        try
+        {
+            modelSolutions = new ArrayList<>();
+            Files.newDirectoryStream(configuration.getModelSolutionsDir()).forEach(
+                    p -> {
+                        if(Files.isDirectory(p))
+                            modelSolutions.add(new Solution(p));
+                    });
+        }
+        catch (IOException ioEx)
+        {
+            ioEx.printStackTrace();
+            logger.error("Model solutions could not be loaded.");
+        }
+    }
+
+
+
     public Gradeer(Configuration config)
     {
         configuration = config;
+        Environment.init();
         init();
     }
 
     public void run()
     {
 
+    }
+
+    public Configuration getConfiguration()
+    {
+        return configuration;
+    }
+
+    public Collection<Solution> getStudentSolutions()
+    {
+        return studentSolutions;
+    }
+
+    public Collection<Solution> getModelSolutions()
+    {
+        return modelSolutions;
+    }
+
+    public Collection<UnitTest> getUnitTests()
+    {
+        return unitTests;
     }
 }

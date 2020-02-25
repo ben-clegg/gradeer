@@ -10,10 +10,11 @@ public class Solution
 {
     private static Logger logger = LogManager.getLogger(Solution.class);
 
-    Path mainDir;
+    Path directory;
 
-    public Solution(File locationDir)
+    public Solution(Path locationDir)
     {
+        directory = locationDir;
 
     }
 }
