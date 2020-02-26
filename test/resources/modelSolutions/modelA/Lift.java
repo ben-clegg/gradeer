@@ -1,5 +1,3 @@
-package resources.modelSolutions.modelA;
-
 public class Lift {
 
 	private int topFloor;

@@ -1,10 +1,10 @@
 package gradeer.execution.junit;
 
-import gradeer.execution.AntResult;
+import gradeer.execution.AntProcessResult;
 
 public class TestResult
 {
-    public TestResult(AntResult antResult)
+    public TestResult(AntProcessResult antResult)
     {
 
     }

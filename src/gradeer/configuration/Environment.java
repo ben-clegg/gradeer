@@ -1,7 +1,9 @@
 package gradeer.configuration;
 
+import gradeer.Gradeer;
 import org.apache.commons.lang3.SystemUtils;
 
+import java.net.URISyntaxException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
@@ -11,12 +13,15 @@ import java.nio.file.Paths;
 public class Environment
 {
     private static Path antExecutable;
+    private static Path gradeerHomeDir;
 
     /**
      * Load values with OS-specific parameters
      */
     public static void init()
     {
+        gradeerHomeDir = Paths.get(System.getProperty("user.dir"));
+
         if(SystemUtils.IS_OS_LINUX)
         {
             antExecutable = Paths.get("/usr/share/ant/bin/ant");
@@ -37,5 +42,10 @@ public class Environment
     public static Path getAntExecutable()
     {
         return antExecutable;
+    }
+
+    public static Path getGradeerHomeDir()
+    {
+        return gradeerHomeDir;
     }
 }

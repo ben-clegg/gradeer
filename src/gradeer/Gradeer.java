@@ -4,6 +4,7 @@ import gradeer.configuration.Configuration;
 import gradeer.configuration.Environment;
 import gradeer.execution.junit.UnitTest;
 import gradeer.execution.junit.UnitTestLoader;
+import gradeer.io.compilation.JavaCompiler;
 import gradeer.misc.ErrorCode;
 import gradeer.solution.Solution;
 import org.apache.logging.log4j.LogManager;
@@ -17,6 +18,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 public class Gradeer
 {
@@ -43,20 +45,37 @@ public class Gradeer
         gradeer.run();
     }
 
+    public Gradeer(Configuration config)
+    {
+        configuration = config;
+        Environment.init();
+        init();
+    }
+
+
     private void init()
     {
         loadModelSolutions();
 
-        loadUnitTests();
+        loadUnitTests(new ArrayList<>(modelSolutions).get(0));
 
         // TODO Load checks
 
         loadStudentSolutions();
     }
 
-    private void loadUnitTests()
+    public void run()
+    {
+
+    }
+
+    private void loadUnitTests(Solution modelSolution)
     {
         unitTests = new UnitTestLoader(configuration.getTestsDir()).getUnitTests();
+
+        logger.info("Compiling " + unitTests.size() + " unit tests...");
+        JavaCompiler testCompiler = JavaCompiler.createCompiler(configuration.getTestsDir(), modelSolution);
+        unitTests.forEach(t -> testCompiler.compile(t, getConfiguration()));
     }
 
     private void loadStudentSolutions()
@@ -93,21 +112,20 @@ public class Gradeer
             ioEx.printStackTrace();
             logger.error("Model solutions could not be loaded.");
         }
-    }
+        if(modelSolutions.isEmpty())
+            logger.error("Warning: no model solutions loaded, cannot compile tests.");
 
-
-
-    public Gradeer(Configuration config)
-    {
-        configuration = config;
-        Environment.init();
-        init();
-    }
-
-    public void run()
-    {
+        JavaCompiler modelSolutionCompiler = JavaCompiler.createCompiler(configuration.getModelSolutionsDir(), new ArrayList<>(modelSolutions).get(0));
+        modelSolutions.forEach(m -> {
+            m.getSources().forEach(s -> modelSolutionCompiler.compile(s, getConfiguration()));
+        });
 
     }
+
+
+
+
+
 
     public Configuration getConfiguration()
     {
