@@ -3,6 +3,7 @@ package gradeer.execution;
 import gradeer.configuration.Configuration;
 import gradeer.configuration.Environment;
 import gradeer.execution.junit.UnitTest;
+import gradeer.io.ClassPath;
 import gradeer.io.JavaSource;
 import gradeer.solution.Solution;
 import org.apache.logging.log4j.LogManager;
@@ -23,10 +24,12 @@ public class AntRunner
     private static Logger logger = LogManager.getLogger(AntRunner.class);
 
     private Configuration config;
+    private ClassPath classPath;
 
-    public AntRunner(Configuration configuration)
+    public AntRunner(Configuration configuration, ClassPath classPath)
     {
         config = configuration;
+        this.classPath = classPath;
     }
 
     public AntProcessResult compile(JavaSource javaSource)
@@ -54,6 +57,7 @@ public class AntRunner
         command.add(targetName);
         command.add("-Dgradeer.home.dir=" + Environment.getGradeerHomeDir());
         command.add("-Dtest.dir=" + config.getTestsDir());
+        command.add("-Dadditional.cp=" + classPath.toString());
         // TODO add source dependencies dir from config
 
         return command;

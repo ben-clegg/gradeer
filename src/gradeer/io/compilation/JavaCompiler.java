@@ -3,12 +3,12 @@ package gradeer.io.compilation;
 import gradeer.configuration.Configuration;
 import gradeer.execution.AntProcessResult;
 import gradeer.execution.AntRunner;
+import gradeer.io.ClassPath;
 import gradeer.io.JavaSource;
 import gradeer.solution.Solution;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.io.File;
 import java.nio.file.Path;
 import java.util.*;
 
@@ -16,19 +16,11 @@ public class JavaCompiler
 {
     private static Logger logger = LogManager.getLogger(JavaCompiler.class);
 
-    public String classPath;
+    public ClassPath classPath;
 
-    public JavaCompiler(Collection<Path> classPathElements)
+    public JavaCompiler(ClassPath classPath)
     {
-        StringBuilder sb = new StringBuilder();
-        Iterator<Path> cpIter = classPathElements.iterator();
-        while (cpIter.hasNext())
-        {
-            sb.append(cpIter.next());
-            if(cpIter.hasNext())
-                sb.append(File.pathSeparator);
-        }
-        classPath = sb.toString();
+        this.classPath =  classPath;
     }
 
     public static JavaCompiler createCompiler(Path targetRootDir, Solution modelSolution)
@@ -38,17 +30,17 @@ public class JavaCompiler
 
     public static JavaCompiler createCompiler(Path targetRootDir, Solution modelSolution, Collection<Path> auxiliaryClassPathElements)
     {
-        List<Path> classPathElements = new ArrayList<>();
-        classPathElements.add(targetRootDir);
-        classPathElements.add(modelSolution.getDirectory());
-        classPathElements.addAll(auxiliaryClassPathElements);
+        ClassPath cp = new ClassPath();new ArrayList<>();
+        cp.add(targetRootDir);
+        cp.add(modelSolution.getDirectory());
+        cp.addAll(auxiliaryClassPathElements);
 
-        return new JavaCompiler(classPathElements);
+        return new JavaCompiler(cp);
     }
 
     public void compile(JavaSource javaSource, Configuration configuration)
     {
-        AntRunner antRunner = new AntRunner(configuration);
+        AntRunner antRunner = new AntRunner(configuration, classPath);
         AntProcessResult result = antRunner.compile(javaSource);
         logger.info(result);
     }

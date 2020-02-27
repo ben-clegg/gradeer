@@ -37,7 +37,9 @@ public class UnitTestLoader
 
     public UnitTestLoader(Collection<Path> testSrcPaths)
     {
-        unitTests = testSrcPaths.stream().filter(Files::exists).map(UnitTest::new).collect(Collectors.toList());
+        unitTests = testSrcPaths.stream()
+                .filter(Files::exists)
+                .map(UnitTest::new).collect(Collectors.toList());
     }
 
     public Collection<UnitTest> getUnitTests()

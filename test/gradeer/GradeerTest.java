@@ -27,4 +27,13 @@ class GradeerTest
         assertEquals(config, gradeer.getConfiguration());
     }
 
+    @Test
+    void testSourcesCompiled()
+    {
+        // Model solutions
+        gradeer.getModelSolutions().forEach(m -> {
+            m.getSources().forEach(s -> assertTrue(s.isCompiled()));
+        });
+        gradeer.getUnitTests().forEach(t -> assertTrue(t.isCompiled()));
+    }
 }

@@ -13,6 +13,7 @@
         <pathelement path="${source.dir}"/>
         <pathelement path="${test.dir}"/>
         <pathelement path="${source.deps}"/>
+        <pathelement path="${additional.cp}"/>
     </path>
 
     <target name="echo-path" description="Echo test path">

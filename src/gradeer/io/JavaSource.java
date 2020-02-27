@@ -1,5 +1,7 @@
 package gradeer.io;
 
+import gradeer.solution.Solution;
+
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -36,6 +38,7 @@ public class JavaSource
     {
         return javaFile.getFileName().toString().replace(".java", ".class");
     }
+
 
     @Override
     public boolean equals(Object o)
