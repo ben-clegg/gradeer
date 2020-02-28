@@ -13,7 +13,9 @@ public class TestResult
 
     public TestResult(AntProcessResult antResult)
     {
-        logger.info(antResult.toString());
+        logger.info(antResult);
+        totalTests = antResult.getTestsRun();
+        passingTests = totalTests - (antResult.getTestsFailures() + antResult.getTestsErrors());
     }
 
     public double proportionPassing()
@@ -26,4 +28,12 @@ public class TestResult
         return (passingTests == totalTests);
     }
 
+    @Override
+    public String toString()
+    {
+        return "TestResult{" +
+                "passingTests=" + passingTests +
+                ", totalTests=" + totalTests +
+                '}';
+    }
 }

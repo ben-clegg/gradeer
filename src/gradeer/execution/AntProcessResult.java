@@ -46,6 +46,15 @@ public class AntProcessResult
     private boolean hasFailure;
     private boolean hasError;
 
+    private int testsRun = 0;
+    private int testsFailures = 0;
+    private int testsErrors = 0;
+    private int testsSkipped = 0;
+
+    public static final String COMPILER_PREFIX = "[javac] ";
+    public static final String TEST_PREFIX = "[junit] ";
+    public static final String JUNIT_RESULT_REGEX = "Tests run: (\\d+), Failures: (\\d+), Errors: (\\d+), Skipped: (\\d+), Time elapsed: ((\\d+)(\\.\\d+)?) sec";
+
     void setInputStream(BufferedReader reader) {
         StringBuilder isLog = new StringBuilder();
         StringBuilder compilerOutputBuilder = new StringBuilder();
@@ -70,6 +79,11 @@ public class AntProcessResult
                     if (m.find()) {
                         hasFailure = Integer.parseInt(m.group(2)) > 0;
                         hasError = Integer.parseInt(m.group(3)) > 0;
+
+                        testsRun = Integer.parseInt(m.group(1));
+                        testsFailures = Integer.parseInt(m.group(2));
+                        testsErrors = Integer.parseInt(m.group(3));
+                        testsSkipped = Integer.parseInt(m.group(4));
                     }
                 } else if (line.equalsIgnoreCase("BUILD SUCCESSFUL"))
                     compiled = true;
@@ -117,28 +131,48 @@ public class AntProcessResult
         this.exceptionText = exceptionText;
     }
 
-    boolean compiled() {
+    public boolean compiled() {
         return compiled;
     }
 
-    boolean hasFailure() {
+    public boolean hasFailure() {
         return hasFailure;
     }
 
-    boolean hasError() {
+    public boolean hasError() {
         return hasError;
     }
 
-    String getCompilerOutput() {
+    public String getCompilerOutput() {
         return compilerOutput;
     }
 
-    String getJUnitMessage() {
+    public String getJUnitMessage() {
         return testOutput;
     }
 
-    String getErrorMessage() {
+    public String getErrorMessage() {
         return inputStreamText + " " + errorStreamText + " " + exceptionText;
+    }
+
+    public int getTestsRun()
+    {
+        return testsRun;
+    }
+
+    public int getTestsFailures()
+    {
+        return testsFailures;
+    }
+
+    public int getTestsErrors()
+    {
+        return testsErrors;
+    }
+
+    public int getTestsSkipped()
+    {
+        return testsSkipped;
     }
 
     @Override
