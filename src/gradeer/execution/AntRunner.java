@@ -36,8 +36,8 @@ public class AntRunner
     {
         List<String> command = commonCommand("compile");
         command.add("-Dsrc.dir=" + javaSource.getJavaFile().getParent().toString());
-        command.add("-Dclass.dir=" + javaSource.getClassFile().getParent().toString());
 
+        logger.info(command);
         return runAntProcess(command);
     }
 
@@ -46,6 +46,7 @@ public class AntRunner
         command.add("-Dtest.class.name=" + test.getBaseName());
         command.add("-Dtest.class.dir=" + test.getClassFile().getParent().toString());
         command.add("-Dsource.dir=" + solution.getDirectory());
+        command.add("-Dtest.dir=" + config.getTestsDir());
 
         return runAntProcess(command);
     }
@@ -56,7 +57,6 @@ public class AntRunner
         command.add(Environment.getAntExecutable().toString());
         command.add(targetName);
         command.add("-Dgradeer.home.dir=" + Environment.getGradeerHomeDir());
-        command.add("-Dtest.dir=" + config.getTestsDir());
         command.add("-Dadditional.cp=" + classPath.toString());
         // TODO add source dependencies dir from config
 

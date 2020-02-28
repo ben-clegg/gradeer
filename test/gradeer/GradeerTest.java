@@ -32,8 +32,13 @@ class GradeerTest
     {
         // Model solutions
         gradeer.getModelSolutions().forEach(m -> {
-            m.getSources().forEach(s -> assertTrue(s.isCompiled()));
+            m.getSources().forEach(src -> assertTrue(src.isCompiled()));
         });
+        // Unit tests
         gradeer.getUnitTests().forEach(t -> assertTrue(t.isCompiled()));
+        // Student solutions
+        gradeer.getStudentSolutions().forEach(s -> {
+            s.getSources().forEach(src -> assertTrue(src.isCompiled()));
+        });
     }
 }

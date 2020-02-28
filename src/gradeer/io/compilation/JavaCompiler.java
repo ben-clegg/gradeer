@@ -20,19 +20,18 @@ public class JavaCompiler
 
     public JavaCompiler(ClassPath classPath)
     {
-        this.classPath =  classPath;
+        this.classPath = classPath;
     }
 
-    public static JavaCompiler createCompiler(Path targetRootDir, Solution modelSolution)
+    public static JavaCompiler createCompiler(Solution solutionForCompilation)
     {
-        return createCompiler(targetRootDir, modelSolution, Collections.EMPTY_LIST);
+        return createCompiler(solutionForCompilation, Collections.EMPTY_LIST);
     }
 
-    public static JavaCompiler createCompiler(Path targetRootDir, Solution modelSolution, Collection<Path> auxiliaryClassPathElements)
+    public static JavaCompiler createCompiler(Solution solutionForCompilation, Collection<Path> auxiliaryClassPathElements)
     {
-        ClassPath cp = new ClassPath();new ArrayList<>();
-        cp.add(targetRootDir);
-        cp.add(modelSolution.getDirectory());
+        ClassPath cp = new ClassPath();
+        cp.add(solutionForCompilation.getDirectory());
         cp.addAll(auxiliaryClassPathElements);
 
         return new JavaCompiler(cp);

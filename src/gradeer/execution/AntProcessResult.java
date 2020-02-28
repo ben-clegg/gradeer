@@ -147,6 +147,8 @@ public class AntProcessResult
                 "inputStreamText='" + inputStreamText + '\'' +
                 ", errorStreamText='" + errorStreamText + '\'' +
                 ", exceptionText='" + exceptionText + '\'' +
+                ", compilerOutput='" + compilerOutput + '\'' +
+                ", testOutput='" + testOutput + '\'' +
                 '}';
     }
 

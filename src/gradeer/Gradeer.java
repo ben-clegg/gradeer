@@ -74,51 +74,44 @@ public class Gradeer
         unitTests = new UnitTestLoader(configuration.getTestsDir()).getUnitTests();
 
         logger.info("Compiling " + unitTests.size() + " unit tests...");
-        JavaCompiler testCompiler = JavaCompiler.createCompiler(configuration.getTestsDir(), modelSolution);
+
+        ArrayList<Path> auxClassPath = new ArrayList<>();
+        auxClassPath.add(configuration.getTestsDir());
+        JavaCompiler testCompiler = JavaCompiler.createCompiler(modelSolution, auxClassPath);
         unitTests.forEach(t -> testCompiler.compile(t, getConfiguration()));
+    }
+
+    private List<Solution> loadSolutions(Path solutionsRootDir)
+    {
+        List<Solution> solutions = new ArrayList<>();
+        try
+        {
+            Files.newDirectoryStream(solutionsRootDir).forEach(
+                    p -> {
+                        if(Files.isDirectory(p))
+                            solutions.add(new Solution(p));
+                    });
+        }
+        catch (IOException ioEx)
+        {
+            ioEx.printStackTrace();
+            logger.error("Solution directories in " + solutionsRootDir + " could not be loaded.");
+        }
+        solutions.forEach(solution -> {
+            JavaCompiler compiler = JavaCompiler.createCompiler(solution);
+            solution.getSources().forEach(src -> compiler.compile(src, getConfiguration()));
+        });
+        return solutions;
     }
 
     private void loadStudentSolutions()
     {
-        try
-        {
-            studentSolutions = new ArrayList<>();
-            Files.newDirectoryStream(configuration.getStudentSolutionsDir()).forEach(
-                    p -> {
-                        if(Files.isDirectory(p))
-                            studentSolutions.add(new Solution(p));
-                    });
-        }
-        catch (IOException ioEx)
-        {
-            ioEx.printStackTrace();
-            logger.error("Student solutions could not be loaded.");
-        }
+        studentSolutions = loadSolutions(configuration.getStudentSolutionsDir());
     }
 
     private void loadModelSolutions()
     {
-        try
-        {
-            modelSolutions = new ArrayList<>();
-            Files.newDirectoryStream(configuration.getModelSolutionsDir()).forEach(
-                    p -> {
-                        if(Files.isDirectory(p))
-                            modelSolutions.add(new Solution(p));
-                    });
-        }
-        catch (IOException ioEx)
-        {
-            ioEx.printStackTrace();
-            logger.error("Model solutions could not be loaded.");
-        }
-        if(modelSolutions.isEmpty())
-            logger.error("Warning: no model solutions loaded, cannot compile tests.");
-
-        JavaCompiler modelSolutionCompiler = JavaCompiler.createCompiler(configuration.getModelSolutionsDir(), new ArrayList<>(modelSolutions).get(0));
-        modelSolutions.forEach(m -> {
-            m.getSources().forEach(s -> modelSolutionCompiler.compile(s, getConfiguration()));
-        });
+        modelSolutions = loadSolutions(configuration.getModelSolutionsDir());
 
     }
 

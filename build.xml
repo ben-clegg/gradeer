@@ -22,8 +22,8 @@
     </target>
 
     <target name="compile" description="Compile a single Java source file">
-        <javac srcdir="${src.dir}" destdir="${class.dir}" target="1.8" source="1.8" classpathref="gradeer.cp" includeantruntime="false"
-               debug="true" nowarn="true" />
+        <javac srcdir="${src.dir}" target="1.8" source="1.8" classpathref="gradeer.cp" includeantruntime="false"
+               debug="true" nowarn="true" fork="true" listfiles="true"/>
     </target>
 
     <target name="run-test" depends="echo-path" description="Run a JUnit test">
