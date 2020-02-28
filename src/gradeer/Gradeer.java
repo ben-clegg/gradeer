@@ -2,6 +2,8 @@ package gradeer;
 
 import gradeer.configuration.Configuration;
 import gradeer.configuration.Environment;
+import gradeer.execution.junit.TestExecutor;
+import gradeer.execution.junit.TestResult;
 import gradeer.execution.junit.UnitTest;
 import gradeer.execution.junit.UnitTestLoader;
 import gradeer.io.compilation.JavaCompiler;
@@ -67,6 +69,12 @@ public class Gradeer
     public void run()
     {
 
+        unitTests.forEach(t -> {
+            TestExecutor executor = new TestExecutor(t, configuration);
+            studentSolutions.forEach(s -> {
+                TestResult testResult = executor.execute(s);
+            });
+        });
     }
 
     private void loadUnitTests(Solution modelSolution)

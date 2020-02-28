@@ -1,5 +1,3 @@
-package resources.studentSolutions.testStudentB;
-
 public class Lift {
 
 	private int topFloor;

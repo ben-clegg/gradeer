@@ -1,7 +1,5 @@
 package gradeer.io;
 
-import gradeer.solution.Solution;
-
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -16,7 +14,7 @@ public class JavaSource
     public JavaSource(Path javaSourcePath)
     {
         javaFile = javaSourcePath;
-        classFile = Paths.get(javaFile.getParent().toString() + File.separator + getBaseName());
+        classFile = Paths.get(javaFile.getParent().toString() + File.separator + getClassName());
     }
 
     public boolean isCompiled()
@@ -34,9 +32,14 @@ public class JavaSource
         return classFile;
     }
 
-    public String getBaseName()
+    public String getClassName()
     {
         return javaFile.getFileName().toString().replace(".java", ".class");
+    }
+
+    public String getBaseName()
+    {
+        return javaFile.getFileName().toString().replace(".java", "");
     }
 
 

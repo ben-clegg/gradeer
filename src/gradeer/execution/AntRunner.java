@@ -10,6 +10,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
@@ -36,13 +37,14 @@ public class AntRunner
     {
         List<String> command = commonCommand("compile");
         command.add("-Dsrc.dir=" + javaSource.getJavaFile().getParent().toString());
+        command.add("-Dclass.dir=" + javaSource.getClassFile().getParent().toString());
 
         logger.info(command);
         return runAntProcess(command);
     }
 
     public AntProcessResult runTest(UnitTest test, Solution solution)
-    {List<String> command = commonCommand("compile");
+    {List<String> command = commonCommand("run-test");
         command.add("-Dtest.class.name=" + test.getBaseName());
         command.add("-Dtest.class.dir=" + test.getClassFile().getParent().toString());
         command.add("-Dsource.dir=" + solution.getDirectory());
@@ -58,6 +60,7 @@ public class AntRunner
         command.add(targetName);
         command.add("-Dgradeer.home.dir=" + Environment.getGradeerHomeDir());
         command.add("-Dadditional.cp=" + classPath.toString());
+        command.add("-Dsource.deps=");
         // TODO add source dependencies dir from config
 
         return command;

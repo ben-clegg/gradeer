@@ -12,24 +12,24 @@
         <pathelement path="${gradeer.home}/jars/hamcrest-all-1.3.jar"/>
         <pathelement path="${source.dir}"/>
         <pathelement path="${test.dir}"/>
-        <pathelement path="${source.deps}"/>
+        <!--<pathelement path="${source.deps}"/>-->
         <pathelement path="${additional.cp}"/>
     </path>
 
     <target name="echo-path" description="Echo test path">
-        <pathconvert targetos="unix" property="test.path.unix" refid="test.cp"/>
+        <pathconvert targetos="unix" property="test.path.unix" refid="gradeer.cp"/>
         <echo message="Test path: ${test.path.unix}"/>
     </target>
 
     <target name="compile" description="Compile a single Java source file">
-        <javac srcdir="${src.dir}" target="1.8" source="1.8" classpathref="gradeer.cp" includeantruntime="false"
+        <javac srcdir="${src.dir}" destdir="${class.dir}" target="1.8" source="1.8" classpathref="gradeer.cp" includeantruntime="false"
                debug="true" nowarn="true" fork="true" listfiles="true"/>
     </target>
 
     <target name="run-test" depends="echo-path" description="Run a JUnit test">
         <junit printsummary="true" haltonfailure="false" showoutput="yes" includeantruntime="true" outputtoformatters="true" fork="true" clonevm="true" timeout="10000">
             <classpath refid="gradeer.cp" />
-            <classpath location="${test.class.dir}"/>
+            <classpath location="${gradeer.home}/test/resources"/>
             <test name="${test.class.name}"/>
             <formatter type="plain" usefile="false"/>
         </junit>
