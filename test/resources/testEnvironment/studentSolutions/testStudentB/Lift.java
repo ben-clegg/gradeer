@@ -15,8 +15,8 @@ public class Lift {
 	}
 
 	public int getTopFloor() {
-		return topFloor;
-	}
+		return topFloor - 1;
+	} // Fault : "-1"
 
 	public int getCurrentFloor() {
 		return currentFloor;

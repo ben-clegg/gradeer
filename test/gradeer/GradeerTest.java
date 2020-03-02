@@ -1,10 +1,7 @@
 package gradeer;
 
 import gradeer.configuration.Configuration;
-import gradeer.solution.Solution;
 import org.junit.jupiter.api.Test;
-
-import java.nio.file.Paths;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -18,7 +15,7 @@ class GradeerTest
     {
         assertFalse(gradeer.getStudentSolutions().isEmpty());
         assertFalse(gradeer.getModelSolutions().isEmpty());
-        assertFalse(gradeer.getUnitTests().isEmpty());
+        assertFalse(gradeer.getTestSuites().isEmpty());
     }
 
     @Test
@@ -35,7 +32,7 @@ class GradeerTest
             m.getSources().forEach(src -> assertTrue(src.isCompiled()));
         });
         // Unit tests
-        gradeer.getUnitTests().forEach(t -> assertTrue(t.isCompiled()));
+        gradeer.getTestSuites().forEach(t -> assertTrue(t.isCompiled()));
         // Student solutions
         gradeer.getStudentSolutions().forEach(s -> {
             s.getSources().forEach(src -> assertTrue(src.isCompiled()));

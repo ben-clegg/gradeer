@@ -12,12 +12,12 @@ public class TestExecutor
 {
     private static Logger logger = LogManager.getLogger(TestExecutor.class);
 
-    private UnitTest test;
+    private TestSuite test;
     private Configuration config;
 
-    public TestExecutor(UnitTest unitTest, Configuration configuration)
+    public TestExecutor(TestSuite testSuite, Configuration configuration)
     {
-        test = unitTest;
+        test = testSuite;
         config = configuration;
     }
 

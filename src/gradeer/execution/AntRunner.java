@@ -2,7 +2,7 @@ package gradeer.execution;
 
 import gradeer.configuration.Configuration;
 import gradeer.configuration.Environment;
-import gradeer.execution.junit.UnitTest;
+import gradeer.execution.junit.TestSuite;
 import gradeer.io.ClassPath;
 import gradeer.io.JavaSource;
 import gradeer.solution.Solution;
@@ -10,7 +10,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
@@ -43,7 +42,7 @@ public class AntRunner
         return runAntProcess(command);
     }
 
-    public AntProcessResult runTest(UnitTest test, Solution solution)
+    public AntProcessResult runTest(TestSuite test, Solution solution)
     {List<String> command = commonCommand("run-test");
         command.add("-Dtest.class.name=" + test.getBaseName());
         command.add("-Dtest.class.dir=" + test.getClassFile().getParent().toString());

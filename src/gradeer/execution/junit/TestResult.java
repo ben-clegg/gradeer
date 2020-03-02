@@ -13,7 +13,7 @@ public class TestResult
 
     public TestResult(AntProcessResult antResult)
     {
-        logger.info(antResult);
+        //logger.info(antResult);
         totalTests = antResult.getTestsRun();
         passingTests = totalTests - (antResult.getTestsFailures() + antResult.getTestsErrors());
     }
@@ -26,6 +26,11 @@ public class TestResult
     public boolean allTestsPass()
     {
         return (passingTests == totalTests);
+    }
+
+    public int getTotalTests()
+    {
+        return totalTests;
     }
 
     @Override

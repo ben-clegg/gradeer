@@ -4,13 +4,10 @@ import gradeer.io.JavaSource;
 
 import java.nio.file.Path;
 
-public class UnitTest extends JavaSource
+public class TestSuite extends JavaSource
 {
-
-    public UnitTest(Path testSrcPath)
+    public TestSuite(Path testSrcPath)
     {
         super(testSrcPath);
     }
-
-
 }
