@@ -8,10 +8,12 @@
       <sourceFolder url="file://$MODULE_DIR$/test" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/test/resources" type="java-test-resource" />
       <excludeFolder url="file://$MODULE_DIR$/target" />
-      <excludeFolder url="file://$MODULE_DIR$/test/resources/testEnvironment" />
-      <excludeFolder url="file://$MODULE_DIR$/test/resources/testEnvironment/modelSolutions" />
-      <excludeFolder url="file://$MODULE_DIR$/test/resources/testEnvironment/studentSolutions" />
-      <excludeFolder url="file://$MODULE_DIR$/test/resources/testEnvironment/unittests" />
+      <excludeFolder url="file://$MODULE_DIR$/test/resources/testEnvironments" />
+      <excludeFolder url="file://$MODULE_DIR$/test/resources/testEnvironments/lift" />
+      <excludeFolder url="file://$MODULE_DIR$/test/resources/testEnvironments/lift/modelSolutions" />
+      <excludeFolder url="file://$MODULE_DIR$/test/resources/testEnvironments/lift/studentSolutions" />
+      <excludeFolder url="file://$MODULE_DIR$/test/resources/testEnvironments/lift/testSuites" />
+      <excludeFolder url="file://$MODULE_DIR$/test/resources/testEnvironments/wine" />
     </content>
     <orderEntry type="jdk" jdkName="1.8" jdkType="JavaSDK" />
     <orderEntry type="sourceFolder" forTests="false" />
