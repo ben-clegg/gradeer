@@ -25,7 +25,7 @@ public class Solution
         {
             sources = Files.walk(directory)
                     .filter(p -> com.google.common.io.Files.getFileExtension(p.toString()).equals("java"))
-                    .map(JavaSource::new)
+                    .map(p -> new JavaSource(p, locationDir))
                     .collect(Collectors.toList());
         } catch (IOException e)
         {

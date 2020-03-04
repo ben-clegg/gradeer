@@ -21,7 +21,7 @@ public class TestSuiteLoader
         {
             testSuites = Files.walk(testsDir)
                     .filter(p -> com.google.common.io.Files.getFileExtension(p.toString()).equals("java"))
-                    .map(TestSuite::new).collect(Collectors.toList());
+                    .map(p -> new TestSuite(p, testsDir)).collect(Collectors.toList());
         }
         catch (IOException ioEx)
         {
@@ -31,11 +31,11 @@ public class TestSuiteLoader
 
     }
 
-    public TestSuiteLoader(Collection<Path> testSrcPaths)
+    public TestSuiteLoader(Collection<Path> testSrcPaths, Path testsRootDir)
     {
         testSuites = testSrcPaths.stream()
                 .filter(Files::exists)
-                .map(TestSuite::new).collect(Collectors.toList());
+                .map(p -> new TestSuite(p, testsRootDir)).collect(Collectors.toList());
     }
 
     public Collection<TestSuite> getTestSuites()

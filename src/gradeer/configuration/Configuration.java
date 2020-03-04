@@ -17,6 +17,8 @@ public class Configuration
     private Path studentSolutionsDir;
     private Path modelSolutionsDir;
     private Path testsDir;
+    private Path dependenciesDir;
+    private Path testDependenciesDir;
 
     public Configuration(Path jsonFile)
     {
@@ -47,6 +49,9 @@ public class Configuration
         modelSolutionsDir = loadLocalOrAbsolutePath(json.modelSolutionsDirPath);
 
         testsDir = loadLocalOrAbsolutePath(json.testsDirPath);
+
+        dependenciesDir = loadLocalOrAbsolutePath(json.dependenciesDirPath);
+        testDependenciesDir = loadLocalOrAbsolutePath(json.testDependenciesDirPath);
     }
 
     /**
@@ -79,6 +84,16 @@ public class Configuration
     {
         return testsDir;
     }
+
+    public Path getTestDependenciesDir()
+    {
+        return testDependenciesDir;
+    }
+
+    public Path getDependenciesDir()
+    {
+        return dependenciesDir;
+    }
 }
 
 class ConfigurationJSON
@@ -87,6 +102,8 @@ class ConfigurationJSON
     String studentSolutionsDirPath;
     String modelSolutionsDirPath;
     String testsDirPath;
+    String dependenciesDirPath;
+    String testDependenciesDirPath;
 
     public static ConfigurationJSON loadJSON(Path jsonFile) throws FileNotFoundException
     {

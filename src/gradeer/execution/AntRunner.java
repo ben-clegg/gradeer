@@ -12,6 +12,8 @@ import org.apache.logging.log4j.Logger;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,21 +32,38 @@ public class AntRunner
     {
         config = configuration;
         this.classPath = classPath;
+
+
+
     }
 
-    public AntProcessResult compile(JavaSource javaSource)
+    public AntProcessResult compile(Solution solution)
     {
         List<String> command = commonCommand("compile");
-        command.add("-Dsrc.dir=" + javaSource.getJavaFile().getParent().toString());
-        command.add("-Dclass.dir=" + javaSource.getClassFile().getParent().toString());
+        command.add("-Dsrc.dir=" + solution.getDirectory());
+        command.add("-Dclass.dir=" + solution.getDirectory());
+
+        logger.info(command);
+        return runAntProcess(command);
+    }
+
+    public AntProcessResult compile(Path testDirectory)
+    {
+        List<String> command = commonCommand("compile");
+        command.add("-Dsrc.dir=" + testDirectory);
+        command.add("-Dclass.dir=" + testDirectory);
 
         logger.info(command);
         return runAntProcess(command);
     }
 
     public AntProcessResult runTest(TestSuite test, Solution solution)
-    {List<String> command = commonCommand("run-test");
-        command.add("-Dtest.class.name=" + test.getBaseName());
+    {
+        String packagePrefix = test.getPackage();
+        if(!packagePrefix.isEmpty())
+            packagePrefix = packagePrefix + ".";
+        List<String> command = commonCommand("run-test");
+        command.add("-Dtest.class.name=" + packagePrefix + test.getBaseName());
         command.add("-Dtest.class.dir=" + test.getClassFile().getParent().toString());
         command.add("-Dsource.dir=" + solution.getDirectory());
         command.add("-Dtest.dir=" + config.getTestsDir());
@@ -59,7 +78,12 @@ public class AntRunner
         command.add(targetName);
         command.add("-Dgradeer.home.dir=" + Environment.getGradeerHomeDir());
         command.add("-Dadditional.cp=" + classPath.toString());
-        command.add("-Dsource.deps=");
+
+        if(config.getDependenciesDir() != null &&
+                Files.exists(config.getDependenciesDir()))
+            command.add("-Druntime.deps=" + config.getDependenciesDir());
+        else
+            command.add("-Druntime.deps=");
         // TODO add source dependencies dir from config
 
         return command;

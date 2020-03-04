@@ -9,12 +9,14 @@ import gradeer.execution.junit.TestResult;
 import gradeer.execution.junit.TestSuite;
 import gradeer.execution.junit.TestSuiteLoader;
 import gradeer.grading.GradeGenerator;
+import gradeer.io.JavaSource;
 import gradeer.io.compilation.JavaCompiler;
 import gradeer.misc.ErrorCode;
 import gradeer.solution.Solution;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -76,13 +78,15 @@ public class Gradeer
 
     private void loadChecks()
     {
+        logger.info("Generating checks...");
         /*
         Run each test suite on every model solution.
         If a suite is valid for all model solutions, generate a check for it.
         A suite is valid if it has >0 tests and passes on the model solution.
          */
-        testSuites.forEach(t -> {
+        testSuites.stream().filter(JavaSource::isCompiled).forEach(t -> {
             boolean valid = true;
+            logger.info("Checking validity of compiled test " + t);
             TestExecutor testExecutor = new TestExecutor(t, getConfiguration());
 
             for (Solution ms : modelSolutions)
@@ -91,6 +95,7 @@ public class Gradeer
                     break;
 
                 TestResult result = testExecutor.execute(ms);
+                logger.info(result);
                 if(!result.allTestsPass())
                     valid = false;
                 if(result.getTotalTests() < 1)
@@ -98,7 +103,11 @@ public class Gradeer
             }
 
             if (valid)
-                checks.add(new TestSuiteCheck(t, getConfiguration()));
+            {
+                Check c = new TestSuiteCheck(t, getConfiguration());
+                checks.add(c);
+                logger.info("Added Check " + c);
+            }
         });
     }
 
@@ -108,10 +117,15 @@ public class Gradeer
 
         logger.info("Compiling " + testSuites.size() + " unit tests...");
 
-        ArrayList<Path> auxClassPath = new ArrayList<>();
-        auxClassPath.add(configuration.getTestsDir());
-        JavaCompiler testCompiler = JavaCompiler.createCompiler(modelSolution, auxClassPath);
-        testSuites.forEach(t -> testCompiler.compile(t, getConfiguration()));
+        JavaCompiler compiler = JavaCompiler.createCompiler(getConfiguration());
+        logger.info("Checking for test dependencies at " + getConfiguration().getTestDependenciesDir() + "...");
+        if (getConfiguration().getTestDependenciesDir() != null &&
+                Files.exists(getConfiguration().getTestDependenciesDir()))
+        {
+            logger.info("Compiling test dependencies at " + getConfiguration().getTestDependenciesDir());
+            compiler.compileDir(getConfiguration().getTestDependenciesDir(), modelSolution);
+        }
+        compiler.compileTests(modelSolution);
     }
 
     private List<Solution> loadSolutions(Path solutionsRootDir)
@@ -131,8 +145,8 @@ public class Gradeer
             logger.error("Solution directories in " + solutionsRootDir + " could not be loaded.");
         }
         solutions.forEach(solution -> {
-            JavaCompiler compiler = JavaCompiler.createCompiler(solution);
-            solution.getSources().forEach(src -> compiler.compile(src, getConfiguration()));
+            JavaCompiler compiler = JavaCompiler.createCompiler(getConfiguration());
+            compiler.compile(solution);
         });
         return solutions;
     }

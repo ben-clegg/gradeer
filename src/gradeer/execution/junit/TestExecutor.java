@@ -12,23 +12,25 @@ public class TestExecutor
 {
     private static Logger logger = LogManager.getLogger(TestExecutor.class);
 
-    private TestSuite test;
-    private Configuration config;
+    private TestSuite testSuite;
+    private Configuration configuration;
 
     public TestExecutor(TestSuite testSuite, Configuration configuration)
     {
-        test = testSuite;
-        config = configuration;
+        this.testSuite = testSuite;
+        this.configuration = configuration;
     }
 
     public TestResult execute(Solution solution)
     {
         ClassPath classPath = new ClassPath();
-        classPath.add(test.getJavaFile().getParent());
+        classPath.add(testSuite.getJavaFile().getParent());
         classPath.add(solution.getDirectory());
+        classPath.add(configuration.getTestDependenciesDir());
 
-        AntRunner antRunner = new AntRunner(config, classPath);
-        AntProcessResult antProcessResult = antRunner.runTest(test, solution);
+        AntRunner antRunner = new AntRunner(configuration, classPath);
+        AntProcessResult antProcessResult = antRunner.runTest(testSuite, solution);
+        //logger.info(antProcessResult);
         return new TestResult(antProcessResult);
     }
 }

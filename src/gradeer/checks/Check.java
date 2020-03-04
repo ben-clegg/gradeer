@@ -37,4 +37,13 @@ public abstract class Check
     {
         return name;
     }
+
+    @Override
+    public String toString()
+    {
+        return "Check{" +
+                "weight=" + weight +
+                ", name='" + name +
+                '}';
+    }
 }

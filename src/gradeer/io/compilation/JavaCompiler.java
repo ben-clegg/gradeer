@@ -3,6 +3,7 @@ package gradeer.io.compilation;
 import gradeer.configuration.Configuration;
 import gradeer.execution.AntProcessResult;
 import gradeer.execution.AntRunner;
+import gradeer.execution.junit.TestSuite;
 import gradeer.io.ClassPath;
 import gradeer.io.JavaSource;
 import gradeer.solution.Solution;
@@ -17,30 +18,58 @@ public class JavaCompiler
     private static Logger logger = LogManager.getLogger(JavaCompiler.class);
 
     public ClassPath classPath;
+    private Configuration configuration;
 
-    public JavaCompiler(ClassPath classPath)
+    public JavaCompiler(ClassPath classPath, Configuration configuration)
     {
         this.classPath = classPath;
+        this.configuration = configuration;
     }
 
-    public static JavaCompiler createCompiler(Solution solutionForCompilation)
+    public static JavaCompiler createCompiler(Configuration configuration)
     {
-        return createCompiler(solutionForCompilation, Collections.EMPTY_LIST);
+        return createCompiler(configuration, Collections.EMPTY_LIST);
     }
 
-    public static JavaCompiler createCompiler(Solution solutionForCompilation, Collection<Path> auxiliaryClassPathElements)
+    public static JavaCompiler createCompiler(Configuration configuration, Collection<Path> auxiliaryClassPathElements)
     {
         ClassPath cp = new ClassPath();
-        cp.add(solutionForCompilation.getDirectory());
         cp.addAll(auxiliaryClassPathElements);
 
-        return new JavaCompiler(cp);
+        return new JavaCompiler(cp, configuration);
     }
 
-    public void compile(JavaSource javaSource, Configuration configuration)
+    public void compile(Solution solutionToCompile)
     {
-        AntRunner antRunner = new AntRunner(configuration, classPath);
-        AntProcessResult result = antRunner.compile(javaSource);
+        ClassPath cp = new ClassPath(classPath);
+        cp.add(solutionToCompile.getDirectory());
+
+        AntRunner antRunner = new AntRunner(configuration, cp);
+        AntProcessResult result = antRunner.compile(solutionToCompile);
         logger.info(result);
     }
+
+    public void compileTests(Solution modelSolution)
+    {
+        ClassPath cp = new ClassPath(classPath);
+        cp.add(modelSolution.getDirectory());
+        cp.add(configuration.getTestsDir());
+        cp.add(configuration.getTestDependenciesDir());
+
+        AntRunner antRunner = new AntRunner(configuration, cp);
+        AntProcessResult result = antRunner.compile(configuration.getTestsDir());
+        logger.info(result);
+    }
+
+    public void compileDir(Path dir, Solution modelSolution)
+    {
+        ClassPath cp = new ClassPath(classPath);
+        cp.add(dir);
+        cp.add(modelSolution.getDirectory());
+
+        AntRunner antRunner = new AntRunner(configuration, cp);
+        AntProcessResult result = antRunner.compile(dir);
+        logger.info(result);
+    }
+
 }

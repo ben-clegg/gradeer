@@ -12,6 +12,12 @@ public class ClassPath extends HashSet<Path>
         this.addAll(elements);
     }
 
+    public ClassPath(ClassPath toCopy)
+    {
+        super();
+        this.addAll(toCopy);
+    }
+
     public ClassPath()
     {
         super();

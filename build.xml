@@ -27,9 +27,9 @@
     </target>
 
     <target name="run-test" depends="echo-path" description="Run a JUnit test">
-        <junit printsummary="true" haltonfailure="false" showoutput="yes" includeantruntime="true" outputtoformatters="true" fork="true" clonevm="true" timeout="10000">
+        <junit printsummary="true" haltonfailure="false" showoutput="yes" includeantruntime="true" outputtoformatters="true" fork="true" clonevm="true" timeout="10000" dir="${runtime.deps}">
             <classpath refid="gradeer.cp" />
-            <classpath location="${gradeer.home}/test/resources"/>
+            <classpath location="${runtime.deps}"/>
             <test name="${test.class.name}"/>
             <formatter type="plain" usefile="false"/>
         </junit>
