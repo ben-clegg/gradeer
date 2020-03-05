@@ -8,6 +8,8 @@ import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Collection;
+import java.util.HashSet;
 
 public class Configuration
 {
@@ -19,6 +21,9 @@ public class Configuration
     private Path testsDir;
     private Path dependenciesDir;
     private Path testDependenciesDir;
+    private Path libDir;
+    private Collection<Path> builtLibComponents;
+    private int perTestSuiteTimeout = 10000;
 
     public Configuration(Path jsonFile)
     {
@@ -52,6 +57,35 @@ public class Configuration
 
         dependenciesDir = loadLocalOrAbsolutePath(json.dependenciesDirPath);
         testDependenciesDir = loadLocalOrAbsolutePath(json.testDependenciesDirPath);
+        libDir = loadLocalOrAbsolutePath(json.libDir);
+
+        loadBuiltLibComponents();
+    }
+
+    private void loadBuiltLibComponents()
+    {
+        builtLibComponents = new HashSet<>();
+
+        logger.info("Loading built lib components for " + libDir);
+        if(!pathExists(libDir))
+        {
+            return;
+        }
+        try
+        {
+            Files.walk(libDir).forEach(logger::info);
+            Files.walk(libDir).filter(p ->
+                    com.google.common.io.Files.getFileExtension(p.toString()).equals("jar"))
+                    .forEach(builtLibComponents::add);
+            Files.walk(libDir).filter(p ->
+                    com.google.common.io.Files.getFileExtension(p.toString()).equals("class"))
+                    .forEach(builtLibComponents::add);
+        }
+        catch (IOException ioEx)
+        {
+            ioEx.printStackTrace();
+        }
+        builtLibComponents.forEach(p -> logger.info("Loaded built lib component " + p));
     }
 
     /**
@@ -94,6 +128,30 @@ public class Configuration
     {
         return dependenciesDir;
     }
+
+    public Path getLibDir()
+    {
+        return libDir;
+    }
+
+    public Collection<Path> getBuiltLibComponents()
+    {
+        return builtLibComponents;
+    }
+
+    public int getPerTestSuiteTimeout()
+    {
+        return perTestSuiteTimeout;
+    }
+
+    public static boolean pathExists(Path path)
+    {
+        if(path == null)
+            return false;
+        if(Files.notExists(path))
+            return false;
+        return true;
+    }
 }
 
 class ConfigurationJSON
@@ -104,6 +162,7 @@ class ConfigurationJSON
     String testsDirPath;
     String dependenciesDirPath;
     String testDependenciesDirPath;
+    String libDir;
 
     public static ConfigurationJSON loadJSON(Path jsonFile) throws FileNotFoundException
     {

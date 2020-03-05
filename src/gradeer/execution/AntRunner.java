@@ -10,6 +10,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.file.Files;
@@ -32,9 +33,7 @@ public class AntRunner
     {
         config = configuration;
         this.classPath = classPath;
-
-
-
+        this.classPath.addAll(configuration.getBuiltLibComponents());
     }
 
     public AntProcessResult compile(Solution solution)
@@ -67,6 +66,7 @@ public class AntRunner
         command.add("-Dtest.class.dir=" + test.getClassFile().getParent().toString());
         command.add("-Dsource.dir=" + solution.getDirectory());
         command.add("-Dtest.dir=" + config.getTestsDir());
+        command.add("-Dtest.suite.timeout=" + config.getPerTestSuiteTimeout());
 
         return runAntProcess(command);
     }

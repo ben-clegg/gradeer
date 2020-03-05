@@ -30,7 +30,7 @@ public class TestExecutor
 
         AntRunner antRunner = new AntRunner(configuration, classPath);
         AntProcessResult antProcessResult = antRunner.runTest(testSuite, solution);
-        //logger.info(antProcessResult);
+        logger.info(antProcessResult);
         return new TestResult(antProcessResult);
     }
 }

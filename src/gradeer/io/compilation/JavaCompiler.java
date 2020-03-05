@@ -46,7 +46,7 @@ public class JavaCompiler
 
         AntRunner antRunner = new AntRunner(configuration, cp);
         AntProcessResult result = antRunner.compile(solutionToCompile);
-        logger.info(result);
+        //logger.info(result);
     }
 
     public void compileTests(Solution modelSolution)
@@ -58,7 +58,7 @@ public class JavaCompiler
 
         AntRunner antRunner = new AntRunner(configuration, cp);
         AntProcessResult result = antRunner.compile(configuration.getTestsDir());
-        logger.info(result);
+        //logger.info(result);
     }
 
     public void compileDir(Path dir, Solution modelSolution)
@@ -69,7 +69,7 @@ public class JavaCompiler
 
         AntRunner antRunner = new AntRunner(configuration, cp);
         AntProcessResult result = antRunner.compile(dir);
-        logger.info(result);
+        //logger.info(result);
     }
 
 }
