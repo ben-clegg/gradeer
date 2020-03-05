@@ -60,6 +60,9 @@ public class Configuration
         libDir = loadLocalOrAbsolutePath(json.libDir);
 
         loadBuiltLibComponents();
+
+        if(json.perTestSuiteTimeout > 0)
+            perTestSuiteTimeout = json.perTestSuiteTimeout * 1000; // Convert seconds to ms
     }
 
     private void loadBuiltLibComponents()
@@ -163,6 +166,7 @@ class ConfigurationJSON
     String dependenciesDirPath;
     String testDependenciesDirPath;
     String libDir;
+    int perTestSuiteTimeout = -1;
 
     public static ConfigurationJSON loadJSON(Path jsonFile) throws FileNotFoundException
     {
