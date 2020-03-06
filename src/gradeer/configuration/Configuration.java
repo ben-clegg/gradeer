@@ -21,9 +21,21 @@ public class Configuration
     private Path testsDir;
     private Path dependenciesDir;
     private Path testDependenciesDir;
+
     private Path libDir;
     private Collection<Path> builtLibComponents;
+
     private int perTestSuiteTimeout = 10000;
+
+    private Path checkstyleXml;
+    private String pmdRulesets = "java-basic,java-braces,java-clone,java-codesize,java-comments," +
+            "java-coupling,java-design,java-empty,java-finalizers,java-imports,java-metrics," +
+            "java-migrating,java-naming,java-sunsecure,java-strings,java-typeresolution," +
+            "java-unnecessary,java-unusedcode";
+
+    private boolean testSuitesEnabled = true;
+    private boolean pmdEnabled = true;
+    private boolean checkStyleEnabled = true;
 
     public Configuration(Path jsonFile)
     {
@@ -63,6 +75,14 @@ public class Configuration
 
         if(json.perTestSuiteTimeout > 0)
             perTestSuiteTimeout = json.perTestSuiteTimeout * 1000; // Convert seconds to ms
+        if(json.pmdRulesets != null && !json.pmdRulesets.isEmpty())
+            pmdRulesets = json.pmdRulesets;
+
+        checkstyleXml = loadLocalOrAbsolutePath(json.checkstyleXml);
+
+        testSuitesEnabled = json.enableTestSuites;
+        checkStyleEnabled = json.enableCheckStyle;
+        pmdEnabled = json.enablePMD;
     }
 
     private void loadBuiltLibComponents()
@@ -147,6 +167,31 @@ public class Configuration
         return perTestSuiteTimeout;
     }
 
+    public String getPmdRulesets()
+    {
+        return pmdRulesets;
+    }
+
+    public Path getCheckstyleXml()
+    {
+        return checkstyleXml;
+    }
+
+    public boolean isTestSuitesEnabled()
+    {
+        return testSuitesEnabled;
+    }
+
+    public boolean isPmdEnabled()
+    {
+        return pmdEnabled;
+    }
+
+    public boolean isCheckStyleEnabled()
+    {
+        return checkStyleEnabled;
+    }
+
     public static boolean pathExists(Path path)
     {
         if(path == null)
@@ -167,6 +212,13 @@ class ConfigurationJSON
     String testDependenciesDirPath;
     String libDir;
     int perTestSuiteTimeout = -1;
+
+    String checkstyleXml;
+    String pmdRulesets;
+
+    boolean enableTestSuites = true;
+    boolean enableCheckStyle = true;
+    boolean enablePMD = true;
 
     public static ConfigurationJSON loadJSON(Path jsonFile) throws FileNotFoundException
     {

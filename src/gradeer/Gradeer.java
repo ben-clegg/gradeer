@@ -2,6 +2,7 @@ package gradeer;
 
 import gradeer.checks.Check;
 import gradeer.checks.TestSuiteCheck;
+import gradeer.checks.generation.TestSuiteCheckGenerator;
 import gradeer.configuration.Configuration;
 import gradeer.configuration.Environment;
 import gradeer.execution.junit.TestExecutor;
@@ -65,7 +66,6 @@ public class Gradeer
     private void init()
     {
         loadModelSolutions();
-        loadUnitTests(new ArrayList<>(modelSolutions).get(0));
         loadChecks();
         loadStudentSolutions();
     }
@@ -78,54 +78,11 @@ public class Gradeer
 
     private void loadChecks()
     {
-        logger.info("Generating checks...");
-        /*
-        Run each test suite on every model solution.
-        If a suite is valid for all model solutions, generate a check for it.
-        A suite is valid if it has >0 tests and passes on the model solution.
-         */
-        testSuites.stream().filter(JavaSource::isCompiled).forEach(t -> {
-            boolean valid = true;
-            logger.info("Checking validity of compiled test " + t);
-            TestExecutor testExecutor = new TestExecutor(t, getConfiguration());
-
-            for (Solution ms : modelSolutions)
-            {
-                if (!valid)
-                    break;
-
-                TestResult result = testExecutor.execute(ms);
-                logger.info(result);
-                if(!result.allTestsPass())
-                    valid = false;
-                if(result.getTotalTests() < 1)
-                    valid = false;
-            }
-
-            if (valid)
-            {
-                Check c = new TestSuiteCheck(t, getConfiguration());
-                checks.add(c);
-                logger.info("Added Check " + c);
-            }
-        });
-    }
-
-    private void loadUnitTests(Solution modelSolution)
-    {
-        testSuites = new TestSuiteLoader(configuration.getTestsDir()).getTestSuites();
-
-        logger.info("Compiling " + testSuites.size() + " unit tests...");
-
-        JavaCompiler compiler = JavaCompiler.createCompiler(getConfiguration());
-        logger.info("Checking for test dependencies at " + getConfiguration().getTestDependenciesDir() + "...");
-        if (getConfiguration().getTestDependenciesDir() != null &&
-                Files.exists(getConfiguration().getTestDependenciesDir()))
+        if(configuration.isTestSuitesEnabled())
         {
-            logger.info("Compiling test dependencies at " + getConfiguration().getTestDependenciesDir());
-            compiler.compileDir(getConfiguration().getTestDependenciesDir(), modelSolution);
+            TestSuiteCheckGenerator testSuiteCheckGenerator = new TestSuiteCheckGenerator(configuration, modelSolutions);
+            checks.addAll(testSuiteCheckGenerator.getChecks());
         }
-        compiler.compileTests(modelSolution);
     }
 
     private List<Solution> loadSolutions(Path solutionsRootDir)
