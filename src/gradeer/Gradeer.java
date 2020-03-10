@@ -25,6 +25,8 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 public class Gradeer
 {
@@ -32,7 +34,6 @@ public class Gradeer
 
     private Configuration configuration;
 
-    private Collection<TestSuite> testSuites;
     private Collection<Solution> modelSolutions;
     private Collection<Solution> studentSolutions;
     private Collection<Check> checks;
@@ -53,7 +54,6 @@ public class Gradeer
 
     public Gradeer(Configuration config)
     {
-        testSuites = new ArrayList<>();
         modelSolutions = new ArrayList<>();
         studentSolutions = new ArrayList<>();
         checks = new ArrayList<>();
@@ -119,11 +119,6 @@ public class Gradeer
 
     }
 
-
-
-
-
-
     public Configuration getConfiguration()
     {
         return configuration;
@@ -139,8 +134,16 @@ public class Gradeer
         return modelSolutions;
     }
 
-    public Collection<TestSuite> getTestSuites()
+    public Collection<Check> getChecks()
     {
-        return testSuites;
+        return checks;
+    }
+
+    public Collection<TestSuite> getEnabledTestSuites()
+    {
+        return checks.stream()
+                .filter(c -> c instanceof TestSuiteCheck)
+                .map(c -> ((TestSuiteCheck) c).getTestSuite())
+                .collect(Collectors.toList());
     }
 }

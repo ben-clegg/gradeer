@@ -19,7 +19,7 @@ public class Configuration
     private Path studentSolutionsDir;
     private Path modelSolutionsDir;
     private Path testsDir;
-    private Path dependenciesDir;
+    private Path runtimeDependenciesDirPath;
     private Path testDependenciesDir;
 
     private Path libDir;
@@ -67,7 +67,7 @@ public class Configuration
 
         testsDir = loadLocalOrAbsolutePath(json.testsDirPath);
 
-        dependenciesDir = loadLocalOrAbsolutePath(json.dependenciesDirPath);
+        runtimeDependenciesDirPath = loadLocalOrAbsolutePath(json.runtimeDependenciesDirPath);
         testDependenciesDir = loadLocalOrAbsolutePath(json.testDependenciesDirPath);
         libDir = loadLocalOrAbsolutePath(json.libDir);
 
@@ -147,9 +147,9 @@ public class Configuration
         return testDependenciesDir;
     }
 
-    public Path getDependenciesDir()
+    public Path getRuntimeDependenciesDirPath()
     {
-        return dependenciesDir;
+        return runtimeDependenciesDirPath;
     }
 
     public Path getLibDir()
@@ -208,7 +208,7 @@ class ConfigurationJSON
     String studentSolutionsDirPath;
     String modelSolutionsDirPath;
     String testsDirPath;
-    String dependenciesDirPath;
+    String runtimeDependenciesDirPath;
     String testDependenciesDirPath;
     String libDir;
     int perTestSuiteTimeout = -1;

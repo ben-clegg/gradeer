@@ -24,4 +24,9 @@ public class TestSuiteCheck extends Check
         TestResult testResult = testExecutor.execute(solution);
         unweightedScores.put(solution, testResult.proportionPassing());
     }
+
+    public TestSuite getTestSuite()
+    {
+        return testSuite;
+    }
 }

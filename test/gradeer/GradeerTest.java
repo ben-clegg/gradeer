@@ -1,5 +1,6 @@
 package gradeer;
 
+import gradeer.checks.TestSuiteCheck;
 import gradeer.configuration.Configuration;
 import org.junit.jupiter.api.Test;
 
@@ -15,7 +16,7 @@ class GradeerTest
     {
         assertFalse(gradeer.getStudentSolutions().isEmpty());
         assertFalse(gradeer.getModelSolutions().isEmpty());
-        assertFalse(gradeer.getTestSuites().isEmpty());
+        assertFalse(gradeer.getEnabledTestSuites().isEmpty());
     }
 
     @Test
@@ -28,14 +29,12 @@ class GradeerTest
     void testSourcesCompiled()
     {
         // Model solutions
-        gradeer.getModelSolutions().forEach(m -> {
-            m.getSources().forEach(src -> assertTrue(src.isCompiled()));
-        });
+        gradeer.getModelSolutions().forEach(m -> m.getSources().forEach(src -> assertTrue(src.isCompiled())));
         // Unit tests
-        gradeer.getTestSuites().forEach(t -> assertTrue(t.isCompiled()));
+        assertTrue(gradeer.getEnabledTestSuites().size() > 0);
+        gradeer.getEnabledTestSuites()
+                .forEach(t -> assertTrue(t.isCompiled()));
         // Student solutions
-        gradeer.getStudentSolutions().forEach(s -> {
-            s.getSources().forEach(src -> assertTrue(src.isCompiled()));
-        });
+        gradeer.getStudentSolutions().forEach(s -> s.getSources().forEach(src -> assertTrue(src.isCompiled())));
     }
 }

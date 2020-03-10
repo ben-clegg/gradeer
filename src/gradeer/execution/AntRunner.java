@@ -4,13 +4,11 @@ import gradeer.configuration.Configuration;
 import gradeer.configuration.Environment;
 import gradeer.execution.junit.TestSuite;
 import gradeer.io.ClassPath;
-import gradeer.io.JavaSource;
 import gradeer.solution.Solution;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.file.Files;
@@ -79,9 +77,9 @@ public class AntRunner
         command.add("-Dgradeer.home.dir=" + Environment.getGradeerHomeDir());
         command.add("-Dadditional.cp=" + classPath.toString());
 
-        if(config.getDependenciesDir() != null &&
-                Files.exists(config.getDependenciesDir()))
-            command.add("-Druntime.deps=" + config.getDependenciesDir());
+        if(config.getRuntimeDependenciesDirPath() != null &&
+                Files.exists(config.getRuntimeDependenciesDirPath()))
+            command.add("-Druntime.deps=" + config.getRuntimeDependenciesDirPath());
         else
             command.add("-Druntime.deps=");
         // TODO add source dependencies dir from config

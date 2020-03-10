@@ -17,7 +17,7 @@ class TestExecutorTest
     @Test
     void testTestExecution()
     {
-        gradeer.getTestSuites().forEach(t -> {
+        gradeer.getEnabledTestSuites().forEach(t -> {
             TestExecutor testExecutor = new TestExecutor(t, config);
             TestResult result = testExecutor.execute(new ArrayList<>(gradeer.getModelSolutions()).get(0));
             System.out.println(result.toString());
