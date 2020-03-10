@@ -42,4 +42,9 @@ public class Solution
     {
         return sources;
     }
+
+    public String getIdentifier()
+    {
+        return directory.getFileName().toString();
+    }
 }

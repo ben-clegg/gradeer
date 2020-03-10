@@ -5,19 +5,15 @@ import gradeer.checks.TestSuiteCheck;
 import gradeer.checks.generation.TestSuiteCheckGenerator;
 import gradeer.configuration.Configuration;
 import gradeer.configuration.Environment;
-import gradeer.execution.junit.TestExecutor;
-import gradeer.execution.junit.TestResult;
+import gradeer.execution.checkstyle.CheckstyleExecutor;
 import gradeer.execution.junit.TestSuite;
-import gradeer.execution.junit.TestSuiteLoader;
 import gradeer.grading.GradeGenerator;
-import gradeer.io.JavaSource;
 import gradeer.io.compilation.JavaCompiler;
 import gradeer.misc.ErrorCode;
 import gradeer.solution.Solution;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -25,7 +21,6 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 public class Gradeer
@@ -78,6 +73,13 @@ public class Gradeer
 
     private void loadChecks()
     {
+        if(configuration.isCheckstyleEnabled() && configuration.getCheckstyleXml() != null)
+        {
+            CheckstyleExecutor checkstyleExecutor = new CheckstyleExecutor(configuration);
+            modelSolutions.forEach(checkstyleExecutor::execute);
+            modelSolutions.forEach(s -> logger.info(checkstyleExecutor.getMessages(s)));
+            System.exit(0);
+        }
         if(configuration.isTestSuitesEnabled())
         {
             TestSuiteCheckGenerator testSuiteCheckGenerator = new TestSuiteCheckGenerator(configuration, modelSolutions);

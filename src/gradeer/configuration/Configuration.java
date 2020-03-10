@@ -35,7 +35,7 @@ public class Configuration
 
     private boolean testSuitesEnabled = true;
     private boolean pmdEnabled = true;
-    private boolean checkStyleEnabled = true;
+    private boolean checkstyleEnabled = true;
 
     public Configuration(Path jsonFile)
     {
@@ -81,7 +81,7 @@ public class Configuration
         checkstyleXml = loadLocalOrAbsolutePath(json.checkstyleXml);
 
         testSuitesEnabled = json.enableTestSuites;
-        checkStyleEnabled = json.enableCheckStyle;
+        checkstyleEnabled = json.enableCheckStyle;
         pmdEnabled = json.enablePMD;
     }
 
@@ -187,9 +187,9 @@ public class Configuration
         return pmdEnabled;
     }
 
-    public boolean isCheckStyleEnabled()
+    public boolean isCheckstyleEnabled()
     {
-        return checkStyleEnabled;
+        return checkstyleEnabled;
     }
 
     public static boolean pathExists(Path path)
