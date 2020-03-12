@@ -6,6 +6,9 @@ import com.puppycrawl.tools.checkstyle.PropertyResolver;
 import com.puppycrawl.tools.checkstyle.api.AuditEvent;
 import com.puppycrawl.tools.checkstyle.api.AuditListener;
 import com.puppycrawl.tools.checkstyle.api.CheckstyleException;
+import gradeer.checks.Check;
+import gradeer.checks.CheckstyleCheck;
+import gradeer.checks.exceptions.NoCheckException;
 import gradeer.solution.Solution;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -13,8 +16,8 @@ import org.apache.logging.log4j.Logger;
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.List;
+import java.nio.file.Paths;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class CheckstyleProcess
@@ -30,11 +33,17 @@ public class CheckstyleProcess
     private List<String> messages;
     private AuditListener auditListener;
 
-    CheckstyleProcess(Solution sut, Path checkstyleXml)
+    private Collection<CheckstyleCheck> checkstyleChecks;
+    private Map<CheckstyleCheck, Map<Path, Integer>> violations;
+
+    CheckstyleProcess(Solution sut, Path checkstyleXml, Collection<CheckstyleCheck> checkstyleChecks)
     {
-        solution = sut;
-        complete = false;
-        xml = checkstyleXml;
+        this.solution = sut;
+        this.complete = false;
+        this.xml = checkstyleXml;
+        this.violations = new HashMap<>();
+
+        this.checkstyleChecks = checkstyleChecks;
 
         messages = new ArrayList<>();
 
@@ -42,41 +51,61 @@ public class CheckstyleProcess
             @Override
             public void auditStarted(AuditEvent auditEvent) {
                 // TODO lock thread?
-                //System.out.println("Started Checkstyle for Solution " + solution.getIdentifier());
                 complete = false;
             }
 
             @Override
             public void auditFinished(AuditEvent auditEvent) {
                 // TODO unlock thread?
-                //System.out.println("Finished Checkstyle for Solution " + solution.getIdentifier());
                 complete = true;
             }
 
             @Override
             public void fileStarted(AuditEvent auditEvent) {
-                //System.err.println(solution.getSrcDirectory());
-                //System.out.println("Started checking file " + auditEvent.getFileName() + " (Solution " + solution.getIdentifier() + ")");
             }
 
             @Override
             public void fileFinished(AuditEvent auditEvent) {
-                System.out.println("Finished checking file " + auditEvent.getFileName() + " (Solution " + solution.getIdentifier() + ")");
+                logger.info("Finished checking file " + auditEvent.getFileName() + " (Solution " + solution.getIdentifier() + ")");
             }
 
             @Override
             public void addError(AuditEvent auditEvent) {
+                /*
                 messages.add(auditEvent.getMessage());
-                //errorDetected = true;
-                //System.err.println("Message: " + auditEvent.getMessage() +
-                //        " ModuleId: " + auditEvent.getModuleId());
+                logger.info(auditEvent.getModuleId() + "-" + auditEvent.getMessage());
+                logger.info(auditEvent.getSourceName());
+                logger.info(auditEvent.getFileName());
+                 */
+
+                try
+                {
+                    CheckstyleCheck c = getCheckForAuditEvent(auditEvent);
+                    logger.info("Matched check " + c);
+                    addViolation(c, Paths.get(auditEvent.getFileName()));
+                }
+                catch (NoCheckException noCheckEx)
+                {
+                    logger.error(noCheckEx);
+                    //noCheckEx.printStackTrace();
+                }
             }
 
             @Override
             public void addException(AuditEvent auditEvent, Throwable throwable) {
-
             }
         };
+    }
+
+    private void addViolation(CheckstyleCheck check, Path source)
+    {
+        // Initialise for check if non-existent.
+        if(violations.get(check) == null || violations.get(check).isEmpty())
+            violations.put(check, new HashMap<>());
+
+        violations.get(check).putIfAbsent(source, 0);
+        int existing = violations.get(check).get(source);
+        violations.get(check).put(source, existing + 1);
     }
 
     protected void run()
@@ -130,7 +159,46 @@ public class CheckstyleProcess
         {
             chEx.printStackTrace();
         }
+
+        for (CheckstyleCheck c : violations.keySet())
+        {
+            for (Map.Entry<Path, Integer> e : violations.get(c).entrySet())
+            {
+                logger.info(c.getName() + " : " + e);
+            }
+        }
     }
 
     protected List<String> getMessages() { return messages; }
+
+
+    private CheckstyleCheck getCheckForAuditEvent(AuditEvent auditEvent) throws NoCheckException
+    {
+        for (CheckstyleCheck c : checkstyleChecks)
+        {
+            if(nameMatchesAuditEvent(c, auditEvent))
+                return c;
+        }
+        throw new NoCheckException("No check exists for AuditEvent " + auditEvent.getSourceName() + "/" + auditEvent.getModuleId());
+    }
+
+    private static boolean nameMatchesAuditEvent(CheckstyleCheck checkstyleCheck, AuditEvent auditEvent)
+    {
+        if(checkstyleCheck.getName() == null || checkstyleCheck.getName().isEmpty())
+            return false;
+        if(checkstyleCheck.getName().equals(auditEvent.getModuleId()))
+            return true;
+
+        // Checkstyle source names are often in the form
+        // "com.puppycrawl.tools.checkstyle.checks.whitespace.FileTabCharacterCheck"
+
+        logger.info(auditEvent.getSourceName());
+        String[] splitSourceName = auditEvent.getSourceName().split("\\.");
+        logger.info(Arrays.toString(splitSourceName));
+        String sourceNameEnding = splitSourceName[splitSourceName.length - 1];
+        if(checkstyleCheck.getName().equals(sourceNameEnding) ||
+                checkstyleCheck.getName().equals(sourceNameEnding.replace("Check", "")))
+            return true;
+        return false;
+    }
 }

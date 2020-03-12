@@ -28,6 +28,7 @@ public class Configuration
     private int perTestSuiteTimeout = 10000;
 
     private Path checkstyleXml;
+    private Path checkstyleChecksJSON;
     private String pmdRulesets = "java-basic,java-braces,java-clone,java-codesize,java-comments," +
             "java-coupling,java-design,java-empty,java-finalizers,java-imports,java-metrics," +
             "java-migrating,java-naming,java-sunsecure,java-strings,java-typeresolution," +
@@ -79,6 +80,7 @@ public class Configuration
             pmdRulesets = json.pmdRulesets;
 
         checkstyleXml = loadLocalOrAbsolutePath(json.checkstyleXml);
+        checkstyleChecksJSON = loadLocalOrAbsolutePath(json.checkstyleChecksJSON);
 
         testSuitesEnabled = json.enableTestSuites;
         checkstyleEnabled = json.enableCheckStyle;
@@ -177,6 +179,11 @@ public class Configuration
         return checkstyleXml;
     }
 
+    public Path getCheckstyleChecksJSON()
+    {
+        return checkstyleChecksJSON;
+    }
+
     public boolean isTestSuitesEnabled()
     {
         return testSuitesEnabled;
@@ -214,6 +221,7 @@ class ConfigurationJSON
     int perTestSuiteTimeout = -1;
 
     String checkstyleXml;
+    String checkstyleChecksJSON;
     String pmdRulesets;
 
     boolean enableTestSuites = true;

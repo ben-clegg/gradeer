@@ -9,6 +9,8 @@ public abstract class Check
 {
     protected double weight = 1.0;
     protected String name;
+    protected String feedback;
+
     protected Map<Solution, Double> unweightedScores = new HashMap<>();
 
     public abstract void run(Solution solution);
@@ -36,6 +38,11 @@ public abstract class Check
     public String getName()
     {
         return name;
+    }
+
+    public String getFeedback()
+    {
+        return feedback;
     }
 
     @Override

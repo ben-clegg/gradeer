@@ -2,6 +2,7 @@ package gradeer;
 
 import gradeer.checks.Check;
 import gradeer.checks.TestSuiteCheck;
+import gradeer.checks.generation.CheckstyleCheckGenerator;
 import gradeer.checks.generation.TestSuiteCheckGenerator;
 import gradeer.configuration.Configuration;
 import gradeer.configuration.Environment;
@@ -75,9 +76,9 @@ public class Gradeer
     {
         if(configuration.isCheckstyleEnabled() && configuration.getCheckstyleXml() != null)
         {
-            CheckstyleExecutor checkstyleExecutor = new CheckstyleExecutor(configuration);
-            modelSolutions.forEach(checkstyleExecutor::execute);
-            modelSolutions.forEach(s -> logger.info(checkstyleExecutor.getMessages(s)));
+            CheckstyleCheckGenerator checkstyleCheckGenerator = new CheckstyleCheckGenerator(configuration, modelSolutions);
+            checks.addAll(checkstyleCheckGenerator.getChecks());
+
             System.exit(0);
         }
         if(configuration.isTestSuitesEnabled())
