@@ -29,6 +29,8 @@ public class Configuration
 
     private Path checkstyleXml;
     private Path checkstyleChecksJSON;
+    private boolean removeCheckstyleFailuresOnModel;
+
     private String pmdRulesets = "java-basic,java-braces,java-clone,java-codesize,java-comments," +
             "java-coupling,java-design,java-empty,java-finalizers,java-imports,java-metrics," +
             "java-migrating,java-naming,java-sunsecure,java-strings,java-typeresolution," +
@@ -81,6 +83,7 @@ public class Configuration
 
         checkstyleXml = loadLocalOrAbsolutePath(json.checkstyleXml);
         checkstyleChecksJSON = loadLocalOrAbsolutePath(json.checkstyleChecksJSON);
+        removeCheckstyleFailuresOnModel = json.removeCheckstyleFailuresOnModel;
 
         testSuitesEnabled = json.enableTestSuites;
         checkstyleEnabled = json.enableCheckStyle;
@@ -184,6 +187,16 @@ public class Configuration
         return checkstyleChecksJSON;
     }
 
+    public boolean isRemoveCheckstyleFailuresOnModel()
+    {
+        return removeCheckstyleFailuresOnModel;
+    }
+
+    public void setRemoveCheckstyleFailuresOnModel(boolean removeCheckstyleFailuresOnModel)
+    {
+        this.removeCheckstyleFailuresOnModel = removeCheckstyleFailuresOnModel;
+    }
+
     public boolean isTestSuitesEnabled()
     {
         return testSuitesEnabled;
@@ -222,6 +235,7 @@ class ConfigurationJSON
 
     String checkstyleXml;
     String checkstyleChecksJSON;
+    boolean removeCheckstyleFailuresOnModel = false;
     String pmdRulesets;
 
     boolean enableTestSuites = true;

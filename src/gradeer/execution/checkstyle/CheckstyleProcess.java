@@ -30,22 +30,20 @@ public class CheckstyleProcess
 
     private final Checker checker = new Checker();
 
-    private List<String> messages;
     private AuditListener auditListener;
-
     private Collection<CheckstyleCheck> checkstyleChecks;
-    private Map<CheckstyleCheck, Map<Path, Integer>> violations;
+
+    private CheckstyleProcessResults results;
 
     CheckstyleProcess(Solution sut, Path checkstyleXml, Collection<CheckstyleCheck> checkstyleChecks)
     {
         this.solution = sut;
         this.complete = false;
         this.xml = checkstyleXml;
-        this.violations = new HashMap<>();
 
         this.checkstyleChecks = checkstyleChecks;
+        this.results = new CheckstyleProcessResults();
 
-        messages = new ArrayList<>();
 
         auditListener = new AuditListener() {
             @Override
@@ -71,12 +69,6 @@ public class CheckstyleProcess
 
             @Override
             public void addError(AuditEvent auditEvent) {
-                /*
-                messages.add(auditEvent.getMessage());
-                logger.info(auditEvent.getModuleId() + "-" + auditEvent.getMessage());
-                logger.info(auditEvent.getSourceName());
-                logger.info(auditEvent.getFileName());
-                 */
 
                 try
                 {
@@ -87,7 +79,7 @@ public class CheckstyleProcess
                 catch (NoCheckException noCheckEx)
                 {
                     logger.error(noCheckEx);
-                    //noCheckEx.printStackTrace();
+                    results.getChecklessAuditEvents().add(auditEvent);
                 }
             }
 
@@ -99,6 +91,8 @@ public class CheckstyleProcess
 
     private void addViolation(CheckstyleCheck check, Path source)
     {
+        Map<CheckstyleCheck, Map<Path, Integer>> violations = results.getViolations();
+
         // Initialise for check if non-existent.
         if(violations.get(check) == null || violations.get(check).isEmpty())
             violations.put(check, new HashMap<>());
@@ -160,17 +154,13 @@ public class CheckstyleProcess
             chEx.printStackTrace();
         }
 
-        for (CheckstyleCheck c : violations.keySet())
-        {
-            for (Map.Entry<Path, Integer> e : violations.get(c).entrySet())
-            {
-                logger.info(c.getName() + " : " + e);
-            }
-        }
+        //results.logViolations();
     }
 
-    protected List<String> getMessages() { return messages; }
-
+    public CheckstyleProcessResults getResults()
+    {
+        return results;
+    }
 
     private CheckstyleCheck getCheckForAuditEvent(AuditEvent auditEvent) throws NoCheckException
     {
@@ -191,10 +181,7 @@ public class CheckstyleProcess
 
         // Checkstyle source names are often in the form
         // "com.puppycrawl.tools.checkstyle.checks.whitespace.FileTabCharacterCheck"
-
-        logger.info(auditEvent.getSourceName());
         String[] splitSourceName = auditEvent.getSourceName().split("\\.");
-        logger.info(Arrays.toString(splitSourceName));
         String sourceNameEnding = splitSourceName[splitSourceName.length - 1];
         if(checkstyleCheck.getName().equals(sourceNameEnding) ||
                 checkstyleCheck.getName().equals(sourceNameEnding.replace("Check", "")))
@@ -202,3 +189,4 @@ public class CheckstyleProcess
         return false;
     }
 }
+

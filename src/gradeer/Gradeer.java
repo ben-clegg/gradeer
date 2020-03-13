@@ -1,6 +1,7 @@
 package gradeer;
 
 import gradeer.checks.Check;
+import gradeer.checks.CheckstyleCheck;
 import gradeer.checks.TestSuiteCheck;
 import gradeer.checks.generation.CheckstyleCheckGenerator;
 import gradeer.checks.generation.TestSuiteCheckGenerator;
@@ -68,6 +69,17 @@ public class Gradeer
 
     public void run()
     {
+        // Run Checkstyle on student solutions
+        if(configuration.isCheckstyleEnabled())
+        {
+            CheckstyleExecutor checkstyleExecutor = new CheckstyleExecutor(configuration,
+                    getChecks().stream()
+                            .filter(c -> c instanceof CheckstyleCheck)
+                            .map(c -> (CheckstyleCheck) c)
+                            .collect(Collectors.toList()));
+            studentSolutions.forEach(checkstyleExecutor::execute);
+        }
+
         GradeGenerator gradeGenerator = new GradeGenerator(checks);
         studentSolutions.forEach(s -> logger.info(s.getDirectory() + " : " + gradeGenerator.generateGrade(s)));
     }
@@ -76,10 +88,10 @@ public class Gradeer
     {
         if(configuration.isCheckstyleEnabled() && configuration.getCheckstyleXml() != null)
         {
+            // Load checks
             CheckstyleCheckGenerator checkstyleCheckGenerator = new CheckstyleCheckGenerator(configuration, modelSolutions);
+            // Store checks
             checks.addAll(checkstyleCheckGenerator.getChecks());
-
-            System.exit(0);
         }
         if(configuration.isTestSuitesEnabled())
         {

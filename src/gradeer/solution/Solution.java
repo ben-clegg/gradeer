@@ -1,5 +1,7 @@
 package gradeer.solution;
 
+import gradeer.execution.checkstyle.CheckstyleExecutor;
+import gradeer.execution.checkstyle.CheckstyleProcessResults;
 import gradeer.io.JavaSource;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -18,9 +20,11 @@ public class Solution
     Path directory;
     Collection<JavaSource> sources;
 
+    private CheckstyleProcessResults checkstyleProcessResults;
+
     public Solution(Path locationDir)
     {
-        directory = locationDir;
+        this.directory = locationDir;
         try
         {
             sources = Files.walk(directory)
@@ -31,6 +35,16 @@ public class Solution
         {
             e.printStackTrace();
         }
+    }
+
+    public void setCheckstyleProcessResults(CheckstyleProcessResults checkstyleProcessResults)
+    {
+        this.checkstyleProcessResults = checkstyleProcessResults;
+    }
+
+    public CheckstyleProcessResults getCheckstyleProcessResults()
+    {
+        return checkstyleProcessResults;
     }
 
     public Path getDirectory()

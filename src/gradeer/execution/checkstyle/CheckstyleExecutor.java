@@ -20,14 +20,12 @@ public class CheckstyleExecutor
     private static Logger logger = LogManager.getLogger(CheckstyleExecutor.class);
 
     private Configuration configuration;
-    private Map<Solution, List<String>> messagesMap;
     private Collection<CheckstyleCheck> checkstyleChecks;
 
 
     public CheckstyleExecutor(Configuration configuration, Collection<CheckstyleCheck> checkstyleChecks)
     {
         this.configuration = configuration;
-        this.messagesMap = new HashMap<>();
         this.checkstyleChecks = checkstyleChecks;
     }
 
@@ -35,19 +33,9 @@ public class CheckstyleExecutor
     {
         CheckstyleProcess checkstyleProcess = new CheckstyleProcess(solution, configuration.getCheckstyleXml(), checkstyleChecks);
         checkstyleProcess.run();
-        messagesMap.put(solution, checkstyleProcess.getMessages());
-    }
-
-    public List<String> getMessages(Solution solution)
-    {
-        return messagesMap.get(solution);
-    }
-
-    public void showMessages(Solution solution)
-    {
-        getMessages(solution).forEach(m -> {
-            logger.info(solution.getIdentifier() + " : " + m);
-        });
+        solution.setCheckstyleProcessResults(checkstyleProcess.getResults());
+        for (Check c : checkstyleChecks)
+            c.run(solution);
     }
 }
 

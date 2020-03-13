@@ -17,6 +17,7 @@ import java.io.Reader;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.stream.Collectors;
 
 public class CheckstyleCheckGenerator extends CheckGenerator
@@ -31,14 +32,14 @@ public class CheckstyleCheckGenerator extends CheckGenerator
     @Override
     void generate()
     {
-        // TODO Load module names and IDs from config
+        // Load module names / IDs of checks, and according parameters
         Gson gson = new Gson();
-
         try
         {
             CheckstyleCheckJSONEntry[] checkJSONEntries =
                     gson.fromJson(new FileReader(getConfiguration().getCheckstyleChecksJSON().toFile()),
                             CheckstyleCheckJSONEntry[].class);
+            // Generate checks
             for (CheckstyleCheckJSONEntry j : checkJSONEntries)
             {
                 CheckstyleCheck checkstyleCheck = new CheckstyleCheck(j.name, j.feedback, j.weight);
@@ -50,23 +51,30 @@ public class CheckstyleCheckGenerator extends CheckGenerator
             e.printStackTrace();
         }
 
-        // TODO Load according weights, per-javafile grace settings, and per-solution grace settings
-        // TODO Make and add check for each module name
+        // TODO Load per-javafile grace settings, and per-solution grace settings
 
-        // Execute on model solutions
+        // Execute on model solutions, setting results for each solution
         CheckstyleExecutor checkstyleExecutor = new CheckstyleExecutor(getConfiguration(), (Collection) getChecks());
         getModelSolutions().forEach(checkstyleExecutor::execute);
-        // TODO remove any checks that fail on model solutions and report them
-        for (Solution m : getModelSolutions())
-        {
 
+        // Remove any checks that fail on model solutions and report them
+        if(getConfiguration().isRemoveCheckstyleFailuresOnModel())
+        {
+            for (Solution m : getModelSolutions())
+            {
+                List<CheckstyleCheck> toRemove = getChecks().stream()
+                        .filter(c -> c.getUnweightedScore(m) == 0.0)
+                        .map(c -> (CheckstyleCheck) c)
+                        .collect(Collectors.toList());
+                getChecks().removeAll(toRemove);
+            }
         }
     }
 
     @Override
     void setWeights()
     {
-
+        // Weights already loaded in constructor.
     }
 
 }
