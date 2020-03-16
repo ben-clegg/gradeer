@@ -3,7 +3,7 @@ package gradeer.execution.junit;
 import gradeer.configuration.Configuration;
 import gradeer.execution.AntProcessResult;
 import gradeer.execution.AntRunner;
-import gradeer.io.ClassPath;
+import gradeer.subject.ClassPath;
 import gradeer.solution.Solution;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

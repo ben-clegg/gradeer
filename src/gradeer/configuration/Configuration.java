@@ -40,6 +40,8 @@ public class Configuration
     private boolean pmdEnabled = true;
     private boolean checkstyleEnabled = true;
 
+    private Path outputDir;
+
     public Configuration(Path jsonFile)
     {
         try
@@ -88,6 +90,8 @@ public class Configuration
         testSuitesEnabled = json.enableTestSuites;
         checkstyleEnabled = json.enableCheckStyle;
         pmdEnabled = json.enablePMD;
+
+        outputDir = Paths.get(rootDir + File.separator + "output");
     }
 
     private void loadBuiltLibComponents()
@@ -210,6 +214,11 @@ public class Configuration
     public boolean isCheckstyleEnabled()
     {
         return checkstyleEnabled;
+    }
+
+    public Path getOutputDir()
+    {
+        return outputDir;
     }
 
     public static boolean pathExists(Path path)

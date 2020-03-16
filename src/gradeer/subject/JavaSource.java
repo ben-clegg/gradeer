@@ -1,6 +1,4 @@
-package gradeer.io;
-
-import gradeer.configuration.Configuration;
+package gradeer.subject;
 
 import java.io.File;
 import java.nio.file.Files;

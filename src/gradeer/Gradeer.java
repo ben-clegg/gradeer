@@ -1,6 +1,7 @@
 package gradeer;
 
 import gradeer.checks.Check;
+import gradeer.checks.CheckExecutor;
 import gradeer.checks.CheckstyleCheck;
 import gradeer.checks.TestSuiteCheck;
 import gradeer.checks.generation.CheckstyleCheckGenerator;
@@ -9,8 +10,9 @@ import gradeer.configuration.Configuration;
 import gradeer.configuration.Environment;
 import gradeer.execution.checkstyle.CheckstyleExecutor;
 import gradeer.execution.junit.TestSuite;
-import gradeer.grading.GradeGenerator;
-import gradeer.io.compilation.JavaCompiler;
+import gradeer.results.GradeGenerator;
+import gradeer.results.ResultsGenerator;
+import gradeer.subject.compilation.JavaCompiler;
 import gradeer.misc.ErrorCode;
 import gradeer.solution.Solution;
 import org.apache.logging.log4j.LogManager;
@@ -69,19 +71,9 @@ public class Gradeer
 
     public void run()
     {
-        // Run Checkstyle on student solutions
-        if(configuration.isCheckstyleEnabled())
-        {
-            CheckstyleExecutor checkstyleExecutor = new CheckstyleExecutor(configuration,
-                    getChecks().stream()
-                            .filter(c -> c instanceof CheckstyleCheck)
-                            .map(c -> (CheckstyleCheck) c)
-                            .collect(Collectors.toList()));
-            studentSolutions.forEach(checkstyleExecutor::execute);
-        }
-
-        GradeGenerator gradeGenerator = new GradeGenerator(checks);
-        studentSolutions.forEach(s -> logger.info(s.getDirectory() + " : " + gradeGenerator.generateGrade(s)));
+        CheckExecutor checkExecutor = new CheckExecutor(checks, configuration);
+        ResultsGenerator resultsGenerator = new ResultsGenerator(studentSolutions, checkExecutor, configuration);
+        resultsGenerator.run();
     }
 
     private void loadChecks()

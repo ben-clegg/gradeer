@@ -1,7 +1,6 @@
 package gradeer.execution.junit;
 
-import gradeer.configuration.Configuration;
-import gradeer.io.JavaSource;
+import gradeer.subject.JavaSource;
 
 import java.nio.file.Path;
 

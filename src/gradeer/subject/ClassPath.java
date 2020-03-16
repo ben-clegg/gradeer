@@ -1,4 +1,4 @@
-package gradeer.io;
+package gradeer.subject;
 
 import java.io.File;
 import java.nio.file.Path;

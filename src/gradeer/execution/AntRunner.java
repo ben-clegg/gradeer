@@ -3,7 +3,7 @@ package gradeer.execution;
 import gradeer.configuration.Configuration;
 import gradeer.configuration.Environment;
 import gradeer.execution.junit.TestSuite;
-import gradeer.io.ClassPath;
+import gradeer.subject.ClassPath;
 import gradeer.solution.Solution;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

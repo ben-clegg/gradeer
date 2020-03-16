@@ -45,6 +45,11 @@ public abstract class Check
         return feedback;
     }
 
+    public boolean wasSolutionExecuted(Solution solution)
+    {
+        return unweightedScores.containsKey(solution);
+    }
+
     @Override
     public String toString()
     {

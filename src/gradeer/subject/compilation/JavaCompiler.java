@@ -1,11 +1,9 @@
-package gradeer.io.compilation;
+package gradeer.subject.compilation;
 
 import gradeer.configuration.Configuration;
 import gradeer.execution.AntProcessResult;
 import gradeer.execution.AntRunner;
-import gradeer.execution.junit.TestSuite;
-import gradeer.io.ClassPath;
-import gradeer.io.JavaSource;
+import gradeer.subject.ClassPath;
 import gradeer.solution.Solution;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

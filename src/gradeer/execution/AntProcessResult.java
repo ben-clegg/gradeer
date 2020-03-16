@@ -97,8 +97,8 @@ public class AntProcessResult
     }
 
     /**
-     * Sanitize the compiler output by identifying the output folder and
-     * removing it from the compiler output before sending it over the clients.
+     * Sanitize the compiler gradeer.output by identifying the gradeer.output folder and
+     * removing it from the compiler gradeer.output before sending it over the clients.
      *
      * @param fullCompilerOutput
      * @return
@@ -110,13 +110,13 @@ public class AntProcessResult
             // This might not work with dependencies, but we should always
             // mutate one file at time, right?
             if (line.startsWith("[javac] Compiling 1 source file to ")) {
-                // Get the value of the output folder
+                // Get the value of the gradeer.output folder
                 outputFolder = line.replace("[javac] Compiling 1 source file to ", "");
             } else {
                 if (outputFolder != null && line.contains(outputFolder)) {
                     line = line.replace(outputFolder + File.separator, "");
                 }
-                // Pass it along the output
+                // Pass it along the gradeer.output
                 sanitized.append(line).append("\n");
             }
         }
