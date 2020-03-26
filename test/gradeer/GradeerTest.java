@@ -1,6 +1,5 @@
 package gradeer;
 
-import gradeer.checks.TestSuiteCheck;
 import gradeer.configuration.Configuration;
 import org.junit.jupiter.api.Test;
 

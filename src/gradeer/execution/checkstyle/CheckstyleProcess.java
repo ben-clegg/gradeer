@@ -20,7 +20,7 @@ import java.nio.file.Paths;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class CheckstyleProcess
+public class CheckstyleProcess implements Runnable
 {
     private static Logger logger = LogManager.getLogger(CheckstyleProcess.class);
 
@@ -102,7 +102,7 @@ public class CheckstyleProcess
         violations.get(check).put(source, existing + 1);
     }
 
-    protected void run()
+    public void run()
     {
         List<File> javaFiles = solution.getSources()
                 .stream().map(s -> s.getJavaFile().toFile())

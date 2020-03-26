@@ -31,7 +31,8 @@ public class CheckstyleExecutor
 
     public void execute(Solution solution)
     {
-        CheckstyleProcess checkstyleProcess = new CheckstyleProcess(solution, configuration.getCheckstyleXml(), checkstyleChecks);
+        CheckstyleProcess checkstyleProcess = new CheckstyleProcess(solution,
+                configuration.getCheckstyleXml(), checkstyleChecks);
         checkstyleProcess.run();
         solution.setCheckstyleProcessResults(checkstyleProcess.getResults());
         for (Check c : checkstyleChecks)
