@@ -1,4 +1,4 @@
-package gradeer.execution.checkstyle;
+package gradeer.execution.staticanalysis.checkstyle;
 
 import com.puppycrawl.tools.checkstyle.Checker;
 import com.puppycrawl.tools.checkstyle.ConfigurationLoader;
@@ -6,7 +6,6 @@ import com.puppycrawl.tools.checkstyle.PropertyResolver;
 import com.puppycrawl.tools.checkstyle.api.AuditEvent;
 import com.puppycrawl.tools.checkstyle.api.AuditListener;
 import com.puppycrawl.tools.checkstyle.api.CheckstyleException;
-import gradeer.checks.Check;
 import gradeer.checks.CheckstyleCheck;
 import gradeer.checks.exceptions.NoCheckException;
 import gradeer.solution.Solution;
@@ -14,7 +13,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.File;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;

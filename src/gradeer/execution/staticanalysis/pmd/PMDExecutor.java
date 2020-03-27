@@ -1,12 +1,9 @@
-package gradeer.execution.pmd;
+package gradeer.execution.staticanalysis.pmd;
 
 import gradeer.configuration.Configuration;
 import gradeer.solution.Solution;
-import net.sourceforge.pmd.PMD;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Iterator;
 import java.util.List;
 
 public class PMDExecutor
@@ -24,5 +21,6 @@ public class PMDExecutor
     {
         PMDProcess pmdProcess = new PMDProcess(solution, pmdRuleSetNames, configuration);
         pmdProcess.run();
+        solution.setPmdProcessResults(pmdProcess.getResults());
     }
 }

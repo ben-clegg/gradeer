@@ -25,7 +25,9 @@ public abstract class CheckGenerator
 
     protected void addCheck(Check check)
     {
-        checks.add(check);
+        // Only add checks with a non-zero weight (0 weight checks are disabled)
+        if(check.getWeight() != 0)
+            checks.add(check);
     }
 
     abstract void generate();

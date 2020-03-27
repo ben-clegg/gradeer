@@ -1,6 +1,7 @@
 package gradeer.solution;
 
-import gradeer.execution.checkstyle.CheckstyleProcessResults;
+import gradeer.execution.staticanalysis.checkstyle.CheckstyleProcessResults;
+import gradeer.execution.staticanalysis.pmd.PMDProcessResults;
 import gradeer.subject.JavaSource;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -19,6 +20,7 @@ public class Solution
     Collection<JavaSource> sources;
 
     private CheckstyleProcessResults checkstyleProcessResults;
+    private PMDProcessResults pmdProcessResults;
 
     public Solution(Path locationDir)
     {
@@ -40,9 +42,19 @@ public class Solution
         this.checkstyleProcessResults = checkstyleProcessResults;
     }
 
+    public void setPmdProcessResults(PMDProcessResults pmdProcessResults)
+    {
+        this.pmdProcessResults = pmdProcessResults;
+    }
+
     public CheckstyleProcessResults getCheckstyleProcessResults()
     {
         return checkstyleProcessResults;
+    }
+
+    public PMDProcessResults getPmdProcessResults()
+    {
+        return pmdProcessResults;
     }
 
     public Path getDirectory()

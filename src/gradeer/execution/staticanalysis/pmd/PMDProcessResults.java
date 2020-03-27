@@ -1,4 +1,4 @@
-package gradeer.execution.pmd;
+package gradeer.execution.staticanalysis.pmd;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -7,8 +7,9 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class PMDProcessResults
 {
@@ -66,5 +67,12 @@ public class PMDProcessResults
     public List<PMDViolation> getPmdViolations()
     {
         return pmdViolations;
+    }
+
+    public Collection<PMDViolation> getViolations(String ruleName)
+    {
+        return pmdViolations.stream()
+                .filter(v -> v.getRule().toLowerCase().equals(ruleName.toLowerCase()))
+                .collect(Collectors.toList());
     }
 }

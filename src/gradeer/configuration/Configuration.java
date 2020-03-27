@@ -40,13 +40,15 @@ public class Configuration
 
  */
     //private String pmdRulesets = "java-basic";
-    private String pmdRulesets = "category/java/bestpractices.xml";
 
     private boolean testSuitesEnabled = true;
     private boolean pmdEnabled = true;
     private boolean checkstyleEnabled = true;
 
     private Path pmdLocation;
+    private String pmdRulesets = "category/java/bestpractices.xml";
+    private Path pmdChecksJSON;
+    private boolean removePmdFailuresOnModel;
 
     private Path outputDir;
 
@@ -99,6 +101,7 @@ public class Configuration
         checkstyleEnabled = json.enableCheckStyle;
         pmdEnabled = json.enablePMD;
 
+        pmdChecksJSON = loadLocalOrAbsolutePath(json.pmdChecksJSON);
         pmdLocation = loadLocalOrAbsolutePath(json.pmdLocation);
 
         outputDir = Paths.get(rootDir + File.separator + "output");
@@ -201,9 +204,19 @@ public class Configuration
         return checkstyleChecksJSON;
     }
 
+    public Path getPmdChecksJSON()
+    {
+        return pmdChecksJSON;
+    }
+
     public boolean isRemoveCheckstyleFailuresOnModel()
     {
         return removeCheckstyleFailuresOnModel;
+    }
+
+    public boolean isRemovePmdFailuresOnModel()
+    {
+        return removePmdFailuresOnModel;
     }
 
     public void setRemoveCheckstyleFailuresOnModel(boolean removeCheckstyleFailuresOnModel)
@@ -267,6 +280,8 @@ class ConfigurationJSON
     boolean enablePMD = true;
 
     String pmdLocation;
+    String pmdChecksJSON;
+    boolean removePMDFailuresOnModel = true;
 
     public static ConfigurationJSON loadJSON(Path jsonFile) throws FileNotFoundException
     {

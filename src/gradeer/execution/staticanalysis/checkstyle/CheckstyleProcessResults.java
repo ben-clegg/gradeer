@@ -1,4 +1,4 @@
-package gradeer.execution.checkstyle;
+package gradeer.execution.staticanalysis.checkstyle;
 
 import com.puppycrawl.tools.checkstyle.api.AuditEvent;
 import gradeer.checks.CheckstyleCheck;

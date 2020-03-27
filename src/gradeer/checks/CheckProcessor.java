@@ -1,7 +1,8 @@
 package gradeer.checks;
 
 import gradeer.configuration.Configuration;
-import gradeer.execution.checkstyle.CheckstyleExecutor;
+import gradeer.execution.staticanalysis.checkstyle.CheckstyleExecutor;
+import gradeer.execution.staticanalysis.pmd.PMDExecutor;
 import gradeer.solution.Solution;
 
 import java.util.Collection;
@@ -9,13 +10,13 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public class CheckExecutor
+public class CheckProcessor
 {
     private Collection<Check> checks;
     private Configuration configuration;
     private Set<Solution> executedSolutions;
 
-    public CheckExecutor(Collection<Check> checks, Configuration configuration)
+    public CheckProcessor(Collection<Check> checks, Configuration configuration)
     {
 
         this.checks = checks;
@@ -25,6 +26,13 @@ public class CheckExecutor
 
     public void runChecks(Solution solution)
     {
+        // Run PMD on student solutions
+        if(configuration.isPmdEnabled())
+        {
+            PMDExecutor pmdExecutor = new PMDExecutor(configuration);
+            pmdExecutor.execute(solution);
+        }
+
         // Run Checkstyle on student solutions
         if(configuration.isCheckstyleEnabled())
         {
@@ -35,6 +43,7 @@ public class CheckExecutor
                             .collect(Collectors.toList()));
             checkstyleExecutor.execute(solution);
         }
+
 
         checks.forEach(c -> c.run(solution));
         executedSolutions.add(solution);

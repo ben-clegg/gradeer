@@ -1,7 +1,6 @@
 package gradeer.results;
 
-import gradeer.checks.Check;
-import gradeer.checks.CheckExecutor;
+import gradeer.checks.CheckProcessor;
 import gradeer.configuration.Configuration;
 import gradeer.solution.Solution;
 import org.apache.logging.log4j.LogManager;
@@ -17,20 +16,20 @@ public class ResultsGenerator implements Runnable
     private static final Logger logger = LogManager.getLogger(ResultsGenerator.class);
 
     private final Collection<Solution> studentSolutions;
-    private CheckExecutor checkExecutor;
+    private CheckProcessor checkProcessor;
     private Configuration configuration;
 
-    public ResultsGenerator(Collection<Solution> studentSolutions, CheckExecutor checkExecutor, Configuration configuration)
+    public ResultsGenerator(Collection<Solution> studentSolutions, CheckProcessor checkProcessor, Configuration configuration)
     {
         this.studentSolutions = studentSolutions;
-        this.checkExecutor = checkExecutor;
+        this.checkProcessor = checkProcessor;
         this.configuration = configuration;
     }
 
     @Override
     public void run()
     {
-        studentSolutions.forEach(s -> checkExecutor.runChecks(s));
+        studentSolutions.forEach(s -> checkProcessor.runChecks(s));
 
         writeGrades();
         writeFeedback();
@@ -38,7 +37,7 @@ public class ResultsGenerator implements Runnable
 
     private void writeGrades()
     {
-        GradeGenerator gradeGenerator = new GradeGenerator(checkExecutor);
+        GradeGenerator gradeGenerator = new GradeGenerator(checkProcessor);
         CSVWriter gradeWriter = new CSVWriter(Arrays.asList("Username", "Grade"));
         for (Solution s : studentSolutions)
         {

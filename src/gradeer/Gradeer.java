@@ -1,16 +1,14 @@
 package gradeer;
 
 import gradeer.checks.Check;
-import gradeer.checks.CheckExecutor;
-import gradeer.checks.CheckstyleCheck;
+import gradeer.checks.CheckProcessor;
 import gradeer.checks.TestSuiteCheck;
 import gradeer.checks.generation.CheckstyleCheckGenerator;
+import gradeer.checks.generation.PMDCheckGenerator;
 import gradeer.checks.generation.TestSuiteCheckGenerator;
 import gradeer.configuration.Configuration;
 import gradeer.configuration.Environment;
-import gradeer.execution.checkstyle.CheckstyleExecutor;
 import gradeer.execution.junit.TestSuite;
-import gradeer.results.GradeGenerator;
 import gradeer.results.ResultsGenerator;
 import gradeer.subject.compilation.JavaCompiler;
 import gradeer.misc.ErrorCode;
@@ -71,20 +69,26 @@ public class Gradeer
 
     public void run()
     {
-        CheckExecutor checkExecutor = new CheckExecutor(checks, configuration);
-        ResultsGenerator resultsGenerator = new ResultsGenerator(studentSolutions, checkExecutor, configuration);
+        CheckProcessor checkProcessor = new CheckProcessor(checks, configuration);
+        ResultsGenerator resultsGenerator = new ResultsGenerator(studentSolutions, checkProcessor, configuration);
         resultsGenerator.run();
     }
 
     private void loadChecks()
     {
+
+        if(configuration.isPmdEnabled())
+        {
+            PMDCheckGenerator pmdCheckGenerator = new PMDCheckGenerator(configuration, modelSolutions);
+            checks.addAll(pmdCheckGenerator.getChecks());
+        }
+
         if(configuration.isCheckstyleEnabled() && configuration.getCheckstyleXml() != null)
         {
-            // Load checks
             CheckstyleCheckGenerator checkstyleCheckGenerator = new CheckstyleCheckGenerator(configuration, modelSolutions);
-            // Store checks
             checks.addAll(checkstyleCheckGenerator.getChecks());
         }
+
         if(configuration.isTestSuitesEnabled())
         {
             TestSuiteCheckGenerator testSuiteCheckGenerator = new TestSuiteCheckGenerator(configuration, modelSolutions);
