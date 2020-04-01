@@ -17,10 +17,7 @@ import org.apache.logging.log4j.Logger;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.nio.file.Files;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Optional;
+import java.util.*;
 
 public class TestSuiteCheckGenerator extends CheckGenerator
 {
@@ -58,10 +55,14 @@ public class TestSuiteCheckGenerator extends CheckGenerator
         If a suite is valid for all model solutions, generate a check for it.
         A suite is valid if it has >0 tests and passes on the model solution.
          */
+
+        List<Check> invalidChecks = new ArrayList<>();
+
         testSuites.stream().filter(JavaSource::isCompiled).forEach(t -> {
             boolean valid = true;
             logger.info("Checking validity of compiled test " + t);
             TestExecutor testExecutor = new TestExecutor(t, getConfiguration());
+            Check c = new TestSuiteCheck(t, getConfiguration());
 
             for (Solution ms : getModelSolutions())
             {
@@ -78,12 +79,14 @@ public class TestSuiteCheckGenerator extends CheckGenerator
 
             if (valid)
             {
-                Check c = new TestSuiteCheck(t, getConfiguration());
                 addCheck(c);
                 logger.info("Added Check " + c);
             }
+            else
+                invalidChecks.add(c);
         });
 
+        reportRemovedChecks(invalidChecks, this.getClass().getName());
         loadFeedbackAndWeights();
     }
 

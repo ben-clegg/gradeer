@@ -103,6 +103,7 @@ public class Configuration
         testSuitesEnabled = json.enableTestSuites;
         checkstyleEnabled = json.enableCheckStyle;
         pmdEnabled = json.enablePMD;
+        removePmdFailuresOnModel = json.removePMDFailuresOnModel;
 
         pmdChecksJSON = loadLocalOrAbsolutePath(json.pmdChecksJSON);
         pmdLocation = loadLocalOrAbsolutePath(json.pmdLocation);
@@ -281,7 +282,7 @@ class ConfigurationJSON
 
     String checkstyleXml;
     String checkstyleChecksJSON;
-    boolean removeCheckstyleFailuresOnModel = false;
+    boolean removeCheckstyleFailuresOnModel = true;
     String pmdRulesets;
 
     boolean enableTestSuites = true;

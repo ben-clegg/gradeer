@@ -1,6 +1,7 @@
 package gradeer.checks.generation;
 
 import com.google.gson.Gson;
+import gradeer.checks.Check;
 import gradeer.checks.CheckstyleCheck;
 import gradeer.configuration.Configuration;
 import gradeer.execution.staticanalysis.checkstyle.CheckstyleExecutor;
@@ -50,16 +51,19 @@ public class CheckstyleCheckGenerator extends CheckGenerator
         // Execute on model solutions, setting results for each solution
         CheckstyleExecutor checkstyleExecutor = new CheckstyleExecutor(getConfiguration(), (Collection) getChecks());
         getModelSolutions().forEach(checkstyleExecutor::execute);
+        for (Check c : getChecks())
+            getModelSolutions().forEach(c::run);
 
         // Remove any checks that fail on model solutions and report them
         if(getConfiguration().isRemoveCheckstyleFailuresOnModel())
         {
             for (Solution m : getModelSolutions())
             {
-                List<CheckstyleCheck> toRemove = getChecks().stream()
+                List<Check> toRemove = getChecks().stream()
                         .filter(c -> c.getUnweightedScore(m) == 0.0)
                         .map(c -> (CheckstyleCheck) c)
                         .collect(Collectors.toList());
+                reportRemovedChecks(toRemove, this.getClass().getName());
                 getChecks().removeAll(toRemove);
             }
             // TODO log removed checks

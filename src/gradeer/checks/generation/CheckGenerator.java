@@ -2,8 +2,14 @@ package gradeer.checks.generation;
 
 import gradeer.checks.Check;
 import gradeer.configuration.Configuration;
+import gradeer.results.io.FileWriter;
 import gradeer.solution.Solution;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.HashSet;
 
@@ -44,5 +50,26 @@ public abstract class CheckGenerator
     public Collection<Check> getChecks()
     {
         return checks;
+    }
+
+    protected void reportRemovedChecks(Collection<Check> toRemove, String generatorType)
+    {
+        FileWriter fileWriter = new FileWriter();
+        for (Check c : toRemove)
+            fileWriter.addLine(c.toString());
+
+        try
+        {
+            Path removedChecksDir = Paths.get(configuration.getOutputDir() + File.separator + "removedChecks");
+
+            if(Files.notExists(removedChecksDir))
+                Files.createDirectory(removedChecksDir);
+            fileWriter.write(Paths.get(removedChecksDir + File.separator + generatorType));
+        }
+        catch (IOException ioEx)
+        {
+            ioEx.printStackTrace();
+        }
+
     }
 }
