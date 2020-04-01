@@ -29,7 +29,7 @@ public class CheckstyleExecutor
                 configuration.getCheckstyleXml(), checkstyleChecks);
         checkstyleProcess.run();
         solution.setCheckstyleProcessResults(checkstyleProcess.getResults());
-        for (Check c : checkstyleChecks)
+        for (CheckstyleCheck c : checkstyleChecks)
             c.run(solution);
     }
 }

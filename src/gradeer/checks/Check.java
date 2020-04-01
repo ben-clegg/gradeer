@@ -40,9 +40,17 @@ public abstract class Check
         return name;
     }
 
-    public String getFeedback()
+    public String getFeedback(Solution solution)
     {
-        return feedback;
+        double unweightedScore = this.unweightedScores.get(solution);
+        if(unweightedScore < 1)
+            return feedback; // Provide feedback for incorrect case
+        return ""; // TODO replace with alternate String for correct case?
+    }
+
+    public void setFeedback(String feedback)
+    {
+        this.feedback = feedback;
     }
 
     public boolean wasSolutionExecuted(Solution solution)

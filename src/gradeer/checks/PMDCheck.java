@@ -4,6 +4,7 @@ import gradeer.execution.staticanalysis.pmd.PMDViolation;
 import gradeer.solution.Solution;
 
 import java.util.Collection;
+import java.util.Optional;
 
 public class PMDCheck extends Check
 {
@@ -51,5 +52,14 @@ public class PMDCheck extends Check
         double score = 1.0 - (double) totalTrackedViolations / (maximumViolations - minimumViolations);
         unweightedScores.put(solution, score);
 
+    }
+
+    private void updateFeedback(Collection<PMDViolation> pmdViolations)
+    {
+        Optional<PMDViolation> violation = pmdViolations.stream()
+                .filter(v -> v.getRule().toLowerCase().equals(this.name.toLowerCase())).findFirst();
+        if(!violation.isPresent())
+            return;
+        feedback = violation.get().getDescription();
     }
 }

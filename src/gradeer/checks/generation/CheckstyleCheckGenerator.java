@@ -65,13 +65,6 @@ public class CheckstyleCheckGenerator extends CheckGenerator
             // TODO log removed checks
         }
     }
-
-    @Override
-    void setWeights()
-    {
-        // Weights already loaded in constructor.
-    }
-
 }
 
 class CheckstyleCheckJSONEntry

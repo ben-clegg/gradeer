@@ -1,7 +1,10 @@
 package gradeer.results;
 
+import gradeer.checks.Check;
 import gradeer.checks.CheckProcessor;
 import gradeer.configuration.Configuration;
+import gradeer.results.io.CSVWriter;
+import gradeer.results.io.FileWriter;
 import gradeer.solution.Solution;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -52,5 +55,18 @@ public class ResultsGenerator implements Runnable
     private void writeFeedback()
     {
         // TODO implement
+
+        for (Solution s : studentSolutions)
+        {
+            FileWriter file = new FileWriter();
+            for (Check c : checkProcessor.getChecks())
+            {
+                String feedback = c.getFeedback(s);
+                if(!feedback.isEmpty())
+                    file.addLine(feedback);
+            }
+            file.write(Paths.get(configuration.getOutputDir() + File.separator + "feedback" + File.separator + s.getIdentifier() + "_feedback.txt"));
+
+        }
     }
 }

@@ -20,7 +20,6 @@ public abstract class CheckGenerator
 
         this.checks = new HashSet<>();
         generate();
-        setWeights();
     }
 
     protected void addCheck(Check check)
@@ -31,8 +30,6 @@ public abstract class CheckGenerator
     }
 
     abstract void generate();
-
-    abstract void setWeights();
 
     protected Configuration getConfiguration()
     {

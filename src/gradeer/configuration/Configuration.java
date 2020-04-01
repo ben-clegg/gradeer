@@ -21,6 +21,7 @@ public class Configuration
     private Path testsDir;
     private Path runtimeDependenciesDirPath;
     private Path testDependenciesDir;
+    private Path unittestChecksJSON;
 
     private Path libDir;
     private Collection<Path> builtLibComponents;
@@ -85,6 +86,8 @@ public class Configuration
         runtimeDependenciesDirPath = loadLocalOrAbsolutePath(json.runtimeDependenciesDirPath);
         testDependenciesDir = loadLocalOrAbsolutePath(json.testDependenciesDirPath);
         libDir = loadLocalOrAbsolutePath(json.libDir);
+
+        unittestChecksJSON = loadLocalOrAbsolutePath(json.unittestChecksJSON);
 
         loadBuiltLibComponents();
 
@@ -167,6 +170,11 @@ public class Configuration
     public Path getTestDependenciesDir()
     {
         return testDependenciesDir;
+    }
+
+    public Path getUnittestChecksJSON()
+    {
+        return unittestChecksJSON;
     }
 
     public Path getRuntimeDependenciesDirPath()
@@ -269,6 +277,7 @@ class ConfigurationJSON
     String testDependenciesDirPath;
     String libDir;
     int perTestSuiteTimeout = -1;
+    String unittestChecksJSON;
 
     String checkstyleXml;
     String checkstyleChecksJSON;

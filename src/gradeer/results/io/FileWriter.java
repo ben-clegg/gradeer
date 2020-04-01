@@ -1,0 +1,51 @@
+package gradeer.results.io;
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
+
+public class FileWriter
+{
+    private final List<String> lines;
+
+    public FileWriter()
+    {
+        this.lines = new ArrayList<>();
+    }
+
+    public FileWriter(List<String> lines)
+    {
+        this.lines = lines;
+    }
+
+    public void write(Path location)
+    {
+        java.io.FileWriter writer;
+
+        try
+        {
+            // Make dir if it doesn't exist
+            if(!Files.exists(location.getParent()))
+            {
+                Files.createDirectory(location.getParent());
+            }
+
+            writer = new java.io.FileWriter(location.toString());
+            for (String l : lines)
+                writer.append(l + "\n");
+            writer.close();
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
+        }
+    }
+
+    public void addLine(String line)
+    {
+        lines.add(line);
+    }
+
+}

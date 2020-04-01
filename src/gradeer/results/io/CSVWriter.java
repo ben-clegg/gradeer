@@ -1,9 +1,8 @@
-package gradeer.results;
+package gradeer.results.io;
 
 import org.jetbrains.annotations.NotNull;
 
 import java.io.BufferedWriter;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -11,13 +10,12 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-public class CSVWriter
+public class CSVWriter extends FileWriter
 {
-    private final List<String> lines;
 
     public CSVWriter(List<String> headerColumns)
     {
-        lines = new ArrayList<>();
+        super();
         addEntry(headerColumns);
     }
 
@@ -35,23 +33,6 @@ public class CSVWriter
             if(valuesIter.hasNext())
                 sb.append(",");
         }
-        lines.add(sb.toString());
-    }
-
-    public void write(Path location)
-    {
-        FileWriter writer;
-        try
-        {
-            Files.createDirectory(location.getParent());
-            writer = new FileWriter(location.toString());
-            for (String l : lines)
-                writer.append(l + "\n");
-            writer.close();
-        }
-        catch (IOException e)
-        {
-            e.printStackTrace();
-        }
+        addLine(sb.toString());
     }
 }

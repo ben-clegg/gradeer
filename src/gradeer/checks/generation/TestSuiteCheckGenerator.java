@@ -1,5 +1,6 @@
 package gradeer.checks.generation;
 
+import com.google.gson.Gson;
 import gradeer.checks.Check;
 import gradeer.checks.TestSuiteCheck;
 import gradeer.configuration.Configuration;
@@ -13,9 +14,13 @@ import gradeer.solution.Solution;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.nio.file.Files;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.Optional;
 
 public class TestSuiteCheckGenerator extends CheckGenerator
 {
@@ -78,13 +83,48 @@ public class TestSuiteCheckGenerator extends CheckGenerator
                 logger.info("Added Check " + c);
             }
         });
+
+        loadFeedbackAndWeights();
     }
 
-    @Override
-    void setWeights()
+    /**
+     * Load feedback and weights from JSON
+     */
+    private void loadFeedbackAndWeights()
     {
-        getChecks().forEach(c -> {
-            // TODO implement from configuration; name match, set weight
-        });
+        Gson gson = new Gson();
+        try
+        {
+            UnitTestCheckJSONEntry[] checkJSONEntries =
+                    gson.fromJson(new FileReader(getConfiguration().getUnittestChecksJSON().toFile()),
+                            UnitTestCheckJSONEntry[].class);
+
+
+            for (Check c : getChecks())
+            {
+                Optional<UnitTestCheckJSONEntry> entry = Arrays.stream(checkJSONEntries)
+                        .filter(j -> j.name.toLowerCase().equals(c.getName().toLowerCase())).findFirst();
+                if(entry.isPresent())
+                {
+                    c.setFeedback(entry.get().feedback);
+                    c.setWeight(entry.get().weight);
+                }
+                else
+                    logger.error("Could not load parameters for " + c.getName() + ", using defaults.");
+            }
+
+        }
+        catch (FileNotFoundException e)
+        {
+            logger.error("Critical error: could not load weights and feedback entries for unit tests, using default values.");
+            e.printStackTrace();
+        }
     }
+}
+
+class UnitTestCheckJSONEntry
+{
+    String name;
+    String feedback = "";
+    double weight;
 }
