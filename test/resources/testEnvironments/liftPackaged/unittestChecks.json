@@ -1,17 +1,17 @@
 [
   {
     "name": "TestLiftA",
-    "feedback": "Your WineSampleCellar class is incorrect.",
+    "feedback": "TestLiftA fails.",
     "weight": 8.0
   },
   {
     "name": "TestLiftB",
-    "feedback": "Your WineSampleBrowser class is incorrect.",
+    "feedback": "TestLiftB fails.",
     "weight": 8.0
   },
   {
     "name": "TestDummyB",
-    "feedback": "Your WineSampleBrowser class is incorrect.",
+    "feedback": "TestDummyB fails (it should fail, but should be removed from the available checks).",
     "weight": 8.0
   }
 ]

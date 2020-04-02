@@ -58,18 +58,11 @@ public abstract class CheckGenerator
         for (Check c : toRemove)
             fileWriter.addLine(c.toString());
 
-        try
-        {
-            Path removedChecksDir = Paths.get(configuration.getOutputDir() + File.separator + "removedChecks");
+        final Path removedChecksDir = Paths.get(configuration.getOutputDir() + File.separator + "removedChecks");
 
-            if(Files.notExists(removedChecksDir))
-                Files.createDirectory(removedChecksDir);
-            fileWriter.write(Paths.get(removedChecksDir + File.separator + generatorType));
-        }
-        catch (IOException ioEx)
-        {
-            ioEx.printStackTrace();
-        }
+        if(Files.notExists(removedChecksDir))
+            removedChecksDir.toFile().mkdirs();
+        fileWriter.write(Paths.get(removedChecksDir + File.separator + generatorType));
 
     }
 }
