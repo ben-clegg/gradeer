@@ -1,0 +1,10 @@
+[
+  {
+    "name": "SystemPrintln",
+    "weight": 0.0
+  },
+  {
+    "name": "AvoidReassigningParameters",
+    "weight": 1.0
+  }
+]

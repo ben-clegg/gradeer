@@ -1,0 +1,17 @@
+[
+  {
+    "name": "TestLiftA",
+    "feedback": "Your WineSampleCellar class is incorrect.",
+    "weight": 8.0
+  },
+  {
+    "name": "TestLiftB",
+    "feedback": "Your WineSampleBrowser class is incorrect.",
+    "weight": 8.0
+  },
+  {
+    "name": "TestDummyB",
+    "feedback": "Your WineSampleBrowser class is incorrect.",
+    "weight": 8.0
+  }
+]

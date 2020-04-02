@@ -1,0 +1,12 @@
+[
+  {
+    "name": "LineLength",
+    "feedback": "Some of your lines of code are too wide (over 100 characters).",
+    "weight": 1.0
+  },
+  {
+    "name": "Indentation",
+    "feedback": "Your code is not always indented correctly.",
+    "weight": 1.0
+  }
+]
