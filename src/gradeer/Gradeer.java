@@ -10,12 +10,14 @@ import gradeer.configuration.Configuration;
 import gradeer.configuration.Environment;
 import gradeer.execution.junit.TestSuite;
 import gradeer.results.ResultsGenerator;
+import gradeer.results.io.FileWriter;
 import gradeer.subject.compilation.JavaCompiler;
 import gradeer.misc.ErrorCode;
 import gradeer.solution.Solution;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -112,10 +114,24 @@ public class Gradeer
             ioEx.printStackTrace();
             logger.error("Solution directories in " + solutionsRootDir + " could not be loaded.");
         }
+
+        List<Solution> uncompilableSolutions = new ArrayList<>();
+
+        // Attempt to compile solutions
         solutions.forEach(solution -> {
             JavaCompiler compiler = JavaCompiler.createCompiler(getConfiguration());
-            compiler.compile(solution);
+            if (!compiler.compile(solution))
+                uncompilableSolutions.add(solution);
         });
+        // Report uncompiled solutions
+        FileWriter fileWriter = new FileWriter();
+        for (Solution s : uncompilableSolutions)
+            fileWriter.addLine(s.getDirectory().toString());
+        final Path uncompilableSolutionsDir = Paths.get(configuration.getOutputDir() + File.separator + "uncompilableSolutions");
+        if(Files.notExists(uncompilableSolutionsDir))
+            uncompilableSolutionsDir.toFile().mkdirs();
+        fileWriter.write(Paths.get(uncompilableSolutionsDir + File.separator + solutionsRootDir.getFileName().toString()));
+
         return solutions;
     }
 

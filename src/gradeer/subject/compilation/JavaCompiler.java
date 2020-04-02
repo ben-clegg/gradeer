@@ -37,7 +37,7 @@ public class JavaCompiler
         return new JavaCompiler(cp, configuration);
     }
 
-    public void compile(Solution solutionToCompile)
+    public boolean compile(Solution solutionToCompile)
     {
         ClassPath cp = new ClassPath(classPath);
         cp.add(solutionToCompile.getDirectory());
@@ -45,6 +45,7 @@ public class JavaCompiler
         AntRunner antRunner = new AntRunner(configuration, cp);
         AntProcessResult result = antRunner.compile(solutionToCompile);
         //logger.info(result);
+        return result.compiled();
     }
 
     public void compileTests(Solution modelSolution)
