@@ -31,13 +31,13 @@ public class PMDCheckGenerator extends CheckGenerator
         Gson gson = new Gson();
         try
         {
-            PMDCheckJSONEntry[] checkJSONEntries =
+            CheckJSONEntry[] checkJSONEntries =
                     gson.fromJson(new FileReader(getConfiguration().getPmdChecksJSON().toFile()),
-                            PMDCheckJSONEntry[].class);
+                            CheckJSONEntry[].class);
             // Generate checks
-            for (PMDCheckJSONEntry j : checkJSONEntries)
+            for (CheckJSONEntry j : checkJSONEntries)
             {
-                PMDCheck pmdCheck = new PMDCheck(j.name, j.weight);
+                PMDCheck pmdCheck = new PMDCheck(j.getName(), j.getWeight());
                 addCheck(pmdCheck);
                 logger.info("Added check " + pmdCheck);
             }
@@ -70,9 +70,4 @@ public class PMDCheckGenerator extends CheckGenerator
         }
 
     }
-}
-class PMDCheckJSONEntry
-{
-    String name;
-    double weight;
 }

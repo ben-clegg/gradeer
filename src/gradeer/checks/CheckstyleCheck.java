@@ -13,11 +13,12 @@ public class CheckstyleCheck extends Check
     private int minimumViolations = 1;
 
 
-    public CheckstyleCheck(String name, String feedback, double weight)
+    public CheckstyleCheck(String name, String feedbackCorrect, String feedbackIncorrect, double weight)
     {
         super();
         this.name = name;
-        this.feedback = feedback;
+        this.feedbackCorrect = feedbackCorrect;
+        this.feedbackIncorrect = feedbackIncorrect;
         this.weight = weight;
     }
 
@@ -66,7 +67,7 @@ public class CheckstyleCheck extends Check
     {
         return "CheckstyleCheck{" +
                 "name='" + name + "'" +
-                ", feedback='" + feedback + "'" +
+                ", feedback='" + feedbackCorrect + "'" +
                 ", weight=" + weight +
                 '}';
     }

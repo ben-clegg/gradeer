@@ -282,7 +282,7 @@ class ConfigurationJSON
 
     String checkstyleXml;
     String checkstyleChecksJSON;
-    boolean removeCheckstyleFailuresOnModel = true;
+    boolean removeCheckstyleFailuresOnModel = false;
     String pmdRulesets;
 
     boolean enableTestSuites = true;
@@ -291,7 +291,7 @@ class ConfigurationJSON
 
     String pmdLocation;
     String pmdChecksJSON;
-    boolean removePMDFailuresOnModel = true;
+    boolean removePMDFailuresOnModel = false;
 
     public static ConfigurationJSON loadJSON(Path jsonFile) throws FileNotFoundException
     {

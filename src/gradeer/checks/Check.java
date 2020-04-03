@@ -7,9 +7,13 @@ import java.util.Map;
 
 public abstract class Check
 {
+    protected final String FEEDBACK_PREFIX_CORRECT = "[PASS] ";
+    protected final String FEEDBACK_PREFIX_INCORRECT = "[FAIL] ";
+
     protected double weight = 1.0;
     protected String name;
-    protected String feedback;
+    protected String feedbackCorrect = "";
+    protected String feedbackIncorrect = "";
 
     protected Map<Solution, Double> unweightedScores = new HashMap<>();
 
@@ -44,13 +48,20 @@ public abstract class Check
     {
         double unweightedScore = this.unweightedScores.get(solution);
         if(unweightedScore < 1)
-            return feedback; // Provide feedback for incorrect case
-        return ""; // TODO replace with alternate String for correct case?
+        {
+            if(feedbackIncorrect.isEmpty())
+                return "";
+            return FEEDBACK_PREFIX_INCORRECT + feedbackIncorrect; // Provide feedback for incorrect case
+        }
+        if(feedbackCorrect.isEmpty())
+            return "";
+        return FEEDBACK_PREFIX_CORRECT + feedbackCorrect; // Feedback for correct case
     }
 
-    public void setFeedback(String feedback)
+    public void setFeedback(String feedbackCorrect, String feedbackIncorrect)
     {
-        this.feedback = feedback;
+        this.feedbackCorrect = feedbackCorrect;
+        this.feedbackIncorrect = feedbackIncorrect;
     }
 
     public boolean wasSolutionExecuted(Solution solution)

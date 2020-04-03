@@ -16,7 +16,6 @@ public class PMDCheck extends Check
     {
         super();
         this.name = name;
-        this.feedback = ""; // Feedback will be automatically loaded from PMD violation descriptions
         this.weight = weight;
     }
 
@@ -33,6 +32,8 @@ public class PMDCheck extends Check
             unweightedScores.put(solution, 1.0);
             return;
         }
+
+        generateFeedback(violations);
 
         int totalTrackedViolations = violations.size();
 
@@ -54,12 +55,23 @@ public class PMDCheck extends Check
 
     }
 
-    private void updateFeedback(Collection<PMDViolation> pmdViolations)
+    private void generateFeedback(Collection<PMDViolation> pmdViolations)
     {
+        // Don't change if incorrect feedback is already populated; want feedback to be consistent.
+        if(!feedbackCorrect.isEmpty() && !feedbackIncorrect.isEmpty())
+            return;
+
         Optional<PMDViolation> violation = pmdViolations.stream()
                 .filter(v -> v.getRule().toLowerCase().equals(this.name.toLowerCase())).findFirst();
         if(!violation.isPresent())
             return;
-        feedback = violation.get().getDescription();
+
+        // Turn description into a question
+        String feedbackContent = violation.get().getDescription();
+        if(feedbackContent.endsWith(".") || feedbackContent.endsWith("!"))
+            feedbackContent = feedbackContent.substring(0, feedbackContent.length() - 1);
+        feedbackContent = feedbackContent + "?";
+
+        this.setFeedback(feedbackContent, feedbackContent);
     }
 }

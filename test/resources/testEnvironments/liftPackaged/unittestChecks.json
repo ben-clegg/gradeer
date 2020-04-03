@@ -1,17 +1,20 @@
 [
   {
     "name": "TestLiftA",
-    "feedback": "TestLiftA fails.",
+    "feedbackCorrect": "TestLiftA passes.",
+    "feedbackIncorrect": "TestLiftA fails.",
     "weight": 8.0
   },
   {
     "name": "TestLiftB",
-    "feedback": "TestLiftB fails.",
+    "feedbackCorrect": "TestLiftB passes.",
+    "feedbackIncorrect": "TestLiftB fails.",
     "weight": 8.0
   },
   {
     "name": "TestDummyB",
-    "feedback": "TestDummyB fails (it should fail, but should be removed from the available checks).",
+    "feedbackCorrect": "TestDummyB passes (it should fail, but should be removed from the available checks).",
+    "feedbackIncorrect": "TestDummyB fails (it should fail, but should be removed from the available checks).",
     "weight": 8.0
   }
 ]

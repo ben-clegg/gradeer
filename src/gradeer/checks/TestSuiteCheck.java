@@ -16,7 +16,6 @@ public class TestSuiteCheck extends Check
         this.testSuite = testSuite;
         this.testExecutor = new TestExecutor(testSuite, configuration);
         this.name = testSuite.getBaseName();
-        this.feedback = "";
     }
 
     @Override

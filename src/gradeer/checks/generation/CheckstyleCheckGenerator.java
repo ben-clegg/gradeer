@@ -31,13 +31,13 @@ public class CheckstyleCheckGenerator extends CheckGenerator
         Gson gson = new Gson();
         try
         {
-            CheckstyleCheckJSONEntry[] checkJSONEntries =
+            CheckJSONEntry[] checkJSONEntries =
                     gson.fromJson(new FileReader(getConfiguration().getCheckstyleChecksJSON().toFile()),
-                            CheckstyleCheckJSONEntry[].class);
+                            CheckJSONEntry[].class);
             // Generate checks
-            for (CheckstyleCheckJSONEntry j : checkJSONEntries)
+            for (CheckJSONEntry j : checkJSONEntries)
             {
-                CheckstyleCheck checkstyleCheck = new CheckstyleCheck(j.name, j.feedback, j.weight);
+                CheckstyleCheck checkstyleCheck = new CheckstyleCheck(j.getName(), j.getFeedbackCorrect(), j.getFeedbackIncorrect(), j.getWeight());
                 addCheck(checkstyleCheck);
                 logger.info("Added check " + checkstyleCheck);
             }
@@ -69,11 +69,4 @@ public class CheckstyleCheckGenerator extends CheckGenerator
             // TODO log removed checks
         }
     }
-}
-
-class CheckstyleCheckJSONEntry
-{
-    String name;
-    String feedback;
-    double weight;
 }

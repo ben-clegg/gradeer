@@ -98,19 +98,19 @@ public class TestSuiteCheckGenerator extends CheckGenerator
         Gson gson = new Gson();
         try
         {
-            UnitTestCheckJSONEntry[] checkJSONEntries =
+            CheckJSONEntry[] checkJSONEntries =
                     gson.fromJson(new FileReader(getConfiguration().getUnittestChecksJSON().toFile()),
-                            UnitTestCheckJSONEntry[].class);
+                            CheckJSONEntry[].class);
 
 
             for (Check c : getChecks())
             {
-                Optional<UnitTestCheckJSONEntry> entry = Arrays.stream(checkJSONEntries)
+                Optional<CheckJSONEntry> entry = Arrays.stream(checkJSONEntries)
                         .filter(j -> j.name.toLowerCase().equals(c.getName().toLowerCase())).findFirst();
                 if(entry.isPresent())
                 {
-                    c.setFeedback(entry.get().feedback);
-                    c.setWeight(entry.get().weight);
+                    c.setFeedback(entry.get().getFeedbackCorrect(), entry.get().getFeedbackIncorrect());
+                    c.setWeight(entry.get().getWeight());
                 }
                 else
                     logger.error("Could not load parameters for " + c.getName() + ", using defaults.");
@@ -123,11 +123,4 @@ public class TestSuiteCheckGenerator extends CheckGenerator
             e.printStackTrace();
         }
     }
-}
-
-class UnitTestCheckJSONEntry
-{
-    String name;
-    String feedback = "";
-    double weight;
 }
