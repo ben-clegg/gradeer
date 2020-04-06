@@ -115,22 +115,16 @@ public class Gradeer
             logger.error("Solution directories in " + solutionsRootDir + " could not be loaded.");
         }
 
-        List<Solution> uncompilableSolutions = new ArrayList<>();
 
         // Attempt to compile solutions
+        List<Solution> uncompilableSolutions = new ArrayList<>();
         solutions.forEach(solution -> {
             JavaCompiler compiler = JavaCompiler.createCompiler(getConfiguration());
             if (!compiler.compile(solution))
                 uncompilableSolutions.add(solution);
         });
-        // Report uncompiled solutions
-        FileWriter fileWriter = new FileWriter();
-        for (Solution s : uncompilableSolutions)
-            fileWriter.addLine(s.getDirectory().toString());
-        final Path uncompilableSolutionsDir = Paths.get(configuration.getOutputDir() + File.separator + "uncompilableSolutions");
-        if(Files.notExists(uncompilableSolutionsDir))
-            uncompilableSolutionsDir.toFile().mkdirs();
-        fileWriter.write(Paths.get(uncompilableSolutionsDir + File.separator + solutionsRootDir.getFileName().toString()));
+        // Remove solutions that cannot be compiled to prevent further processing.
+        solutions.removeAll(uncompilableSolutions);
 
         return solutions;
     }

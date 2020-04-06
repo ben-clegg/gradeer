@@ -3,12 +3,15 @@ package gradeer.subject.compilation;
 import gradeer.configuration.Configuration;
 import gradeer.execution.AntProcessResult;
 import gradeer.execution.AntRunner;
+import gradeer.results.io.FileWriter;
 import gradeer.subject.ClassPath;
 import gradeer.solution.Solution;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.io.File;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
 
 public class JavaCompiler
@@ -44,7 +47,18 @@ public class JavaCompiler
 
         AntRunner antRunner = new AntRunner(configuration, cp);
         AntProcessResult result = antRunner.compile(solutionToCompile);
-        //logger.info(result);
+
+        // Report if uncompilable
+        if (!result.compiled())
+        {
+            FileWriter fileWriter = new FileWriter();
+            fileWriter.addLine(result.getErrorMessage());
+
+            final Path uncompilableSolutionsDir = Paths.get(configuration.getOutputDir() + File.separator + "uncompilableSolutions");
+            uncompilableSolutionsDir.toFile().mkdirs();
+            fileWriter.write(Paths.get(uncompilableSolutionsDir + File.separator + solutionToCompile.getIdentifier()));
+        }
+
         return result.compiled();
     }
 
