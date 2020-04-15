@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 public class FileWriter
@@ -47,5 +48,7 @@ public class FileWriter
     {
         lines.add(line);
     }
+
+    public void addLines(Collection<String> multipleLines) { lines.addAll(multipleLines); }
 
 }

@@ -32,16 +32,6 @@ public class Configuration
     private Path checkstyleChecksJSON;
     private boolean removeCheckstyleFailuresOnModel;
 
-
-/*
-    private String pmdRulesets = "java-basic,java-braces,java-clone,java-codesize,java-comments," +
-            "java-coupling,java-design,java-empty,java-finalizers,java-imports,java-metrics," +
-            "java-migrating,java-naming,java-sunsecure,java-strings,java-typeresolution," +
-            "java-unnecessary,java-unusedcode";
-
- */
-    //private String pmdRulesets = "java-basic";
-
     private boolean testSuitesEnabled = true;
     private boolean pmdEnabled = true;
     private boolean checkstyleEnabled = true;
@@ -51,7 +41,10 @@ public class Configuration
     private Path pmdChecksJSON;
     private boolean removePmdFailuresOnModel;
 
+    private Path mergedSolutionsDir;
+
     private Path outputDir;
+
 
     public Configuration(Path jsonFile)
     {
@@ -109,6 +102,8 @@ public class Configuration
         pmdLocation = loadLocalOrAbsolutePath(json.pmdLocation);
 
         outputDir = Paths.get(rootDir + File.separator + "output");
+
+        mergedSolutionsDir = loadLocalOrAbsolutePath(json.mergedSolutionsDir);
     }
 
     private void loadBuiltLibComponents()
@@ -258,6 +253,11 @@ public class Configuration
         return outputDir;
     }
 
+    public Path getMergedSolutionsDir()
+    {
+        return mergedSolutionsDir;
+    }
+
     public static boolean pathExists(Path path)
     {
         if(path == null)
@@ -292,6 +292,8 @@ class ConfigurationJSON
     String pmdLocation;
     String pmdChecksJSON;
     boolean removePMDFailuresOnModel = false;
+
+    String mergedSolutionsDir;
 
     public static ConfigurationJSON loadJSON(Path jsonFile) throws FileNotFoundException
     {

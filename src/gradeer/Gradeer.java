@@ -1,5 +1,6 @@
 package gradeer;
 
+import gradeer.auxiliaryprocesses.MergedSolutionWriter;
 import gradeer.checks.Check;
 import gradeer.checks.CheckProcessor;
 import gradeer.checks.TestSuiteCheck;
@@ -71,6 +72,9 @@ public class Gradeer
 
     public void run()
     {
+        if(configuration.getMergedSolutionsDir() != null)
+            new MergedSolutionWriter(configuration, studentSolutions).run();
+
         CheckProcessor checkProcessor = new CheckProcessor(checks, configuration);
         ResultsGenerator resultsGenerator = new ResultsGenerator(studentSolutions, checkProcessor, configuration);
         resultsGenerator.run();
@@ -114,7 +118,6 @@ public class Gradeer
             ioEx.printStackTrace();
             logger.error("Solution directories in " + solutionsRootDir + " could not be loaded.");
         }
-
 
         // Attempt to compile solutions
         List<Solution> uncompilableSolutions = new ArrayList<>();
