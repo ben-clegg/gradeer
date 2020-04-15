@@ -19,8 +19,11 @@ public class Configuration
     private Path studentSolutionsDir;
     private Path modelSolutionsDir;
     private Path testsDir;
-    private Path runtimeDependenciesDirPath;
+
+    private Path runtimeDependenciesDir;
     private Path testDependenciesDir;
+    private Path sourceDependenciesDir;
+
     private Path unittestChecksJSON;
 
     private Path libDir;
@@ -76,8 +79,10 @@ public class Configuration
 
         testsDir = loadLocalOrAbsolutePath(json.testsDirPath);
 
-        runtimeDependenciesDirPath = loadLocalOrAbsolutePath(json.runtimeDependenciesDirPath);
+        runtimeDependenciesDir = loadLocalOrAbsolutePath(json.runtimeDependenciesDirPath);
         testDependenciesDir = loadLocalOrAbsolutePath(json.testDependenciesDirPath);
+        sourceDependenciesDir = loadLocalOrAbsolutePath(json.sourceDependenciesDirPath);
+
         libDir = loadLocalOrAbsolutePath(json.libDir);
 
         unittestChecksJSON = loadLocalOrAbsolutePath(json.unittestChecksJSON);
@@ -168,14 +173,19 @@ public class Configuration
         return testDependenciesDir;
     }
 
+    public Path getSourceDependenciesDir()
+    {
+        return sourceDependenciesDir;
+    }
+
     public Path getUnittestChecksJSON()
     {
         return unittestChecksJSON;
     }
 
-    public Path getRuntimeDependenciesDirPath()
+    public Path getRuntimeDependenciesDir()
     {
-        return runtimeDependenciesDirPath;
+        return runtimeDependenciesDir;
     }
 
     public Path getLibDir()
@@ -276,6 +286,7 @@ class ConfigurationJSON
     String testsDirPath;
     String runtimeDependenciesDirPath;
     String testDependenciesDirPath;
+    String sourceDependenciesDirPath;
     String libDir;
     int perTestSuiteTimeout = -1;
     String unittestChecksJSON;

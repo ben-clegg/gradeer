@@ -77,12 +77,17 @@ public class AntRunner
         command.add("-Dgradeer.home.dir=" + Environment.getGradeerHomeDir());
         command.add("-Dadditional.cp=" + classPath.toString());
 
-        if(config.getRuntimeDependenciesDirPath() != null &&
-                Files.exists(config.getRuntimeDependenciesDirPath()))
-            command.add("-Druntime.deps=" + config.getRuntimeDependenciesDirPath());
+        if(config.getRuntimeDependenciesDir() != null &&
+                Files.exists(config.getRuntimeDependenciesDir()))
+            command.add("-Druntime.deps=" + config.getRuntimeDependenciesDir());
         else
             command.add("-Druntime.deps=");
-        // TODO add source dependencies dir from config
+
+        if(config.getSourceDependenciesDir() != null &&
+                Files.exists(config.getSourceDependenciesDir()))
+            command.add("-Dsource.deps=" + config.getSourceDependenciesDir());
+        else
+            command.add("-Dsource.deps=");
 
         return command;
 
