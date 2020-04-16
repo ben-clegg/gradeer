@@ -25,6 +25,7 @@ public class Configuration
     private Path sourceDependenciesDir;
 
     private Path unittestChecksJSON;
+    private Path testOutputDir;
 
     private Path libDir;
     private Collection<Path> builtLibComponents;
@@ -86,6 +87,7 @@ public class Configuration
         libDir = loadLocalOrAbsolutePath(json.libDir);
 
         unittestChecksJSON = loadLocalOrAbsolutePath(json.unittestChecksJSON);
+        testOutputDir = loadLocalOrAbsolutePath(json.testOutputDir);
 
         loadBuiltLibComponents();
 
@@ -243,6 +245,11 @@ public class Configuration
         return testSuitesEnabled;
     }
 
+    public Path getTestOutputDir()
+    {
+        return testOutputDir;
+    }
+
     public boolean isPmdEnabled()
     {
         return pmdEnabled;
@@ -290,6 +297,7 @@ class ConfigurationJSON
     String libDir;
     int perTestSuiteTimeout = -1;
     String unittestChecksJSON;
+    String testOutputDir;
 
     String checkstyleXml;
     String checkstyleChecksJSON;

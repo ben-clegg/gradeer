@@ -76,7 +76,7 @@ public class CheckstyleProcess implements Runnable
                 }
                 catch (NoCheckException noCheckEx)
                 {
-                    logger.error(noCheckEx);
+                    //logger.error(noCheckEx);
                     results.getChecklessAuditEvents().add(auditEvent);
                 }
             }
