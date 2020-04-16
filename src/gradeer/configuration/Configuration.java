@@ -48,6 +48,9 @@ public class Configuration
     private Path mergedSolutionsDir;
 
     private Path outputDir;
+    private Path checkResultsDir;
+
+    private Path manualChecksJSON;
 
 
     public Configuration(Path jsonFile)
@@ -87,7 +90,7 @@ public class Configuration
         libDir = loadLocalOrAbsolutePath(json.libDir);
 
         unittestChecksJSON = loadLocalOrAbsolutePath(json.unittestChecksJSON);
-        testOutputDir = loadLocalOrAbsolutePath(json.testOutputDir);
+        testOutputDir = loadLocalOrAbsolutePath(json.testOutputDirPath);
 
         loadBuiltLibComponents();
 
@@ -110,7 +113,10 @@ public class Configuration
 
         outputDir = Paths.get(rootDir + File.separator + "output");
 
-        mergedSolutionsDir = loadLocalOrAbsolutePath(json.mergedSolutionsDir);
+        mergedSolutionsDir = loadLocalOrAbsolutePath(json.mergedSolutionsDirPath);
+        checkResultsDir = loadLocalOrAbsolutePath(json.checkResultsDirPath);
+
+        manualChecksJSON = loadLocalOrAbsolutePath(json.manualChecksJSON);
     }
 
     private void loadBuiltLibComponents()
@@ -275,6 +281,16 @@ public class Configuration
         return mergedSolutionsDir;
     }
 
+    public Path getCheckResultsDir()
+    {
+        return checkResultsDir;
+    }
+
+    public Path getManualChecksJSON()
+    {
+        return manualChecksJSON;
+    }
+
     public static boolean pathExists(Path path)
     {
         if(path == null)
@@ -297,7 +313,7 @@ class ConfigurationJSON
     String libDir;
     int perTestSuiteTimeout = -1;
     String unittestChecksJSON;
-    String testOutputDir;
+    String testOutputDirPath;
 
     String checkstyleXml;
     String checkstyleChecksJSON;
@@ -312,7 +328,11 @@ class ConfigurationJSON
     String pmdChecksJSON;
     boolean removePMDFailuresOnModel = false;
 
-    String mergedSolutionsDir;
+    String checkResultsDirPath;
+
+    String mergedSolutionsDirPath;
+
+    String manualChecksJSON;
 
     public static ConfigurationJSON loadJSON(Path jsonFile) throws FileNotFoundException
     {

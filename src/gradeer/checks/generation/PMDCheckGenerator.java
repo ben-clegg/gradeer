@@ -3,6 +3,7 @@ package gradeer.checks.generation;
 import com.google.gson.Gson;
 import gradeer.checks.Check;
 import gradeer.checks.PMDCheck;
+import gradeer.checks.generation.json.CheckJSONEntry;
 import gradeer.configuration.Configuration;
 import gradeer.execution.staticanalysis.pmd.PMDExecutor;
 import gradeer.solution.Solution;

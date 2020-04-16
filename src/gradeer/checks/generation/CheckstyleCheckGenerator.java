@@ -3,6 +3,7 @@ package gradeer.checks.generation;
 import com.google.gson.Gson;
 import gradeer.checks.Check;
 import gradeer.checks.CheckstyleCheck;
+import gradeer.checks.generation.json.CheckJSONEntry;
 import gradeer.configuration.Configuration;
 import gradeer.execution.staticanalysis.checkstyle.CheckstyleExecutor;
 import gradeer.solution.Solution;
@@ -43,7 +44,7 @@ public class CheckstyleCheckGenerator extends CheckGenerator
             }
         } catch (FileNotFoundException e)
         {
-            e.printStackTrace();
+            logger.error(e);
         }
 
         // TODO Load per-javafile grace settings, and per-solution grace settings

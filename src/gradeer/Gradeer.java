@@ -1,24 +1,19 @@
 package gradeer;
 
-import gradeer.auxiliaryprocesses.MergedSolutionWriter;
 import gradeer.checks.Check;
 import gradeer.checks.CheckProcessor;
 import gradeer.checks.TestSuiteCheck;
-import gradeer.checks.generation.CheckstyleCheckGenerator;
-import gradeer.checks.generation.PMDCheckGenerator;
-import gradeer.checks.generation.TestSuiteCheckGenerator;
 import gradeer.configuration.Configuration;
 import gradeer.configuration.Environment;
 import gradeer.execution.junit.TestSuite;
 import gradeer.results.ResultsGenerator;
-import gradeer.results.io.FileWriter;
+import gradeer.runtime.ManualRuntime;
 import gradeer.subject.compilation.JavaCompiler;
 import gradeer.misc.ErrorCode;
 import gradeer.solution.Solution;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -49,7 +44,17 @@ public class Gradeer
 
         Configuration config = new Configuration(configJSON);
         Gradeer gradeer = new Gradeer(config);
-        gradeer.run();
+
+        CheckProcessor manualCheckProcessor = new ManualRuntime(gradeer, config).run();
+        ResultsGenerator resultsGenerator = new ResultsGenerator(gradeer.getStudentSolutions(), manualCheckProcessor, config);
+        resultsGenerator.run();
+
+        /*
+        CheckProcessor autogradingCheckProcessor = new AutogradingRuntime(gradeer, config).run();
+
+        ResultsGenerator resultsGenerator = new ResultsGenerator(gradeer.getStudentSolutions(), autogradingCheckProcessor, config);
+        resultsGenerator.run();
+         */
     }
 
     public Gradeer(Configuration config)
@@ -66,41 +71,9 @@ public class Gradeer
     private void init()
     {
         loadModelSolutions();
-        loadChecks();
         loadStudentSolutions();
     }
 
-    public void run()
-    {
-        if(configuration.getMergedSolutionsDir() != null)
-            new MergedSolutionWriter(configuration, studentSolutions).run();
-
-        CheckProcessor checkProcessor = new CheckProcessor(checks, configuration);
-        ResultsGenerator resultsGenerator = new ResultsGenerator(studentSolutions, checkProcessor, configuration);
-        resultsGenerator.run();
-    }
-
-    private void loadChecks()
-    {
-
-        if(configuration.isPmdEnabled())
-        {
-            PMDCheckGenerator pmdCheckGenerator = new PMDCheckGenerator(configuration, modelSolutions);
-            checks.addAll(pmdCheckGenerator.getChecks());
-        }
-
-        if(configuration.isCheckstyleEnabled() && configuration.getCheckstyleXml() != null)
-        {
-            CheckstyleCheckGenerator checkstyleCheckGenerator = new CheckstyleCheckGenerator(configuration, modelSolutions);
-            checks.addAll(checkstyleCheckGenerator.getChecks());
-        }
-
-        if(configuration.isTestSuitesEnabled())
-        {
-            TestSuiteCheckGenerator testSuiteCheckGenerator = new TestSuiteCheckGenerator(configuration, modelSolutions);
-            checks.addAll(testSuiteCheckGenerator.getChecks());
-        }
-    }
 
     private List<Solution> loadSolutions(Path solutionsRootDir)
     {

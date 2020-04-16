@@ -3,6 +3,7 @@ package gradeer.checks.generation;
 import com.google.gson.Gson;
 import gradeer.checks.Check;
 import gradeer.checks.TestSuiteCheck;
+import gradeer.checks.generation.json.CheckJSONEntry;
 import gradeer.configuration.Configuration;
 import gradeer.execution.junit.TestExecutor;
 import gradeer.execution.junit.TestResult;
@@ -106,7 +107,7 @@ public class TestSuiteCheckGenerator extends CheckGenerator
             for (Check c : getChecks())
             {
                 Optional<CheckJSONEntry> entry = Arrays.stream(checkJSONEntries)
-                        .filter(j -> j.name.toLowerCase().equals(c.getName().toLowerCase())).findFirst();
+                        .filter(j -> j.getName().toLowerCase().equals(c.getName().toLowerCase())).findFirst();
                 if(entry.isPresent())
                 {
                     c.setFeedback(entry.get().getFeedbackCorrect(), entry.get().getFeedbackIncorrect());

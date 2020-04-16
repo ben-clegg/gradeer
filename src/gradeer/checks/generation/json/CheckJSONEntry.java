@@ -1,4 +1,4 @@
-package gradeer.checks.generation;
+package gradeer.checks.generation.json;
 
 public class CheckJSONEntry
 {

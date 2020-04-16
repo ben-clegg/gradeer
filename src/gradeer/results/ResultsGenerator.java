@@ -34,8 +34,36 @@ public class ResultsGenerator implements Runnable
     {
         studentSolutions.forEach(s -> checkProcessor.runChecks(s));
 
+        writeCheckResults();
         writeGrades();
         writeFeedback();
+    }
+
+    private void writeCheckResults()
+    {
+        if(configuration.getCheckResultsDir() == null)
+            return;
+
+        configuration.getCheckResultsDir().toFile().mkdirs();
+
+        for (Solution s : studentSolutions)
+        {
+            FileWriter f = new FileWriter();
+            for (Check c : checkProcessor.getChecks())
+            {
+                StringBuilder sb = new StringBuilder();
+                sb.append(c.getClass().getName());
+                sb.append(" - ");
+                sb.append(c.getName());
+                sb.append(": ");
+                sb.append(c.getWeightedScore(s));
+                sb.append(" / ");
+                sb.append(c.getWeight());
+
+                f.addLine(sb.toString());
+            }
+            f.write(Paths.get(configuration.getCheckResultsDir() + File.separator + s.getIdentifier()));
+        }
     }
 
     private void writeGrades()
