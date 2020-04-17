@@ -3,9 +3,11 @@ package gradeer.checks;
 import gradeer.checks.generation.json.FeedbackEntry;
 import gradeer.checks.generation.json.ManualCheckJSONEntry;
 import gradeer.solution.Solution;
+import org.antlr.v4.runtime.misc.DoubleKeyMap;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Scanner;
 import java.util.TreeMap;
@@ -58,9 +60,20 @@ public class ManualCheck extends Check
         Scanner scanner = new Scanner(System.in);
 
         if(!scanner.hasNext())
+        {
+            System.err.println("No input provided.");
+            System.err.println("Please re-enter.");
             return getInputResult();
+        }
 
-        String input = scanner.next();
+        String input = scanner.next().trim();
+
+        if(input.isEmpty())
+        {
+            System.err.println("No input provided.");
+            System.err.println("Please re-enter.");
+            return getInputResult();
+        }
 
 
         // Check if result in correct format
@@ -81,6 +94,7 @@ public class ManualCheck extends Check
                 return inputInt;
 
             System.err.println(inputInt + " is out of the range 0 - " + maxRange);
+            System.err.println("Please re-enter.");
             return getInputResult();
         }
         catch (NumberFormatException numberFormatException)
@@ -93,8 +107,22 @@ public class ManualCheck extends Check
     @Override
     public String getFeedback(Solution solution)
     {
-        // TODO implement
-        return null;
+        double score = this.getUnweightedScore(solution);
+
+        Iterator<Double> keysInterator = feedbackForUnweightedScoreBounds.keySet().iterator();
+
+        double lastKey = -1;
+
+        // Assuming ascending order of TreeMap, get the key just below or equal to the actual score
+        while (keysInterator.hasNext()) {
+            double k = keysInterator.next();
+            if(score >= k)
+                lastKey = k;
+            else
+                break;
+        }
+
+        return feedbackForUnweightedScoreBounds.get(lastKey);
     }
 
     @Override
