@@ -49,7 +49,14 @@ public class ResultsGenerator implements Runnable
     {
         for (CheckProcessor checkProcessor : checkProcessors)
         {
-            studentSolutions.forEach(checkProcessor::runChecks);
+            int solutionNumber = 1;
+            for (Solution s : studentSolutions)
+            {
+                System.out.println("Processing solution " + s.getIdentifier() +
+                        " ( " + solutionNumber + " / " + studentSolutions.size() + " ) ");
+                checkProcessor.runChecks(s);
+                solutionNumber++;
+            }
         }
 
         writeSolutionsFailingAllUnitTests();
