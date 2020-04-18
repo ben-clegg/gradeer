@@ -38,7 +38,7 @@ public class CheckstyleCheckGenerator extends CheckGenerator
             // Generate checks
             for (CheckJSONEntry j : checkJSONEntries)
             {
-                CheckstyleCheck checkstyleCheck = new CheckstyleCheck(j.getName(), j.getFeedbackCorrect(), j.getFeedbackIncorrect(), j.getWeight());
+                CheckstyleCheck checkstyleCheck = new CheckstyleCheck(j);
                 addCheck(checkstyleCheck);
                 logger.info("Added check " + checkstyleCheck);
             }

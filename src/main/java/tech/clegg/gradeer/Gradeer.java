@@ -48,12 +48,7 @@ public class Gradeer
         ResultsGenerator resultsGenerator = gradeer.startEnvironment();
         resultsGenerator.run();
 
-        /*
-        CheckProcessor autogradingCheckProcessor = new AutogradingRuntime(gradeer, config).run();
-
-        ResultsGenerator resultsGenerator = new ResultsGenerator(gradeer.getStudentSolutions(), autogradingCheckProcessor, config);
-        resultsGenerator.run();
-         */
+        System.out.println("Completed grading for config " + configJSON.getFileName());
     }
 
     public Gradeer(Configuration config)

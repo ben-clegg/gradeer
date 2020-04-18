@@ -1,5 +1,6 @@
 package tech.clegg.gradeer.checks;
 
+import tech.clegg.gradeer.checks.generation.json.CheckJSONEntry;
 import tech.clegg.gradeer.execution.staticanalysis.pmd.PMDViolation;
 import tech.clegg.gradeer.solution.Solution;
 
@@ -12,11 +13,13 @@ public class PMDCheck extends Check
     private int maximumViolations = 5;
     private int minimumViolations = 0;
 
-    public PMDCheck(String name, double weight)
+    public PMDCheck(CheckJSONEntry jsonEntry)
     {
         super();
-        this.name = name;
-        this.weight = weight;
+        this.name = jsonEntry.getName();
+        this.weight = jsonEntry.getWeight();
+        this.feedbackCorrect = jsonEntry.getFeedbackCorrect();
+        this.feedbackIncorrect = jsonEntry.getFeedbackIncorrect();
     }
 
     @Override
@@ -32,8 +35,6 @@ public class PMDCheck extends Check
             unweightedScores.put(solution, 1.0);
             return;
         }
-
-        generateFeedback(violations);
 
         int totalTrackedViolations = violations.size();
 
@@ -53,25 +54,5 @@ public class PMDCheck extends Check
         double score = 1.0 - (double) totalTrackedViolations / (maximumViolations - minimumViolations);
         unweightedScores.put(solution, score);
 
-    }
-
-    private void generateFeedback(Collection<PMDViolation> pmdViolations)
-    {
-        // Don't change if incorrect feedback is already populated; want feedback to be consistent.
-        if(!feedbackCorrect.isEmpty() && !feedbackIncorrect.isEmpty())
-            return;
-
-        Optional<PMDViolation> violation = pmdViolations.stream()
-                .filter(v -> v.getRule().toLowerCase().equals(this.name.toLowerCase())).findFirst();
-        if(!violation.isPresent())
-            return;
-
-        // Turn description into a question
-        String feedbackContent = violation.get().getDescription();
-        if(feedbackContent.endsWith(".") || feedbackContent.endsWith("!"))
-            feedbackContent = feedbackContent.substring(0, feedbackContent.length() - 1);
-        feedbackContent = feedbackContent + "?";
-
-        this.setFeedback(feedbackContent, feedbackContent);
     }
 }

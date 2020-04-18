@@ -38,7 +38,7 @@ public class PMDCheckGenerator extends CheckGenerator
             // Generate checks
             for (CheckJSONEntry j : checkJSONEntries)
             {
-                PMDCheck pmdCheck = new PMDCheck(j.getName(), j.getWeight());
+                PMDCheck pmdCheck = new PMDCheck(j);
                 addCheck(pmdCheck);
                 logger.info("Added check " + pmdCheck);
             }

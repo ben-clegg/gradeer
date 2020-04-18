@@ -1,5 +1,6 @@
 package tech.clegg.gradeer.checks;
 
+import tech.clegg.gradeer.checks.generation.json.CheckJSONEntry;
 import tech.clegg.gradeer.solution.Solution;
 
 import java.nio.file.Path;
@@ -13,13 +14,13 @@ public class CheckstyleCheck extends Check
     private int minimumViolations = 1;
 
 
-    public CheckstyleCheck(String name, String feedbackCorrect, String feedbackIncorrect, double weight)
+    public CheckstyleCheck(CheckJSONEntry jsonEntry)
     {
         super();
-        this.name = name;
-        this.feedbackCorrect = feedbackCorrect;
-        this.feedbackIncorrect = feedbackIncorrect;
-        this.weight = weight;
+        this.name = jsonEntry.getName();
+        this.feedbackCorrect = jsonEntry.getFeedbackCorrect();
+        this.feedbackIncorrect = jsonEntry.getFeedbackIncorrect();
+        this.weight = jsonEntry.getWeight();
     }
 
     @Override

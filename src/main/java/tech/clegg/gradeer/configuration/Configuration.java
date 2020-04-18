@@ -52,6 +52,8 @@ public class Configuration
 
     private Path manualChecksJSON;
 
+    private String inspectionCommand;
+
 
     public Configuration(Path jsonFile)
     {
@@ -117,6 +119,7 @@ public class Configuration
         checkResultsDir = loadLocalOrAbsolutePath(json.checkResultsDirPath);
 
         manualChecksJSON = loadLocalOrAbsolutePath(json.manualChecksJSON);
+        inspectionCommand = json.inspectionCommand;
     }
 
     private void loadBuiltLibComponents()
@@ -291,6 +294,11 @@ public class Configuration
         return manualChecksJSON;
     }
 
+    public String getInspectionCommand()
+    {
+        return inspectionCommand;
+    }
+
     public static boolean pathExists(Path path)
     {
         if(path == null)
@@ -333,6 +341,8 @@ class ConfigurationJSON
     String mergedSolutionsDirPath;
 
     String manualChecksJSON;
+
+    String inspectionCommand;
 
     public static ConfigurationJSON loadJSON(Path jsonFile) throws FileNotFoundException
     {

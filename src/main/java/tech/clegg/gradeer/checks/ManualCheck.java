@@ -39,7 +39,7 @@ public class ManualCheck extends Check
     @Override
     public void run(Solution solution)
     {
-        System.out.println("\nManual check " + name + "for Solution " + solution.getIdentifier());
+        System.out.println("\nManual check " + name + " for Solution " + solution.getIdentifier());
         System.out.println(prompt);
         System.out.print("Enter a value in the range 0 - " + maxRange);
         if(maxRange == 1)

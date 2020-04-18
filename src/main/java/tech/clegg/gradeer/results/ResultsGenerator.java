@@ -3,13 +3,14 @@ package tech.clegg.gradeer.results;
 import tech.clegg.gradeer.checks.Check;
 import tech.clegg.gradeer.checks.CheckProcessor;
 import tech.clegg.gradeer.configuration.Configuration;
-import tech.clegg.gradeer.results.io.CSVWriter;
+import tech.clegg.gradeer.results.io.SCSVWriter;
 import tech.clegg.gradeer.results.io.FileWriter;
 import tech.clegg.gradeer.solution.Solution;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.File;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -51,9 +52,34 @@ public class ResultsGenerator implements Runnable
             studentSolutions.forEach(checkProcessor::runChecks);
         }
 
+        writeSolutionsFailingAllUnitTests();
         writeCheckResults();
         writeGrades();
         writeFeedback();
+    }
+
+    private void writeSolutionsFailingAllUnitTests()
+    {
+        Collection<Solution> failAllUnitTests = new ArrayList<>();
+        for (Solution s : studentSolutions)
+        {
+            for (CheckProcessor cp : checkProcessors)
+            {
+                if(cp.failsAllUnitTests(s))
+                {
+                    failAllUnitTests.add(s);
+                    break;
+                }
+            }
+        }
+
+        if(failAllUnitTests.isEmpty())
+            return;
+
+        FileWriter f = new FileWriter();
+        for(Solution s : failAllUnitTests)
+            f.addLine(s.getIdentifier());
+        f.write(Paths.get(configuration.getOutputDir() + File.separator + "SolutionsFailingAllUnitTests"));
     }
 
     private void writeCheckResults()
@@ -89,15 +115,34 @@ public class ResultsGenerator implements Runnable
     private void writeGrades()
     {
         GradeGenerator gradeGenerator = new GradeGenerator(checkProcessors);
-        CSVWriter gradeWriter = new CSVWriter(Arrays.asList("Username", "Grade"));
+        SCSVWriter gradeWriter = new SCSVWriter(Arrays.asList("Username", "Grade", "Feedback"));
         for (Solution s : studentSolutions)
         {
             double grade = gradeGenerator.generateGrade(s);
-            String[] line = {s.getIdentifier(), String.valueOf(grade)};
+
+            String[] line = {s.getIdentifier(), String.valueOf(grade), "\"" + generateFeedback(s) + "\""};
             gradeWriter.addEntry(Arrays.asList(line));
             logger.info("Grade Generated: " + Arrays.toString(line));
         }
-        gradeWriter.write(Paths.get(configuration.getOutputDir() + File.separator + "AssignmentMarks.csv"));
+        gradeWriter.write(Paths.get(configuration.getOutputDir() + File.separator + "AssignmentMarks.scsv"));
+    }
+
+    private String generateFeedback(Solution solution)
+    {
+        StringBuilder sb = new StringBuilder();
+
+        for (CheckProcessor checkProcessor : checkProcessors)
+        {
+            for (Check c : checkProcessor.getChecks())
+            {
+                String feedback = c.getFeedback(solution);
+                if(!feedback.isEmpty())
+                    sb.append(feedback + "\n");
+            }
+        }
+
+        return sb.toString();
+
     }
 
     private void writeFeedback()
@@ -107,15 +152,7 @@ public class ResultsGenerator implements Runnable
         for (Solution s : studentSolutions)
         {
             FileWriter file = new FileWriter();
-            for (CheckProcessor checkProcessor : checkProcessors)
-            {
-                for (Check c : checkProcessor.getChecks())
-                {
-                    String feedback = c.getFeedback(s);
-                    if(!feedback.isEmpty())
-                        file.addLine(feedback);
-                }
-            }
+            file.addLine(generateFeedback(s));
             file.write(Paths.get(configuration.getOutputDir() + File.separator + "feedback" + File.separator + s.getIdentifier() + "_feedback.txt"));
 
         }

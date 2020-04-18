@@ -7,9 +7,6 @@ import java.util.Map;
 
 public abstract class Check
 {
-    protected final String FEEDBACK_PREFIX_CORRECT = "[PASS] ";
-    protected final String FEEDBACK_PREFIX_INCORRECT = "[FAIL] ";
-
     protected double weight = 1.0;
     protected String name;
     protected String feedbackCorrect = "";
@@ -51,11 +48,11 @@ public abstract class Check
         {
             if(feedbackIncorrect.isEmpty())
                 return "";
-            return FEEDBACK_PREFIX_INCORRECT + feedbackIncorrect; // Provide feedback for incorrect case
+            return feedbackIncorrect; // Provide feedback for incorrect case
         }
         if(feedbackCorrect.isEmpty())
             return "";
-        return FEEDBACK_PREFIX_CORRECT + feedbackCorrect; // Feedback for correct case
+        return feedbackCorrect; // Feedback for correct case
     }
 
     public void setFeedback(String feedbackCorrect, String feedbackIncorrect)
