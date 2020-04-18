@@ -99,6 +99,7 @@ public class ManualCheck extends Check
         catch (NumberFormatException numberFormatException)
         {
             System.err.println(input + " is not a valid integer");
+            System.err.println("Please re-enter.");
             return getInputResult();
         }
     }

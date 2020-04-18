@@ -7,6 +7,8 @@ import tech.clegg.gradeer.checks.generation.PMDCheckGenerator;
 import tech.clegg.gradeer.checks.generation.TestSuiteCheckGenerator;
 import tech.clegg.gradeer.configuration.Configuration;
 
+import java.nio.file.Files;
+
 public class AutogradingRuntime extends Runtime
 {
     public AutogradingRuntime(Gradeer gradeer, Configuration configuration)
@@ -19,20 +21,30 @@ public class AutogradingRuntime extends Runtime
     {
         if(configuration.isPmdEnabled())
         {
-            PMDCheckGenerator pmdCheckGenerator = new PMDCheckGenerator(configuration, gradeer.getModelSolutions());
-            checks.addAll(pmdCheckGenerator.getChecks());
+            if(configuration.getPmdChecksJSON() != null && Files.exists(configuration.getPmdChecksJSON()))
+            {
+                PMDCheckGenerator pmdCheckGenerator = new PMDCheckGenerator(configuration, gradeer.getModelSolutions());
+                checks.addAll(pmdCheckGenerator.getChecks());
+            }
         }
 
         if(configuration.isCheckstyleEnabled() && configuration.getCheckstyleXml() != null)
         {
-            CheckstyleCheckGenerator checkstyleCheckGenerator = new CheckstyleCheckGenerator(configuration, gradeer.getModelSolutions());
-            checks.addAll(checkstyleCheckGenerator.getChecks());
+
+            if(configuration.getCheckstyleChecksJSON() != null && Files.exists(configuration.getCheckstyleChecksJSON()))
+            {
+                CheckstyleCheckGenerator checkstyleCheckGenerator = new CheckstyleCheckGenerator(configuration, gradeer.getModelSolutions());
+                checks.addAll(checkstyleCheckGenerator.getChecks());
+            }
         }
 
         if(configuration.isTestSuitesEnabled())
         {
-            TestSuiteCheckGenerator testSuiteCheckGenerator = new TestSuiteCheckGenerator(configuration, gradeer.getModelSolutions());
-            checks.addAll(testSuiteCheckGenerator.getChecks());
+            if(configuration.getUnittestChecksJSON() != null && Files.exists(configuration.getUnittestChecksJSON()))
+            {
+                TestSuiteCheckGenerator testSuiteCheckGenerator = new TestSuiteCheckGenerator(configuration, gradeer.getModelSolutions());
+                checks.addAll(testSuiteCheckGenerator.getChecks());
+            }
         }
     }
 
