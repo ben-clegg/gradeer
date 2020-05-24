@@ -10,12 +10,9 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.File;
-import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class ResultsGenerator implements Runnable
 {
@@ -60,7 +57,8 @@ public class ResultsGenerator implements Runnable
         }
 
         writeSolutionsFailingAllUnitTests();
-        writeCheckResults();
+        writeIndividualCheckResults();
+        writeCombinedCheckResults();
         writeGrades();
         writeFeedback();
     }
@@ -89,7 +87,7 @@ public class ResultsGenerator implements Runnable
         f.write(Paths.get(configuration.getOutputDir() + File.separator + "SolutionsFailingAllUnitTests"));
     }
 
-    private void writeCheckResults()
+    private void writeIndividualCheckResults()
     {
         if(configuration.getCheckResultsDir() == null)
             return;
@@ -98,6 +96,7 @@ public class ResultsGenerator implements Runnable
 
         for (Solution s : studentSolutions)
         {
+            // Individual file
             FileWriter f = new FileWriter();
             for (CheckProcessor checkProcessor : checkProcessors)
             {
@@ -118,6 +117,40 @@ public class ResultsGenerator implements Runnable
             f.write(Paths.get(configuration.getCheckResultsDir() + File.separator + s.getIdentifier()));
         }
     }
+
+    /**
+     * Creates a matrix of unweighted scores for each check on each solution
+     */
+    private void writeCombinedCheckResults()
+    {
+        Set<Check> allChecks = new HashSet<>();
+        for (CheckProcessor checkProcessor : checkProcessors)
+            allChecks.addAll(checkProcessor.getChecks());
+
+        List<String> headers = new ArrayList<>();
+        headers.add("Solution");
+        headers.addAll(allChecks.stream()
+                .map(c -> c.getClass().getSimpleName() + "-" + c.getName())
+                .collect(Collectors.toList()));
+
+
+        SCSVWriter w = new SCSVWriter(headers);
+
+        for (Solution s : studentSolutions)
+        {
+            List<String> row = new ArrayList<>();
+            row.add(s.getIdentifier());
+            for (Check c : allChecks)
+            {
+                row.add(String.valueOf(c.getUnweightedScore(s)));
+            }
+            w.addEntry(row);
+        }
+
+        w.write(Paths.get(configuration.getOutputDir() + File.separator + "allCheckResults.scsv"));
+
+    }
+
 
     private void writeGrades()
     {

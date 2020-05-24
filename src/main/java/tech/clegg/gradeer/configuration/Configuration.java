@@ -54,6 +54,8 @@ public class Configuration
 
     private String inspectionCommand;
 
+    private boolean skipChecksFailingOnAnyModel = false;
+
 
     public Configuration(Path jsonFile)
     {
@@ -120,6 +122,8 @@ public class Configuration
 
         manualChecksJSON = loadLocalOrAbsolutePath(json.manualChecksJSON);
         inspectionCommand = json.inspectionCommand;
+
+        skipChecksFailingOnAnyModel = json.skipChecksFailingOnAnyModel;
     }
 
     private void loadBuiltLibComponents()
@@ -162,6 +166,11 @@ public class Configuration
         if(Files.notExists(p))
             p = Paths.get(rootDir.toString() + File.separator + uri);
         return p;
+    }
+
+    public Path getRootDir()
+    {
+        return rootDir;
     }
 
     public Path getStudentSolutionsDir()
@@ -294,6 +303,11 @@ public class Configuration
         return manualChecksJSON;
     }
 
+    public boolean isSkipChecksFailingOnAnyModel()
+    {
+        return skipChecksFailingOnAnyModel;
+    }
+
     public String getInspectionCommand()
     {
         return inspectionCommand;
@@ -343,6 +357,8 @@ class ConfigurationJSON
     String manualChecksJSON;
 
     String inspectionCommand;
+
+    boolean skipChecksFailingOnAnyModel = false;
 
     public static ConfigurationJSON loadJSON(Path jsonFile) throws FileNotFoundException
     {

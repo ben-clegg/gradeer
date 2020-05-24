@@ -40,6 +40,8 @@ public class TestSuiteCheckGenerator extends CheckGenerator
         JavaCompiler compiler = JavaCompiler.createCompiler(getConfiguration());
         logger.info("Checking for test dependencies at " + getConfiguration().getTestDependenciesDir() + "...");
 
+        if(getModelSolutions().size() < 1)
+            logger.error("No compiled model solutions available.");
         Solution modelSolution = new ArrayList<>(getModelSolutions()).get(0);
         if (getConfiguration().getTestDependenciesDir() != null &&
                 Files.exists(getConfiguration().getTestDependenciesDir()))
@@ -72,8 +74,16 @@ public class TestSuiteCheckGenerator extends CheckGenerator
 
                 TestResult result = testExecutor.execute(ms);
                 logger.info(result);
-                if(!result.allTestsPass())
-                    valid = false;
+
+                if(getConfiguration().isSkipChecksFailingOnAnyModel())
+                {
+                    // Remove all tests that fail on any model solution
+                    if(!result.allTestsPass())
+                    {
+                        valid = false;
+                    }
+                }
+
                 if(result.getTotalTests() < 1)
                     valid = false;
             }

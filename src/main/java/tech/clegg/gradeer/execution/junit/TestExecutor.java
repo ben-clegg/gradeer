@@ -10,8 +10,10 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.File;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Arrays;
 
 public class TestExecutor
 {
@@ -42,10 +44,14 @@ public class TestExecutor
             configuration.getTestOutputDir().toFile().mkdirs();
             Path output = Paths.get(configuration.getTestOutputDir() + File.separator + solution.getIdentifier());
 
-            FileWriter f = new FileWriter();
+            FileWriter f = new FileWriter(true);
+            f.addLine("\n" + testSuite.getBaseName() + ":");
             f.addLine(antProcessResult.getJUnitMessage());
             f.write(output);
         }
+        System.out.println("Tests run: " + antProcessResult.getTestsRun() +
+                " Failures: " + antProcessResult.getTestsFailures() +
+                " Errors: " + antProcessResult.getTestsErrors());
         //logger.info(antProcessResult);
         return new TestResult(antProcessResult);
     }

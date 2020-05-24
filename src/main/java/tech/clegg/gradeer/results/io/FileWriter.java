@@ -10,10 +10,17 @@ import java.util.List;
 public class FileWriter
 {
     private final List<String> lines;
+    private boolean appendMode = false;
+
+    public FileWriter(boolean append)
+    {
+        this.lines = new ArrayList<>();
+        this.appendMode = append;
+    }
 
     public FileWriter()
     {
-        this.lines = new ArrayList<>();
+        this(false);
     }
 
     public FileWriter(List<String> lines)
@@ -33,7 +40,7 @@ public class FileWriter
                 Files.createDirectory(location.getParent());
             }
 
-            writer = new java.io.FileWriter(location.toString());
+            writer = new java.io.FileWriter(location.toString(), appendMode);
             for (String l : lines)
                 writer.append(l + "\n");
             writer.close();

@@ -81,7 +81,7 @@ public class AntRunner
                 Files.exists(config.getRuntimeDependenciesDir()))
             command.add("-Druntime.deps=" + config.getRuntimeDependenciesDir());
         else
-            command.add("-Druntime.deps=");
+            command.add("-Druntime.deps=" + config.getRootDir());
 
         if(config.getSourceDependenciesDir() != null &&
                 Files.exists(config.getSourceDependenciesDir()))
