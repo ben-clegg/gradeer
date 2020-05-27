@@ -10,7 +10,7 @@
     </properties>
     <groupId>tech.clegg.gradeer</groupId>
     <artifactId>gradeer</artifactId>
-    <version>0.93</version>
+    <version>0.94-SNAPSHOT</version>
     <packaging>jar</packaging>
     <url>https://github.com/ben-clegg/gradeer</url>
     <inceptionYear>2020</inceptionYear>

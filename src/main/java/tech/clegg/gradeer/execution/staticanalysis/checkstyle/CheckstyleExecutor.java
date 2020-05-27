@@ -1,5 +1,6 @@
 package tech.clegg.gradeer.execution.staticanalysis.checkstyle;
 
+import com.puppycrawl.tools.checkstyle.api.CheckstyleException;
 import tech.clegg.gradeer.checks.CheckstyleCheck;
 import tech.clegg.gradeer.configuration.Configuration;
 import tech.clegg.gradeer.solution.Solution;
@@ -26,7 +27,15 @@ public class CheckstyleExecutor
     {
         CheckstyleProcess checkstyleProcess = new CheckstyleProcess(solution,
                 configuration.getCheckstyleXml(), checkstyleChecks);
-        checkstyleProcess.run();
+        try
+        {
+            checkstyleProcess.run();
+        }
+        catch (CheckstyleException e)
+        {
+            e.printStackTrace();
+            // TODO Handle checkstyle exceptions more elegantly
+        }
         solution.setCheckstyleProcessResults(checkstyleProcess.getResults());
         for (CheckstyleCheck c : checkstyleChecks)
             c.run(solution);

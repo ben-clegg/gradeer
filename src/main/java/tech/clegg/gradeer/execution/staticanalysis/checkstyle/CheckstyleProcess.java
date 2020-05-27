@@ -1,11 +1,9 @@
 package tech.clegg.gradeer.execution.staticanalysis.checkstyle;
 
-import com.puppycrawl.tools.checkstyle.Checker;
-import com.puppycrawl.tools.checkstyle.ConfigurationLoader;
-import com.puppycrawl.tools.checkstyle.PropertyResolver;
-import com.puppycrawl.tools.checkstyle.api.AuditEvent;
-import com.puppycrawl.tools.checkstyle.api.AuditListener;
-import com.puppycrawl.tools.checkstyle.api.CheckstyleException;
+import com.puppycrawl.tools.checkstyle.*;
+import com.puppycrawl.tools.checkstyle.api.*;
+import net.sf.saxon.functions.Root;
+import tech.clegg.gradeer.checks.Check;
 import tech.clegg.gradeer.checks.CheckstyleCheck;
 import tech.clegg.gradeer.checks.exceptions.NoCheckException;
 import tech.clegg.gradeer.solution.Solution;
@@ -18,7 +16,7 @@ import java.nio.file.Paths;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class CheckstyleProcess implements Runnable
+public class CheckstyleProcess
 {
     private static Logger logger = LogManager.getLogger(CheckstyleProcess.class);
 
@@ -26,7 +24,6 @@ public class CheckstyleProcess implements Runnable
     private boolean complete;
     private Path xml;
 
-    private final Checker checker = new Checker();
 
     private AuditListener auditListener;
     private Collection<CheckstyleCheck> checkstyleChecks;
@@ -100,7 +97,7 @@ public class CheckstyleProcess implements Runnable
         violations.get(check).put(source, existing + 1);
     }
 
-    public void run()
+    public void run() throws CheckstyleException
     {
         List<File> javaFiles = solution.getSources()
                 .stream().map(s -> s.getJavaFile().toFile())
@@ -109,37 +106,40 @@ public class CheckstyleProcess implements Runnable
         if (javaFiles.isEmpty())
         {
             System.err.println("No java files found for solution " + solution);
+            System.err.println("No java files found for solution " + solution);
             return;
         }
 
-        checker.addListener(auditListener);
 
-        try {
-            checker.setModuleClassLoader(ClassLoader.getSystemClassLoader());
-            checker.configure(ConfigurationLoader.loadConfiguration(xml.toString(), new PropertyResolver() {
-                @Override
-                public String resolve(String s)
-                {
-                    logger.info("Resolved property: " + s);
-                    return null;
-                }
-            }));
-        } catch (CheckstyleException e) {
-            e.printStackTrace();
-            return;
-        }
+        Configuration csConfig = ConfigurationLoader.loadConfiguration(xml.toString(),
+                new PropertiesExpander(System.getProperties()),
+                ConfigurationLoader.IgnoredModulesOptions.OMIT);
+
+        // Force tab character - required for line length checks, etc
+        ((DefaultConfiguration) csConfig).addAttribute("tabWidth", Integer.toString(2));
+
+        final ClassLoader moduleClassLoader = Checker.class.getClassLoader();
+        // final ClassLoader moduleClassLoader = ClassLoader.getSystemClassLoader();
+
+        // "The first module that is run as part of Checkstyle and controls its entire behavior and children."
+        final ModuleFactory moduleFactory = new PackageObjectFactory(Checker.class.getPackage().getName(), moduleClassLoader);
+        final RootModule rootModule = (RootModule) moduleFactory.createModule(csConfig.getName());
+
+        rootModule.setModuleClassLoader(moduleClassLoader);
+        rootModule.configure(csConfig);
+        rootModule.addListener(auditListener);
 
         // Run Checkstyle
         try
         {
-            synchronized (checker)
+            synchronized (rootModule)
             {
-                System.err.println("Running checkstyle for " + solution.getIdentifier());
-                checker.process(javaFiles);
+                System.out.println("Running checkstyle for " + solution.getIdentifier());
+                rootModule.process(javaFiles);
                 while (!complete)
                 {
                     try {
-                        checker.wait();
+                        rootModule.wait();
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
