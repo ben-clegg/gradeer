@@ -123,7 +123,7 @@ public class ResultsGenerator implements Runnable
      */
     private void writeCombinedCheckResults()
     {
-        Set<Check> allChecks = new HashSet<>();
+        List<Check> allChecks = new ArrayList<>();
         for (CheckProcessor checkProcessor : checkProcessors)
             allChecks.addAll(checkProcessor.getChecks());
 

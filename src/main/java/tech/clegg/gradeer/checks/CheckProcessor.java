@@ -10,30 +10,51 @@ import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class CheckProcessor
 {
-    private Collection<Check> checks;
-    private Configuration configuration;
-    private Set<Solution> executedSolutions;
+    private final Collection<Check> checks;
+    private final Configuration configuration;
+    private final Set<Solution> executedSolutions;
 
-    private Set<Class<? extends Check>> presentCheckClasses;
+    private final Set<Class<? extends Check>> presentCheckClasses;
 
     public CheckProcessor(Collection<Check> checks, Configuration configuration)
     {
 
-        this.checks = checks;
+        this.checks = sortChecks(checks);
         this.configuration = configuration;
         this.executedSolutions = new HashSet<>();
         this.presentCheckClasses = new HashSet<>();
 
         for (Check c : checks)
             presentCheckClasses.add(c.getClass());
+    }
+
+    private Collection<Check> sortChecks(Collection<Check> checksToSort)
+    {
+        Map<String, List<Check>> checkTypeGroups = new HashMap<>();
+        for (Check c : checksToSort)
+        {
+            String key = c.getClass().getName();
+            if(checkTypeGroups.containsKey(key))
+                checkTypeGroups.get(key).add(c);
+            else
+                checkTypeGroups.put(key, new ArrayList<>(Collections.singletonList(c)));
+        }
+
+        Collection<Check> sorted = new ArrayList<>();
+
+        // Sort each list alphabetically
+        for (List<Check> l : checkTypeGroups.values())
+        {
+            l.sort(Comparator.comparing(Check::getName));
+            sorted.addAll(l);
+        }
+
+        return sorted;
     }
 
     public void runChecks(Solution solution)
