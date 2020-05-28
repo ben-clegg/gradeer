@@ -23,18 +23,19 @@ public class CheckstyleProcess
     private Solution solution;
     private boolean complete;
     private Path xml;
-
+    private final int tabWidth;
 
     private AuditListener auditListener;
     private Collection<CheckstyleCheck> checkstyleChecks;
 
     private CheckstyleProcessResults results;
 
-    CheckstyleProcess(Solution sut, Path checkstyleXml, Collection<CheckstyleCheck> checkstyleChecks)
+    CheckstyleProcess(Solution sut, tech.clegg.gradeer.configuration.Configuration configuration, Collection<CheckstyleCheck> checkstyleChecks)
     {
         this.solution = sut;
         this.complete = false;
-        this.xml = checkstyleXml;
+        this.xml = configuration.getCheckstyleXml();
+        this.tabWidth = configuration.getTabWidth();
 
         this.checkstyleChecks = checkstyleChecks;
         this.results = new CheckstyleProcessResults();
@@ -116,7 +117,7 @@ public class CheckstyleProcess
                 ConfigurationLoader.IgnoredModulesOptions.OMIT);
 
         // Force tab character - required for line length checks, etc
-        ((DefaultConfiguration) csConfig).addAttribute("tabWidth", Integer.toString(2));
+        ((DefaultConfiguration) csConfig).addAttribute("tabWidth", Integer.toString(tabWidth));
 
         final ClassLoader moduleClassLoader = Checker.class.getClassLoader();
         // final ClassLoader moduleClassLoader = ClassLoader.getSystemClassLoader();

@@ -25,8 +25,7 @@ public class CheckstyleExecutor
 
     public void execute(Solution solution) throws CheckstyleException
     {
-        CheckstyleProcess checkstyleProcess = new CheckstyleProcess(solution,
-                configuration.getCheckstyleXml(), checkstyleChecks);
+        CheckstyleProcess checkstyleProcess = new CheckstyleProcess(solution, configuration, checkstyleChecks);
 
         checkstyleProcess.run();
 

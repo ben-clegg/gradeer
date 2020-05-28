@@ -35,6 +35,8 @@ public class Configuration
 
     private Path checkstyleXml;
     private Path checkstyleChecksJSON;
+    private int tabWidth;
+
     private boolean removeCheckstyleFailuresOnModel;
 
     private boolean testSuitesEnabled = true;
@@ -111,6 +113,7 @@ public class Configuration
 
         checkstyleXml = loadLocalOrAbsolutePath(json.checkstyleXml);
         checkstyleChecksJSON = loadLocalOrAbsolutePath(json.checkstyleChecksJSON);
+        tabWidth = json.tabWidth;
         removeCheckstyleFailuresOnModel = json.removeCheckstyleFailuresOnModel;
 
         testSuitesEnabled = json.enableTestSuites;
@@ -244,6 +247,11 @@ public class Configuration
         return checkstyleChecksJSON;
     }
 
+    public int getTabWidth()
+    {
+        return tabWidth;
+    }
+
     public Path getPmdChecksJSON()
     {
         return pmdChecksJSON;
@@ -350,6 +358,7 @@ class ConfigurationJSON
 
     String checkstyleXml;
     String checkstyleChecksJSON;
+    int tabWidth = 2;
     boolean removeCheckstyleFailuresOnModel = false;
     String pmdRulesets;
 
