@@ -1,5 +1,6 @@
 package tech.clegg.gradeer.checks;
 
+import com.puppycrawl.tools.checkstyle.api.CheckstyleException;
 import tech.clegg.gradeer.auxiliaryprocesses.InspectionCommandProcess;
 import tech.clegg.gradeer.configuration.Configuration;
 import tech.clegg.gradeer.execution.staticanalysis.checkstyle.CheckstyleExecutor;
@@ -107,7 +108,19 @@ public class CheckProcessor
                             .filter(c -> c instanceof CheckstyleCheck)
                             .map(c -> (CheckstyleCheck) c)
                             .collect(Collectors.toList()));
-            checkstyleExecutor.execute(solution);
+            try
+            {
+                checkstyleExecutor.execute(solution);
+            }
+            catch (CheckstyleException checkstyleException)
+            {
+                // Log the file
+                configuration.getLogFile().writeMessage("Checkstyle process error on solution " + solution.getIdentifier());
+                configuration.getLogFile().writeException(checkstyleException);
+                // Set solution as failing all checkstyle checks
+                for (CheckstyleCheck c : checkstyleExecutor.getCheckstyleChecks())
+                    c.unweightedScores.put(solution, 0.0);
+            }
         }
     }
 

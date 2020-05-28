@@ -23,22 +23,22 @@ public class CheckstyleExecutor
         this.checkstyleChecks = checkstyleChecks;
     }
 
-    public void execute(Solution solution)
+    public void execute(Solution solution) throws CheckstyleException
     {
         CheckstyleProcess checkstyleProcess = new CheckstyleProcess(solution,
                 configuration.getCheckstyleXml(), checkstyleChecks);
-        try
-        {
-            checkstyleProcess.run();
-        }
-        catch (CheckstyleException e)
-        {
-            e.printStackTrace();
-            // TODO Handle checkstyle exceptions more elegantly
-        }
+
+        checkstyleProcess.run();
+
+        // Update check results for this solution
         solution.setCheckstyleProcessResults(checkstyleProcess.getResults());
         for (CheckstyleCheck c : checkstyleChecks)
             c.run(solution);
+    }
+
+    public Collection<CheckstyleCheck> getCheckstyleChecks()
+    {
+        return checkstyleChecks;
     }
 }
 

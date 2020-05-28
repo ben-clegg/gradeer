@@ -1,6 +1,7 @@
 package tech.clegg.gradeer.checks.generation;
 
 import com.google.gson.Gson;
+import com.puppycrawl.tools.checkstyle.api.CheckstyleException;
 import tech.clegg.gradeer.checks.Check;
 import tech.clegg.gradeer.checks.CheckstyleCheck;
 import tech.clegg.gradeer.checks.generation.json.CheckJSONEntry;
@@ -51,7 +52,24 @@ public class CheckstyleCheckGenerator extends CheckGenerator
 
         // Execute on model solutions, setting results for each solution
         CheckstyleExecutor checkstyleExecutor = new CheckstyleExecutor(getConfiguration(), (Collection) getChecks());
-        getModelSolutions().forEach(checkstyleExecutor::execute);
+        for (Solution m : getModelSolutions())
+        {
+            try
+            {
+                checkstyleExecutor.execute(m);
+            }
+            catch (CheckstyleException checkstyleException)
+            {
+                // Log the file
+                getConfiguration().getLogFile().writeMessage("Checkstyle process error on model solution " + m.getIdentifier());
+                getConfiguration().getLogFile().writeMessage("Disabling checkstyle checks as a result of this error...");
+                getConfiguration(). getLogFile().writeException(checkstyleException);
+                // Remove checks
+                getChecks().clear();
+            }
+        }
+
+
         for (Check c : getChecks())
             getModelSolutions().forEach(c::run);
 

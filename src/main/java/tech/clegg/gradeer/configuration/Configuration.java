@@ -3,6 +3,7 @@ package tech.clegg.gradeer.configuration;
 import com.google.gson.Gson;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import tech.clegg.gradeer.results.io.LogFile;
 
 import java.io.*;
 import java.nio.file.Files;
@@ -56,6 +57,7 @@ public class Configuration
 
     private boolean skipChecksFailingOnAnyModel = false;
 
+    private LogFile logFile;
 
     public Configuration(Path jsonFile)
     {
@@ -65,11 +67,15 @@ public class Configuration
             rootDir = jsonFile.getParent();
             // Load config variables from json
             loadFromJSON(ConfigurationJSON.loadJSON(jsonFile));
+
+            // Setup log file
+            logFile = new LogFile(Paths.get(outputDir + File.separator + "logOutput.log"));
         }
         catch (IOException ioEx)
         {
             logger.error(ioEx);
             logger.error("Could not load configuration!");
+            System.exit(1);
         }
     }
 
@@ -311,6 +317,11 @@ public class Configuration
     public String getInspectionCommand()
     {
         return inspectionCommand;
+    }
+
+    public LogFile getLogFile()
+    {
+        return logFile;
     }
 
     public static boolean pathExists(Path path)

@@ -44,6 +44,8 @@ public class FileWriter
             for (String l : lines)
                 writer.append(l + "\n");
             writer.close();
+            // Clear lines
+            lines.clear();
         }
         catch (IOException e)
         {
