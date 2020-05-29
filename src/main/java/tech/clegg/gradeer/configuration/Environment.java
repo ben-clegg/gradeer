@@ -24,6 +24,10 @@ public class Environment
         {
             antExecutable = Paths.get("/usr/share/ant/bin/ant");
         }
+        if(SystemUtils.IS_OS_MAC_OSX)
+        {
+            antExecutable = Paths.get("/usr/local/bin/ant");
+        }
 
         // Override with env vars
         loadEnvVars();
