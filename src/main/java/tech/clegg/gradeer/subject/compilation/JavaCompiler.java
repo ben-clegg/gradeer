@@ -68,6 +68,7 @@ public class JavaCompiler
         ClassPath cp = new ClassPath(classPath);
         cp.add(modelSolution.getDirectory());
         cp.add(configuration.getTestsDir());
+        cp.add(configuration.getSourceDependenciesDir());
         cp.add(configuration.getTestDependenciesDir());
 
         AntRunner antRunner = new AntRunner(configuration, cp);
