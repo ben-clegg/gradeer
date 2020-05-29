@@ -216,7 +216,7 @@ public class ResultsGenerator implements Runnable
         {
             String checkName =  c.getClass().getSimpleName() + "-" + c.getName();
             headers.add("UnweightedScore_" + checkName);
-            headers.add("Feedback" + checkName);
+            headers.add("Feedback_" + checkName);
         }
         headers.add("CombinedGeneratedFeedback");
         headers.add("GeneratedGrade");

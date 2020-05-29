@@ -15,6 +15,7 @@ public class LogFile extends FileWriter
     {
         super(true);
         this.location = location;
+        writeMessage("Created logger " + System.currentTimeMillis());
     }
 
     public void writeMessage(String message)
