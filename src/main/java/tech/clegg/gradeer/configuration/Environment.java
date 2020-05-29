@@ -2,6 +2,7 @@ package tech.clegg.gradeer.configuration;
 
 import org.apache.commons.lang3.SystemUtils;
 
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
@@ -31,13 +32,32 @@ public class Environment
 
         // Override with env vars
         loadEnvVars();
+
+        // Check if any important paths are missing
+        exitOnMissingEnviroment();
     }
 
     private static void loadEnvVars()
     {
         if(System.getenv("ANT_EXECUTABLE") != null && !System.getenv("ANT_EXECUTABLE").isEmpty())
             antExecutable = Paths.get(System.getenv("ANT_EXECUTABLE"));
+    }
 
+    private static void exitOnMissingEnviroment()
+    {
+        if(!pathExists(antExecutable))
+        {
+            System.err.println("Ant executable location is not defined. ");
+            System.err.println("This can be defined with the environment variable ANT_EXECUTABLE");
+            System.exit(2);
+        }
+    }
+
+    private static boolean pathExists(Path toCheck)
+    {
+        if(toCheck == null)
+            return false;
+        return Files.exists(toCheck);
     }
 
 
