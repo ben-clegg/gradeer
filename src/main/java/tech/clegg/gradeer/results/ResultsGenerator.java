@@ -3,7 +3,7 @@ package tech.clegg.gradeer.results;
 import tech.clegg.gradeer.checks.Check;
 import tech.clegg.gradeer.checks.CheckProcessor;
 import tech.clegg.gradeer.configuration.Configuration;
-import tech.clegg.gradeer.results.io.SCSVWriter;
+import tech.clegg.gradeer.results.io.CSVWriter;
 import tech.clegg.gradeer.results.io.FileWriter;
 import tech.clegg.gradeer.solution.Solution;
 import org.apache.logging.log4j.LogManager;
@@ -61,6 +61,7 @@ public class ResultsGenerator implements Runnable
         writeCombinedCheckResults();
         writeGrades();
         writeFeedback();
+        writeSplitResultsWithWeights();
     }
 
     private void writeSolutionsFailingAllUnitTests()
@@ -123,9 +124,7 @@ public class ResultsGenerator implements Runnable
      */
     private void writeCombinedCheckResults()
     {
-        List<Check> allChecks = new ArrayList<>();
-        for (CheckProcessor checkProcessor : checkProcessors)
-            allChecks.addAll(checkProcessor.getChecks());
+        List<Check> allChecks = getAllChecks();
 
         List<String> headers = new ArrayList<>();
         headers.add("Solution");
@@ -134,7 +133,7 @@ public class ResultsGenerator implements Runnable
                 .collect(Collectors.toList()));
 
 
-        SCSVWriter w = new SCSVWriter(headers);
+        CSVWriter w = new CSVWriter(headers);
 
         for (Solution s : studentSolutions)
         {
@@ -147,7 +146,7 @@ public class ResultsGenerator implements Runnable
             w.addEntry(row);
         }
 
-        w.write(Paths.get(configuration.getOutputDir() + File.separator + "allCheckResults.scsv"));
+        w.write(Paths.get(configuration.getOutputDir() + File.separator + "allCheckResults.csv"));
 
     }
 
@@ -155,7 +154,7 @@ public class ResultsGenerator implements Runnable
     private void writeGrades()
     {
         GradeGenerator gradeGenerator = new GradeGenerator(checkProcessors);
-        SCSVWriter gradeWriter = new SCSVWriter(Arrays.asList("Username", "Grade", "Feedback"));
+        CSVWriter gradeWriter = new CSVWriter(Arrays.asList("Username", "Grade", "Feedback"));
         for (Solution s : studentSolutions)
         {
             double grade = gradeGenerator.generateGrade(s);
@@ -164,7 +163,7 @@ public class ResultsGenerator implements Runnable
             gradeWriter.addEntry(Arrays.asList(line));
             logger.info("Grade Generated: " + Arrays.toString(line));
         }
-        gradeWriter.write(Paths.get(configuration.getOutputDir() + File.separator + "AssignmentMarks.scsv"));
+        gradeWriter.write(Paths.get(configuration.getOutputDir() + File.separator + "AssignmentMarks.csv"));
     }
 
     private String generateFeedback(Solution solution)
@@ -196,5 +195,75 @@ public class ResultsGenerator implements Runnable
             file.write(Paths.get(configuration.getOutputDir() + File.separator + "feedback" + File.separator + s.getIdentifier() + "_feedback.txt"));
 
         }
+    }
+
+    /**
+     * Writes a SCSV file that contains:
+     * - a row of starting weights for each check
+     * - unweighted scores for each check
+     * - feedback for each check
+     * - combined feedback at the end
+     */
+    private void writeSplitResultsWithWeights()
+    {
+        GradeGenerator gradeGenerator = new GradeGenerator(checkProcessors);
+        List<Check> allChecks = getAllChecks();
+
+        // Setup headers
+        List<String> headers = new ArrayList<>();
+        headers.add("Solution");
+        for (Check c : allChecks)
+        {
+            String checkName =  c.getClass().getSimpleName() + "-" + c.getName();
+            headers.add("UnweightedScore_" + checkName);
+            headers.add("Feedback" + checkName);
+        }
+        headers.add("CombinedGeneratedFeedback");
+        headers.add("GeneratedGrade");
+
+        // Add row of weights
+        List<String> weightsRow = new ArrayList<>();
+        weightsRow.add("Weights"); // "Solution"
+        for (Check c : allChecks)
+        {
+            weightsRow.add(String.valueOf(c.getWeight()));
+            weightsRow.add("-");
+        }
+        weightsRow.add("-");
+        weightsRow.add("-");
+
+        // Initialise SCSVWriter
+        CSVWriter w = new CSVWriter(headers);
+        w.addEntry(weightsRow);
+
+        // Handle each solution
+        for (Solution s : studentSolutions)
+        {
+            List<String> row = new ArrayList<>();
+            row.add(s.getIdentifier());
+
+            for (Check c : allChecks)
+            {
+                row.add(String.valueOf(c.getUnweightedScore(s)));
+                row.add(c.getFeedback(s));
+            }
+
+            row.add(generateFeedback(s));
+            row.add(String.valueOf(gradeGenerator.generateGrade(s)));
+            w.addEntry(row);
+        }
+
+        w.write(Paths.get(configuration.getOutputDir() + File.separator +
+                "splitStudentResultsForPostprocessing.csv"));
+
+    }
+
+    private List<Check> getAllChecks()
+    {
+        List<Check> allChecks = new ArrayList<>();
+        for (CheckProcessor checkProcessor : checkProcessors)
+            allChecks.addAll(checkProcessor.getChecks());
+
+        return allChecks;
     }
 }

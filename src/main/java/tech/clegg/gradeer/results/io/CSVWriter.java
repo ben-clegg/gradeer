@@ -3,11 +3,11 @@ package tech.clegg.gradeer.results.io;
 import java.util.Iterator;
 import java.util.List;
 
-public class SCSVWriter extends FileWriter
+public class CSVWriter extends FileWriter
 {
-    private static final String SEP = ";";
+    private static final String SEP = ",";
 
-    public SCSVWriter(List<String> headerColumns)
+    public CSVWriter(List<String> headerColumns)
     {
         super();
         addEntry(headerColumns);
@@ -23,7 +23,8 @@ public class SCSVWriter extends FileWriter
 
         while (valuesIter.hasNext())
         {
-            sb.append(valuesIter.next());
+            String value = "\"" + valuesIter.next() + "\"";
+            sb.append(value);
             if(valuesIter.hasNext())
                 sb.append(SEP);
         }
