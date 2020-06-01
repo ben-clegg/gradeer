@@ -2,6 +2,7 @@ package tech.clegg.gradeer.execution;
 
 import tech.clegg.gradeer.configuration.Configuration;
 import tech.clegg.gradeer.configuration.Environment;
+import tech.clegg.gradeer.execution.java.ClassExecutionTemplate;
 import tech.clegg.gradeer.execution.junit.TestSuite;
 import tech.clegg.gradeer.subject.ClassPath;
 import tech.clegg.gradeer.solution.Solution;
@@ -14,6 +15,8 @@ import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -68,6 +71,28 @@ public class AntRunner
 
         return runAntProcess(command);
     }
+
+    public AntProcessResult runJavaClass(ClassExecutionTemplate classExecutionTemplate)
+    {
+        List<String> command = commonCommand("run-class");
+        // Class name
+        command.add("-Djava.class.name=" + classExecutionTemplate.getFullClassName());
+
+        // Args
+        StringBuilder args = new StringBuilder();
+        args.append("-Djava.class.exec.arg=");
+        Iterator<String> argIter = Arrays.asList(classExecutionTemplate.getArgs()).iterator();
+        while (argIter.hasNext())
+        {
+            args.append(argIter.next());
+            if(argIter.hasNext())
+                args.append(" ");
+        }
+        command.add(args.toString());
+
+        return runAntProcess(command);
+    }
+
 
     public List<String> commonCommand(String targetName)
     {

@@ -20,6 +20,7 @@ public class LogFile extends FileWriter
 
     public void writeMessage(String message)
     {
+        System.out.println("[Log] " + message);
         addLine(message);
         write(location);
     }

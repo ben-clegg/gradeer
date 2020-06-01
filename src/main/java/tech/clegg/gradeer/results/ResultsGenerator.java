@@ -1,7 +1,8 @@
 package tech.clegg.gradeer.results;
 
 import tech.clegg.gradeer.checks.Check;
-import tech.clegg.gradeer.checks.CheckProcessor;
+import tech.clegg.gradeer.checks.checkprocessing.AutoCheckProcessor;
+import tech.clegg.gradeer.checks.checkprocessing.CheckProcessor;
 import tech.clegg.gradeer.configuration.Configuration;
 import tech.clegg.gradeer.results.io.CSVWriter;
 import tech.clegg.gradeer.results.io.FileWriter;

@@ -2,7 +2,8 @@ package tech.clegg.gradeer.runtime;
 
 import tech.clegg.gradeer.Gradeer;
 import tech.clegg.gradeer.auxiliaryprocesses.MergedSolutionWriter;
-import tech.clegg.gradeer.checks.CheckProcessor;
+import tech.clegg.gradeer.checks.checkprocessing.CheckProcessor;
+import tech.clegg.gradeer.checks.checkprocessing.ManualCheckProcessor;
 import tech.clegg.gradeer.checks.generation.ManualCheckGenerator;
 import tech.clegg.gradeer.configuration.Configuration;
 
@@ -31,6 +32,6 @@ public class ManualRuntime extends Runtime
         if(configuration.getMergedSolutionsDir() != null)
             new MergedSolutionWriter(configuration, gradeer.getStudentSolutions()).run();
 
-        return new CheckProcessor(checks, configuration);
+        return new ManualCheckProcessor(checks, configuration);
     }
 }

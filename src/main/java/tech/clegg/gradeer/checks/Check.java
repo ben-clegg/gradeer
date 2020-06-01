@@ -61,6 +61,11 @@ public abstract class Check
         this.feedbackIncorrect = feedbackIncorrect;
     }
 
+    public void setSolutionAsFailed(Solution solution)
+    {
+        unweightedScores.put(solution, 0.0);
+    }
+
     public boolean wasSolutionExecuted(Solution solution)
     {
         return unweightedScores.containsKey(solution);

@@ -1,7 +1,8 @@
 package tech.clegg.gradeer.results;
 
 import tech.clegg.gradeer.checks.Check;
-import tech.clegg.gradeer.checks.CheckProcessor;
+import tech.clegg.gradeer.checks.checkprocessing.AutoCheckProcessor;
+import tech.clegg.gradeer.checks.checkprocessing.CheckProcessor;
 import tech.clegg.gradeer.solution.Solution;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

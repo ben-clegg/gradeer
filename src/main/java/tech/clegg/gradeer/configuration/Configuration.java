@@ -3,14 +3,14 @@ package tech.clegg.gradeer.configuration;
 import com.google.gson.Gson;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import tech.clegg.gradeer.execution.java.ClassExecutionTemplate;
 import tech.clegg.gradeer.results.io.LogFile;
 
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Collection;
-import java.util.HashSet;
+import java.util.*;
 
 public class Configuration
 {
@@ -54,12 +54,14 @@ public class Configuration
     private Path checkResultsDir;
 
     private Path manualChecksJSON;
+    private List<ClassExecutionTemplate> preManualJavaClassesToExecute;
 
     private String inspectionCommand;
 
     private boolean skipChecksFailingOnAnyModel = false;
 
     private LogFile logFile;
+
 
     public Configuration(Path jsonFile)
     {
@@ -130,6 +132,10 @@ public class Configuration
         checkResultsDir = loadLocalOrAbsolutePath(json.checkResultsDirPath);
 
         manualChecksJSON = loadLocalOrAbsolutePath(json.manualChecksJSON);
+        preManualJavaClassesToExecute = new ArrayList<>();
+        if(json.preManualJavaClassesToExecute != null && json.preManualJavaClassesToExecute.length > 0)
+            preManualJavaClassesToExecute.addAll(Arrays.asList(json.preManualJavaClassesToExecute));
+
         inspectionCommand = json.inspectionCommand;
 
         skipChecksFailingOnAnyModel = json.skipChecksFailingOnAnyModel;
@@ -317,6 +323,11 @@ public class Configuration
         return manualChecksJSON;
     }
 
+    public List<ClassExecutionTemplate> getPreManualJavaClassesToExecute()
+    {
+        return preManualJavaClassesToExecute;
+    }
+
     public boolean isSkipChecksFailingOnAnyModel()
     {
         return skipChecksFailingOnAnyModel;
@@ -375,6 +386,7 @@ class ConfigurationJSON
     String mergedSolutionsDirPath;
 
     String manualChecksJSON;
+    ClassExecutionTemplate[] preManualJavaClassesToExecute;
 
     String inspectionCommand;
 

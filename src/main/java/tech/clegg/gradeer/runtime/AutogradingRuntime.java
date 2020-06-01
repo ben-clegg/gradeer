@@ -1,7 +1,8 @@
 package tech.clegg.gradeer.runtime;
 
 import tech.clegg.gradeer.Gradeer;
-import tech.clegg.gradeer.checks.CheckProcessor;
+import tech.clegg.gradeer.checks.checkprocessing.AutoCheckProcessor;
+import tech.clegg.gradeer.checks.checkprocessing.CheckProcessor;
 import tech.clegg.gradeer.checks.generation.CheckstyleCheckGenerator;
 import tech.clegg.gradeer.checks.generation.PMDCheckGenerator;
 import tech.clegg.gradeer.checks.generation.TestSuiteCheckGenerator;
@@ -51,6 +52,6 @@ public class AutogradingRuntime extends Runtime
     @Override
     public CheckProcessor run()
     {
-        return new CheckProcessor(checks, configuration);
+        return new AutoCheckProcessor(checks, configuration);
     }
 }

@@ -10,8 +10,10 @@ public class CheckstyleCheck extends Check
 {
     private int perSourceFileGrace = 0;
 
-    private int maximumViolations = 5;
-    private int minimumViolations = 1;
+    private int maximumViolations = 3;
+    private int minimumViolations = 0;
+
+    // TOOD configurable min / max violations
 
 
     public CheckstyleCheck(CheckJSONEntry jsonEntry)

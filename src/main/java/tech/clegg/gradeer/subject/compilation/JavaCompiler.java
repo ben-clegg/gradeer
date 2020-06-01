@@ -29,7 +29,7 @@ public class JavaCompiler
 
     public static JavaCompiler createCompiler(Configuration configuration)
     {
-        return createCompiler(configuration, Collections.EMPTY_LIST);
+        return createCompiler(configuration, new ArrayList<>());
     }
 
     public static JavaCompiler createCompiler(Configuration configuration, Collection<Path> auxiliaryClassPathElements)

@@ -34,4 +34,11 @@
             <formatter type="plain" usefile="false"/>
         </junit>
     </target>
+
+    <target name="run-class" depends="echo-path" description="Run a defined java class">
+        <java classname="${java.class.name}" fork="true" dir="${runtime.deps}">
+            <arg value="${java.class.exec.arg}"/>
+            <classpath refid="gradeer.cp"/>
+        </java>
+    </target>
 </project>

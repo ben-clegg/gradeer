@@ -2,7 +2,8 @@ package tech.clegg.gradeer.runtime;
 
 import tech.clegg.gradeer.Gradeer;
 import tech.clegg.gradeer.checks.Check;
-import tech.clegg.gradeer.checks.CheckProcessor;
+import tech.clegg.gradeer.checks.checkprocessing.AutoCheckProcessor;
+import tech.clegg.gradeer.checks.checkprocessing.CheckProcessor;
 import tech.clegg.gradeer.configuration.Configuration;
 
 import java.util.ArrayList;
