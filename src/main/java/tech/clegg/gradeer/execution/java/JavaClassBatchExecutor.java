@@ -2,6 +2,7 @@ package tech.clegg.gradeer.execution.java;
 
 import tech.clegg.gradeer.configuration.Configuration;
 import tech.clegg.gradeer.execution.AntRunner;
+import tech.clegg.gradeer.execution.SingleAntRunner;
 import tech.clegg.gradeer.solution.Solution;
 import tech.clegg.gradeer.subject.ClassPath;
 
@@ -45,7 +46,8 @@ public class JavaClassBatchExecutor
                     execCP.add(Paths.get(elem));
             }
 
-            AntRunner antRunner = new AntRunner(configuration, execCP);
+            // Make a single ant runner - allows for the process to be terminated
+            SingleAntRunner antRunner = new SingleAntRunner(configuration, execCP);
             javaExecutors.add(new JavaExecutor(antRunner, cet));
         }
     }
