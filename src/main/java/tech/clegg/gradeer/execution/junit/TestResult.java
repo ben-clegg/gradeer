@@ -8,18 +8,24 @@ public class TestResult
 {
     private static Logger logger = LogManager.getLogger(TestResult.class);
 
-    private int passingTests;
-    private int totalTests;
+    private final int passingTests;
+    private final int totalTests;
+    private final int failuresAndErrors;
 
     public TestResult(AntProcessResult antResult)
     {
         //logger.info(antResult);
         totalTests = antResult.getTestsRun();
-        passingTests = totalTests - (antResult.getTestsFailures() + antResult.getTestsErrors());
+        failuresAndErrors = antResult.getTestsFailures() + antResult.getTestsErrors();
+        passingTests = totalTests - failuresAndErrors;
     }
 
     public double proportionPassing()
     {
+        // Prevent divide by 0
+        if(failuresAndErrors >= totalTests)
+            return 0;
+
         return (double) passingTests / (double) totalTests;
     }
 
