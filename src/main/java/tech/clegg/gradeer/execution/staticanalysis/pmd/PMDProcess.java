@@ -4,9 +4,13 @@ package tech.clegg.gradeer.execution.staticanalysis.pmd;
         import tech.clegg.gradeer.solution.Solution;
         import org.apache.logging.log4j.LogManager;
         import org.apache.logging.log4j.Logger;
+        import tech.clegg.gradeer.subject.ClassPath;
 
         import java.io.File;
         import java.io.IOException;
+        import java.nio.file.Files;
+        import java.nio.file.Path;
+        import java.nio.file.Paths;
         import java.util.*;
 
 public class PMDProcess implements Runnable
@@ -37,13 +41,24 @@ public class PMDProcess implements Runnable
 
     public void run()
     {
-        List<String> command = new ArrayList<>();
+        ClassPath cp = new ClassPath();
+        try
+        {
+            Files.list(Paths.get(configuration.getPmdLocation().toAbsolutePath().toString() +
+                    File.separator + "lib"))
+                    .forEach(cp::add);
+        } catch (IOException e)
+        {
+            e.printStackTrace();
+        }
 
         // Load PMD
+        List<String> command = new ArrayList<>();
         command.add("java");
-        command.add("-cp"); // Classpath elements...
-        command.add(configuration.getPmdLocation().toAbsolutePath().toString()
-                + File.separator + "lib" + File.separator + "*"); // PMD .jars
+
+        // Classpath elements...
+        command.add("-cp");
+        command.add(cp.toString());
         command.add("net.sourceforge.pmd.PMD"); // PMD target class
 
         // PMD args
@@ -55,15 +70,7 @@ public class PMDProcess implements Runnable
         // Run process
         ProcessBuilder processBuilder = new ProcessBuilder();
         processBuilder.command(command);
-        try
-        {
-            Process p = processBuilder.start();
-            results = new PMDProcessResults(p);
-        }
-        catch (IOException ioEx)
-        {
-            ioEx.printStackTrace();
-        }
+        results = new PMDProcessResults(processBuilder);
     }
 
     public PMDProcessResults getResults()

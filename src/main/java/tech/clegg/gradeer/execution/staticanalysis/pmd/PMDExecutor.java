@@ -14,7 +14,7 @@ public class PMDExecutor
     public PMDExecutor(Configuration configuration)
     {
         this.configuration = configuration;
-        this.pmdRuleSetNames = Arrays.asList(configuration.getPmdRulesets().split(","));
+        this.pmdRuleSetNames = Arrays.asList(configuration.getPmdRulesets());
     }
 
     public void execute(Solution solution)

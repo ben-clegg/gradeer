@@ -44,7 +44,16 @@ public class Configuration
     private boolean checkstyleEnabled = true;
 
     private Path pmdLocation;
-    private String pmdRulesets = "category/java/bestpractices.xml";
+    private String[] pmdRulesets = {
+            "category/java/bestpractices.xml",
+            "category/java/codestyle.xml",
+            "category/java/design.xml",
+            "category/java/documentation.xml",
+            "category/java/errorprone.xml",
+            "category/java/multithreading.xml",
+            "category/java/performance.xml",
+            "category/java/security.xml"
+    };
     private Path pmdChecksJSON;
     private boolean removePmdFailuresOnModel;
 
@@ -110,7 +119,7 @@ public class Configuration
 
         if(json.perTestSuiteTimeout > 0)
             perTestSuiteTimeout = json.perTestSuiteTimeout * 1000; // Convert seconds to ms
-        if(json.pmdRulesets != null && !json.pmdRulesets.isEmpty())
+        if(json.pmdRulesets != null && json.pmdRulesets.length > 0)
             pmdRulesets = json.pmdRulesets;
 
         checkstyleXml = loadLocalOrAbsolutePath(json.checkstyleXml);
@@ -238,7 +247,7 @@ public class Configuration
         return perTestSuiteTimeout;
     }
 
-    public String getPmdRulesets()
+    public String[] getPmdRulesets()
     {
         return pmdRulesets;
     }
@@ -371,7 +380,7 @@ class ConfigurationJSON
     String checkstyleChecksJSON;
     int tabWidth = 2;
     boolean removeCheckstyleFailuresOnModel = false;
-    String pmdRulesets;
+    String[] pmdRulesets;
 
     boolean enableTestSuites = true;
     boolean enableCheckStyle = true;

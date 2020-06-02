@@ -9,6 +9,7 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 public class PMDProcessResults
@@ -18,17 +19,40 @@ public class PMDProcessResults
     private List<String> errorLines;
     private List<PMDViolation> pmdViolations;
 
-    public PMDProcessResults(Process process)
-    {
-        BufferedReader inputStreamReader = new BufferedReader(new InputStreamReader(process.getInputStream()));
-        BufferedReader errorStreamReader = new BufferedReader(new InputStreamReader(process.getErrorStream()));
+    private static final int PMD_PROCESS_TIME = 15;
 
-        this.errorLines = readLines(errorStreamReader);
-        this.pmdViolations = loadViolations(readLines(inputStreamReader));
+    public PMDProcessResults(ProcessBuilder processBuilder)
+    {
+        try
+        {
+            Process process = processBuilder.start();
+
+            BufferedReader inputStreamReader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+            BufferedReader errorStreamReader = new BufferedReader(new InputStreamReader(process.getErrorStream()));
+
+            this.pmdViolations = loadViolations(readLines(inputStreamReader));
+            // The line below must not be executed before the line above.
+            // I don't know why.
+            this.errorLines = readLines(errorStreamReader);
+
+            process.waitFor(PMD_PROCESS_TIME, TimeUnit.SECONDS);
+            process.destroy();
+
+            process.getInputStream().close();
+            process.getErrorStream().close();
+
+        } catch (IOException | InterruptedException e)
+        {
+            e.printStackTrace();
+        }
+
     }
 
     private List<String> readLines(BufferedReader bufferedReader)
     {
+        if(bufferedReader == null)
+            return new ArrayList<>();
+
         List<String> lines = new ArrayList<>();
         String line;
         try
