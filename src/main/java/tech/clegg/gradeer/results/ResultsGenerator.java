@@ -50,7 +50,7 @@ public class ResultsGenerator implements Runnable
             int solutionNumber = 1;
             for (Solution s : studentSolutions)
             {
-                System.out.println("Processing solution " + s.getIdentifier() +
+                System.out.println("\nProcessing solution " + s.getIdentifier() +
                         " ( " + solutionNumber + " / " + studentSolutions.size() + " ) ");
                 checkProcessor.runChecks(s);
                 solutionNumber++;

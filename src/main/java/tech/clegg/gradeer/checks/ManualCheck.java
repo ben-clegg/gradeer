@@ -6,6 +6,7 @@ import tech.clegg.gradeer.solution.Solution;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.io.IOException;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Scanner;
@@ -39,6 +40,16 @@ public class ManualCheck extends Check
     @Override
     public void run(Solution solution)
     {
+        // Force clear past input to prevent state infection
+        try
+        {
+            System.in.read(new byte[System.in.available()]);
+        } catch (IOException e)
+        {
+            e.printStackTrace();
+        }
+
+        // Start check
         System.out.println("\nManual check " + name + " for Solution " + solution.getIdentifier());
         System.out.println(prompt);
         System.out.print("Enter a value in the range 0 - " + maxRange);

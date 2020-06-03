@@ -12,13 +12,16 @@ import java.io.InputStreamReader;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-public class SingleAntRunner extends AntRunner
+public class SinglePrintingAntRunner extends AntRunner
 {
-    private static Logger logger = LogManager.getLogger(SingleAntRunner.class);
+    private static Logger logger = LogManager.getLogger(SinglePrintingAntRunner.class);
 
     private Process process;
 
-    public SingleAntRunner(Configuration configuration, ClassPath classPath)
+    private BufferedReader stdOut;
+    private BufferedReader stdErr;
+
+    public SinglePrintingAntRunner(Configuration configuration, ClassPath classPath)
     {
         super(configuration, classPath);
     }
@@ -33,28 +36,28 @@ public class SingleAntRunner extends AntRunner
 
         logger.info("Running ant command: " + command + " from " + pb.directory());
 
-        AntProcessResult res = new AntProcessResult();
         try
         {
             process = pb.start();
 
-            BufferedReader is = new BufferedReader(new InputStreamReader(process.getInputStream()));
-            res.setInputStream(is);
+            stdOut = new BufferedReader(new InputStreamReader(process.getInputStream()));
+            stdErr = new BufferedReader(new InputStreamReader(process.getErrorStream()));
 
-            String line;
-            BufferedReader es = new BufferedReader(new InputStreamReader(process.getErrorStream()));
-            StringBuilder esLog = new StringBuilder();
-            while ((line = es.readLine()) != null) {
-                esLog.append(line).append(System.lineSeparator());
-            }
-            res.setErrorStreamText(esLog.toString());
+            String stdOutLine;
+            while ((stdOutLine = stdOut.readLine()) != null)
+                System.out.println("[StdOut] " + stdOutLine);
+
+            String stdErrLine;
+            while ((stdErrLine = stdErr.readLine()) != null)
+                System.err.println("[StdErr] " + stdErrLine);
+
         }
         catch (IOException ioEx)
         {
-            res.setExceptionText(String.format("Exception: %s%s", ioEx.toString(), System.lineSeparator()));
+            ioEx.printStackTrace();
         }
 
-        return res;
+        return new AntProcessResult();
     }
 
     public void halt()
@@ -70,10 +73,15 @@ public class SingleAntRunner extends AntRunner
             process.waitFor(80, TimeUnit.MILLISECONDS);
             process.destroy();
             process.waitFor(80, TimeUnit.MILLISECONDS);
+
+            stdOut.close();
+            stdErr.close();
         } catch (InterruptedException e)
         {
-
             logger.info("Process terminated early.");
+        } catch (IOException e)
+        {
+            e.printStackTrace();
         }
     }
 }

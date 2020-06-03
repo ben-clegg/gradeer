@@ -1,8 +1,7 @@
 package tech.clegg.gradeer.execution.java;
 
 import tech.clegg.gradeer.configuration.Configuration;
-import tech.clegg.gradeer.execution.AntRunner;
-import tech.clegg.gradeer.execution.SingleAntRunner;
+import tech.clegg.gradeer.execution.SinglePrintingAntRunner;
 import tech.clegg.gradeer.solution.Solution;
 import tech.clegg.gradeer.subject.ClassPath;
 
@@ -10,6 +9,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.concurrent.TimeUnit;
 
 public class JavaClassBatchExecutor
 {
@@ -47,7 +47,7 @@ public class JavaClassBatchExecutor
             }
 
             // Make a single ant runner - allows for the process to be terminated
-            SingleAntRunner antRunner = new SingleAntRunner(configuration, execCP);
+            SinglePrintingAntRunner antRunner = new SinglePrintingAntRunner(configuration, execCP);
             javaExecutors.add(new JavaExecutor(antRunner, cet));
         }
     }
@@ -63,6 +63,7 @@ public class JavaClassBatchExecutor
         }
 
         javaExecutors.forEach(JavaExecutor::start);
+
     }
 
     public void stopExecutions()

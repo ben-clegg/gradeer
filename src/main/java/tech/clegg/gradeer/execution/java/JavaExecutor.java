@@ -1,24 +1,31 @@
 package tech.clegg.gradeer.execution.java;
 
 import tech.clegg.gradeer.execution.AntProcessResult;
-import tech.clegg.gradeer.execution.AntRunner;
-import tech.clegg.gradeer.execution.SingleAntRunner;
+import tech.clegg.gradeer.execution.SinglePrintingAntRunner;
 
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 public class JavaExecutor
 {
     private final JavaExecution javaExecution;
+    private int waitAfterExecutionTime;
 
-    public JavaExecutor(SingleAntRunner antRunner, ClassExecutionTemplate classExecutionTemplate)
+    public JavaExecutor(SinglePrintingAntRunner antRunner, ClassExecutionTemplate classExecutionTemplate)
     {
         this.javaExecution = new JavaExecution(antRunner, classExecutionTemplate);
+        this.waitAfterExecutionTime = classExecutionTemplate.getWaitAfterExecutionTime();
     }
 
     public void start()
     {
         javaExecution.start();
+        try
+        {
+            TimeUnit.SECONDS.sleep(waitAfterExecutionTime);
+        } catch (InterruptedException e)
+        {
+            e.printStackTrace();
+        }
     }
 
     public void stop()
@@ -29,10 +36,10 @@ public class JavaExecutor
 
 class JavaExecution extends Thread
 {
-    private final SingleAntRunner antRunner;
+    private final SinglePrintingAntRunner antRunner;
     private final ClassExecutionTemplate classExecutionTemplate;
 
-    JavaExecution(SingleAntRunner antRunner, ClassExecutionTemplate classExecutionTemplate)
+    JavaExecution(SinglePrintingAntRunner antRunner, ClassExecutionTemplate classExecutionTemplate)
     {
         this.antRunner = antRunner;
         this.classExecutionTemplate = classExecutionTemplate;
@@ -42,8 +49,7 @@ class JavaExecution extends Thread
     public void run()
     {
         System.out.println("Executing " + classExecutionTemplate.getFullClassName());
-        AntProcessResult result = antRunner.runJavaClass(classExecutionTemplate);
-        // TODO handle failing AntProcessResult
+        antRunner.runJavaClass(classExecutionTemplate);
     }
 
     @Override

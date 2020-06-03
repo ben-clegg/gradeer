@@ -5,6 +5,7 @@ public class ClassExecutionTemplate
     private String fullClassName;
     private String[] args;
     private String[] additionalCPElems;
+    private int waitAfterExecutionTime = 0;
 
     public String getFullClassName()
     {
@@ -26,7 +27,7 @@ public class ClassExecutionTemplate
         this.args = args;
     }
 
-    public String []getAdditionalCPElems()
+    public String[] getAdditionalCPElems()
     {
         return additionalCPElems;
     }
@@ -34,5 +35,10 @@ public class ClassExecutionTemplate
     public void setAdditionalCPElems(String[] additionalCPElems)
     {
         this.additionalCPElems = additionalCPElems;
+    }
+
+    public int getWaitAfterExecutionTime()
+    {
+        return waitAfterExecutionTime;
     }
 }
