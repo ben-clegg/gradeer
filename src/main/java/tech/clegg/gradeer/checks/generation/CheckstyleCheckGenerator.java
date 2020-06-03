@@ -4,7 +4,7 @@ import com.google.gson.Gson;
 import com.puppycrawl.tools.checkstyle.api.CheckstyleException;
 import tech.clegg.gradeer.checks.Check;
 import tech.clegg.gradeer.checks.CheckstyleCheck;
-import tech.clegg.gradeer.checks.generation.json.CheckJSONEntry;
+import tech.clegg.gradeer.checks.generation.json.StaticAnalysisCheckJSONEntry;
 import tech.clegg.gradeer.configuration.Configuration;
 import tech.clegg.gradeer.execution.staticanalysis.checkstyle.CheckstyleExecutor;
 import tech.clegg.gradeer.solution.Solution;
@@ -33,11 +33,11 @@ public class CheckstyleCheckGenerator extends CheckGenerator
         Gson gson = new Gson();
         try
         {
-            CheckJSONEntry[] checkJSONEntries =
+            StaticAnalysisCheckJSONEntry[] checkJSONEntries =
                     gson.fromJson(new FileReader(getConfiguration().getCheckstyleChecksJSON().toFile()),
-                            CheckJSONEntry[].class);
+                            StaticAnalysisCheckJSONEntry[].class);
             // Generate checks
-            for (CheckJSONEntry j : checkJSONEntries)
+            for (StaticAnalysisCheckJSONEntry j : checkJSONEntries)
             {
                 CheckstyleCheck checkstyleCheck = new CheckstyleCheck(j);
                 addCheck(checkstyleCheck);

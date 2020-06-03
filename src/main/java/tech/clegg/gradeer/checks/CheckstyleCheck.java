@@ -1,6 +1,6 @@
 package tech.clegg.gradeer.checks;
 
-import tech.clegg.gradeer.checks.generation.json.CheckJSONEntry;
+import tech.clegg.gradeer.checks.generation.json.StaticAnalysisCheckJSONEntry;
 import tech.clegg.gradeer.solution.Solution;
 
 import java.nio.file.Path;
@@ -8,21 +8,21 @@ import java.util.Map;
 
 public class CheckstyleCheck extends Check
 {
-    private int perSourceFileGrace = 0;
-
-    private int maximumViolations = 3;
+    private int maximumViolations = 4;
     private int minimumViolations = 0;
 
-    // TOOD configurable min / max violations
-
-
-    public CheckstyleCheck(CheckJSONEntry jsonEntry)
+    public CheckstyleCheck(StaticAnalysisCheckJSONEntry json)
     {
         super();
-        this.name = jsonEntry.getName();
-        this.feedbackCorrect = jsonEntry.getFeedbackCorrect();
-        this.feedbackIncorrect = jsonEntry.getFeedbackIncorrect();
-        this.weight = jsonEntry.getWeight();
+        this.name = json.getName();
+        this.feedbackCorrect = json.getFeedbackCorrect();
+        this.feedbackIncorrect = json.getFeedbackIncorrect();
+        this.weight = json.getWeight();
+
+        if(json.getMaxViolations() >= 1)
+            maximumViolations = json.getMaxViolations();
+        if(json.getMinViolations() >= 0)
+            minimumViolations = json.getMinViolations();
     }
 
     @Override
@@ -40,13 +40,10 @@ public class CheckstyleCheck extends Check
             return;
         }
 
+        // Get number of violations
         int totalTrackedViolations = 0;
         for (Integer v : violations.values())
-        {
-            // Remove grace value to prevent excessive punishment for infrequent errors (optional)
-            if(v > perSourceFileGrace)
-                totalTrackedViolations += v - perSourceFileGrace;
-        }
+            totalTrackedViolations += v;
 
         // Derive score from maximum & minimum violations
         if(totalTrackedViolations >= maximumViolations)

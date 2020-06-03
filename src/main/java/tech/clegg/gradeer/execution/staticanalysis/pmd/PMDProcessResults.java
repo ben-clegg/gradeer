@@ -31,7 +31,7 @@ public class PMDProcessResults
             BufferedReader errorStreamReader = new BufferedReader(new InputStreamReader(process.getErrorStream()));
 
             this.pmdViolations = loadViolations(readLines(inputStreamReader));
-            // The line below must not be executed before the line above.
+            // The line below must not be executed before the line above or PMD will not terminate.
             // I don't know why.
             this.errorLines = readLines(errorStreamReader);
 

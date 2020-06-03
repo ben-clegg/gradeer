@@ -3,7 +3,7 @@ package tech.clegg.gradeer.checks.generation;
 import com.google.gson.Gson;
 import tech.clegg.gradeer.checks.Check;
 import tech.clegg.gradeer.checks.PMDCheck;
-import tech.clegg.gradeer.checks.generation.json.CheckJSONEntry;
+import tech.clegg.gradeer.checks.generation.json.StaticAnalysisCheckJSONEntry;
 import tech.clegg.gradeer.configuration.Configuration;
 import tech.clegg.gradeer.execution.staticanalysis.pmd.PMDExecutor;
 import tech.clegg.gradeer.solution.Solution;
@@ -32,11 +32,11 @@ public class PMDCheckGenerator extends CheckGenerator
         Gson gson = new Gson();
         try
         {
-            CheckJSONEntry[] checkJSONEntries =
+            StaticAnalysisCheckJSONEntry[] checkJSONEntries =
                     gson.fromJson(new FileReader(getConfiguration().getPmdChecksJSON().toFile()),
-                            CheckJSONEntry[].class);
+                            StaticAnalysisCheckJSONEntry[].class);
             // Generate checks
-            for (CheckJSONEntry j : checkJSONEntries)
+            for (StaticAnalysisCheckJSONEntry j : checkJSONEntries)
             {
                 PMDCheck pmdCheck = new PMDCheck(j);
                 addCheck(pmdCheck);

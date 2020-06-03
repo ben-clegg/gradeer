@@ -1,25 +1,29 @@
 package tech.clegg.gradeer.checks;
 
-import tech.clegg.gradeer.checks.generation.json.CheckJSONEntry;
+import tech.clegg.gradeer.checks.generation.json.StaticAnalysisCheckJSONEntry;
 import tech.clegg.gradeer.execution.staticanalysis.pmd.PMDViolation;
 import tech.clegg.gradeer.solution.Solution;
 
 import java.util.Collection;
-import java.util.Optional;
 
 public class PMDCheck extends Check
 {
 
-    private int maximumViolations = 5;
+    private int maximumViolations = 4;
     private int minimumViolations = 0;
 
-    public PMDCheck(CheckJSONEntry jsonEntry)
+    public PMDCheck(StaticAnalysisCheckJSONEntry json)
     {
         super();
-        this.name = jsonEntry.getName();
-        this.weight = jsonEntry.getWeight();
-        this.feedbackCorrect = jsonEntry.getFeedbackCorrect();
-        this.feedbackIncorrect = jsonEntry.getFeedbackIncorrect();
+        this.name = json.getName();
+        this.weight = json.getWeight();
+        this.feedbackCorrect = json.getFeedbackCorrect();
+        this.feedbackIncorrect = json.getFeedbackIncorrect();
+
+        if(json.getMaxViolations() >= 1)
+            maximumViolations = json.getMaxViolations();
+        if(json.getMinViolations() >= 0)
+            minimumViolations = json.getMinViolations();
     }
 
     @Override
