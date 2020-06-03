@@ -113,7 +113,6 @@ public class Configuration
         libDir = loadLocalOrAbsolutePath(json.libDir);
 
         unittestChecksJSON = loadLocalOrAbsolutePath(json.unittestChecksJSON);
-        testOutputDir = loadLocalOrAbsolutePath(json.testOutputDirPath);
 
         loadBuiltLibComponents();
 
@@ -136,9 +135,20 @@ public class Configuration
         pmdLocation = loadLocalOrAbsolutePath(json.pmdLocation);
 
         outputDir = Paths.get(rootDir + File.separator + "output");
+        if(json.outputDirPath != null)
+            outputDir = loadLocalOrAbsolutePath(json.outputDirPath);
 
-        mergedSolutionsDir = loadLocalOrAbsolutePath(json.mergedSolutionsDirPath);
-        checkResultsDir = loadLocalOrAbsolutePath(json.checkResultsDirPath);
+        testOutputDir = Paths.get(outputDir + File.separator + "testOutput");
+        if(json.testOutputDirPath != null)
+            testOutputDir = loadLocalOrAbsolutePath(json.testOutputDirPath);
+
+        checkResultsDir = Paths.get(outputDir + File.separator + "checkResults");
+        if(json.checkResultsDirPath != null)
+            checkResultsDir = loadLocalOrAbsolutePath(json.checkResultsDirPath);
+
+        mergedSolutionsDir = Paths.get(outputDir + File.separator + "mergedSolutions");
+        if(json.mergedSolutionsDirPath != null)
+            mergedSolutionsDir = loadLocalOrAbsolutePath(json.mergedSolutionsDirPath);
 
         manualChecksJSON = loadLocalOrAbsolutePath(json.manualChecksJSON);
         preManualJavaClassesToExecute = new ArrayList<>();
@@ -374,6 +384,7 @@ class ConfigurationJSON
     String libDir;
     int perTestSuiteTimeout = -1;
     String unittestChecksJSON;
+    String outputDirPath;
     String testOutputDirPath;
 
     String checkstyleXml;
