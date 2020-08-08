@@ -11,6 +11,7 @@ public class JavaSource
     Path javaFile;
     Path classFile;
     String fullPackage;
+    String baseName;
 
     public JavaSource(Path javaSourcePath, Path rootDir)
     {
@@ -39,12 +40,14 @@ public class JavaSource
 
     public String getClassName()
     {
-        return javaFile.getFileName().toString().replace(".java", ".class");
+        return getBaseName() + ".class";
     }
 
     public String getBaseName()
     {
-        return javaFile.getFileName().toString().replace(".java", "");
+        if(baseName == null)
+            baseName = javaFile.getFileName().toString().replace(".java", "");
+        return baseName;
     }
 
     public String getPackage()

@@ -72,4 +72,14 @@ public class Solution
     {
         return directory.getFileName().toString();
     }
+
+    public boolean isCompiled()
+    {
+        for (JavaSource s : sources)
+        {
+            if(!s.isCompiled())
+                return false;
+        }
+        return true;
+    }
 }

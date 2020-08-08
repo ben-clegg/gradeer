@@ -68,6 +68,7 @@ public class Configuration
     private String inspectionCommand;
 
     private boolean skipChecksFailingOnAnyModel = false;
+    private boolean forceRecompilation = false;
 
     private LogFile logFile;
 
@@ -158,6 +159,7 @@ public class Configuration
         inspectionCommand = json.inspectionCommand;
 
         skipChecksFailingOnAnyModel = json.skipChecksFailingOnAnyModel;
+        forceRecompilation = json.forceRecompilation;
     }
 
     private void loadBuiltLibComponents()
@@ -370,6 +372,11 @@ public class Configuration
             return false;
         return true;
     }
+
+    public boolean isForceRecompilation()
+    {
+        return forceRecompilation;
+    }
 }
 
 class ConfigurationJSON
@@ -411,6 +418,7 @@ class ConfigurationJSON
     String inspectionCommand;
 
     boolean skipChecksFailingOnAnyModel = false;
+    boolean forceRecompilation = false;
 
     public static ConfigurationJSON loadJSON(Path jsonFile) throws FileNotFoundException
     {

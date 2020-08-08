@@ -42,6 +42,12 @@ public class JavaCompiler
 
     public boolean compile(Solution solutionToCompile)
     {
+        if(!configuration.isForceRecompilation())
+        {
+            if(solutionToCompile.isCompiled())
+                return true;
+        }
+
         ClassPath cp = new ClassPath(classPath);
         cp.add(solutionToCompile.getDirectory());
 
