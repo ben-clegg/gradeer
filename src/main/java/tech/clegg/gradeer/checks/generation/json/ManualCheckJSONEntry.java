@@ -7,6 +7,7 @@ public class ManualCheckJSONEntry
     double weight;
     int maxRange;
     FeedbackEntry[] feedbackEntries;
+    boolean arbitraryFeedback = false;
 
     public String getName()
     {
@@ -31,6 +32,11 @@ public class ManualCheckJSONEntry
     public FeedbackEntry[] getFeedbackEntries()
     {
         return feedbackEntries;
+    }
+
+    public boolean isArbitraryFeedback()
+    {
+        return arbitraryFeedback;
     }
 }
 

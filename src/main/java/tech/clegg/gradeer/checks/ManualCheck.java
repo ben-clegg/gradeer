@@ -18,8 +18,10 @@ public class ManualCheck extends Check
 
     private String prompt;
     private int maxRange;
+    private boolean arbitraryFeedback;
 
     private Map<Double, String> feedbackForUnweightedScoreBounds;
+    private Map<Solution, String> arbitraryFeedbackPerSolution;
 
     public ManualCheck(ManualCheckJSONEntry jsonEntry)
     {
@@ -27,6 +29,7 @@ public class ManualCheck extends Check
         this.weight = jsonEntry.getWeight();
         this.prompt = jsonEntry.getPrompt();
         this.maxRange = jsonEntry.getMaxRange();
+        this.arbitraryFeedback = jsonEntry.isArbitraryFeedback();
 
         this.feedbackForUnweightedScoreBounds = new TreeMap<>();
         // Map feedback minimum values to the same space as unweighted scores (i.e. 0 - 1)
@@ -52,19 +55,37 @@ public class ManualCheck extends Check
         // Start check
         System.out.println("\nManual check " + name + " for Solution " + solution.getIdentifier());
         System.out.println(prompt);
-        System.out.print("Enter a value in the range 0 - " + maxRange);
-        if(maxRange == 1)
-            System.out.print(" or y(es) / n(o)");
-        System.out.println();
 
-        int inputResult = getInputResult();
-        double unweightedScore = (double) inputResult / maxRange;
-        unweightedScores.put(solution, unweightedScore);
+        // Calculate unweighted grade
+        if(weight > 0)
+        {
+            System.out.print("Enter a value in the range 0 - " + maxRange);
+            if(maxRange == 1)
+                System.out.print(" or y(es) / n(o)");
+            System.out.println();
 
-        System.out.println("Entered value [" + inputResult + "] (unweighted score of " + unweightedScore + " / 1.0)");
+            int inputResult = getNumericInputResult();
+            double unweightedScore = (double) inputResult / maxRange;
+            unweightedScores.put(solution, unweightedScore);
+            System.out.println("Entered value [" + inputResult + "] (unweighted score of " + unweightedScore + " / 1.0)");
+        }
+        else
+        {
+            // Skip if no weight for check (check disabled or ungraded)
+            unweightedScores.put(solution, 1.0);
+        }
+
+        // Determine arbitrary feedback to add (if enabled)
+        if(arbitraryFeedback)
+        {
+            System.out.println("Enter feedback:");
+            String feedback = getStringInputResult();
+            arbitraryFeedbackPerSolution.put(solution, feedback);
+        }
+
     }
 
-    private int getInputResult()
+    private String getStringInputResult()
     {
         // Get input
         Scanner scanner = new Scanner(System.in);
@@ -73,16 +94,71 @@ public class ManualCheck extends Check
         {
             System.err.println("No input provided.");
             System.err.println("Please re-enter.");
-            return getInputResult();
+            return getStringInputResult();
         }
 
         String input = scanner.next().trim();
+        scanner.close();
+
+        if(input.isEmpty())
+        {
+            System.out.println("Note: no input provided!");
+        }
+        System.out.println();
+        System.out.println("Entered input: ");
+        System.out.println(input);
+        System.out.println();
+
+        // Check that result approved
+        System.out.println("Accept? (y / n)");
+        if(!getAffirmation())
+            return getStringInputResult();
+
+        return input;
+    }
+
+    private boolean getAffirmation()
+    {
+        Scanner scanner = new Scanner(System.in);
+
+        if(!scanner.hasNext())
+        {
+            scanner.close();
+            return getAffirmation();
+        }
+
+        String input = scanner.next().trim();
+        scanner.close();
+
+        if(input.equalsIgnoreCase("y") || input.equalsIgnoreCase("yes"))
+            return true;
+        else if(input.equalsIgnoreCase("n") || input.equalsIgnoreCase("no"))
+            return false;
+
+        return getAffirmation();
+    }
+
+    private int getNumericInputResult()
+    {
+        // Get input
+        Scanner scanner = new Scanner(System.in);
+
+        if(!scanner.hasNext())
+        {
+            System.err.println("No input provided.");
+            System.err.println("Please re-enter.");
+            scanner.close();
+            return getNumericInputResult();
+        }
+
+        String input = scanner.next().trim();
+        scanner.close();
 
         if(input.isEmpty())
         {
             System.err.println("No input provided.");
             System.err.println("Please re-enter.");
-            return getInputResult();
+            return getNumericInputResult();
         }
 
 
@@ -105,21 +181,39 @@ public class ManualCheck extends Check
 
             System.err.println(inputInt + " is out of the range 0 - " + maxRange);
             System.err.println("Please re-enter.");
-            return getInputResult();
+            return getNumericInputResult();
         }
         catch (NumberFormatException numberFormatException)
         {
             System.err.println(input + " is not a valid integer");
             System.err.println("Please re-enter.");
-            return getInputResult();
+            return getNumericInputResult();
         }
     }
 
     @Override
     public String getFeedback(Solution solution)
     {
-        double score = this.getUnweightedScore(solution);
+        StringBuilder feedback = new StringBuilder();
 
+        // Tiered feedback
+        String boundedFeedback = getBoundedFeedbackForScore(getUnweightedScore(solution));
+        if(!boundedFeedback.isEmpty())
+            feedback.append(boundedFeedback);
+
+        // Arbitrary feedback
+        String arbitraryFeedback = arbitraryFeedbackPerSolution.getOrDefault(solution, "");
+        if(!arbitraryFeedback.isEmpty())
+        {
+            if(!feedback.toString().isEmpty())
+                feedback.append("\n");
+            feedback.append(arbitraryFeedback);
+        }
+        return feedback.toString();
+    }
+
+    private String getBoundedFeedbackForScore(double score)
+    {
         Iterator<Double> keysInterator = feedbackForUnweightedScoreBounds.keySet().iterator();
 
         double lastKey = -1;
