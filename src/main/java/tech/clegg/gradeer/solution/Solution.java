@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.stream.Collectors;
 
 public class Solution
@@ -21,6 +22,8 @@ public class Solution
 
     private CheckstyleProcessResults checkstyleProcessResults;
     private PMDProcessResults pmdProcessResults;
+
+    private Collection<Flag> flags = new HashSet<>();
 
     public Solution(Path locationDir)
     {
@@ -81,5 +84,10 @@ public class Solution
                 return false;
         }
         return true;
+    }
+
+    public void addFlag(Flag flag)
+    {
+        flags.add(flag);
     }
 }

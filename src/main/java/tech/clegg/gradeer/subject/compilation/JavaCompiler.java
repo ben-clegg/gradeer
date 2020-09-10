@@ -4,6 +4,7 @@ import tech.clegg.gradeer.configuration.Configuration;
 import tech.clegg.gradeer.execution.AntProcessResult;
 import tech.clegg.gradeer.execution.AntRunner;
 import tech.clegg.gradeer.results.io.FileWriter;
+import tech.clegg.gradeer.solution.Flag;
 import tech.clegg.gradeer.subject.ClassPath;
 import tech.clegg.gradeer.solution.Solution;
 import org.apache.logging.log4j.LogManager;
@@ -40,6 +41,11 @@ public class JavaCompiler
         return new JavaCompiler(cp, configuration);
     }
 
+    /**
+     * Compile a Solution
+     * @param solutionToCompile the Solution to compile
+     * @return true if the Solution compiled (or was already compiled), false if it did not
+     */
     public boolean compile(Solution solutionToCompile)
     {
         if(!configuration.isForceRecompilation())
@@ -64,6 +70,9 @@ public class JavaCompiler
             final Path uncompilableSolutionsDir = Paths.get(configuration.getOutputDir() + File.separator + "uncompilableSolutions");
             uncompilableSolutionsDir.toFile().mkdirs();
             fileWriter.write(Paths.get(uncompilableSolutionsDir + File.separator + solutionToCompile.getIdentifier()));
+
+            // Set flag for Solution
+            solutionToCompile.addFlag(Flag.UNCOMPILABLE);
         }
 
         return result.compiled();
