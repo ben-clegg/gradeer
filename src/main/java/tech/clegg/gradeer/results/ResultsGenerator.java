@@ -45,16 +45,16 @@ public class ResultsGenerator implements Runnable
     @Override
     public void run()
     {
-        for (CheckProcessor checkProcessor : checkProcessors)
+        int solutionNumber = 1;
+        for (Solution s : studentSolutions)
         {
-            int solutionNumber = 1;
-            for (Solution s : studentSolutions)
+            System.out.println("\nProcessing solution " + s.getIdentifier() +
+                    " ( " + solutionNumber + " / " + studentSolutions.size() + " ) ");
+            for (CheckProcessor checkProcessor : checkProcessors)
             {
-                System.out.println("\nProcessing solution " + s.getIdentifier() +
-                        " ( " + solutionNumber + " / " + studentSolutions.size() + " ) ");
                 checkProcessor.runChecks(s);
-                solutionNumber++;
             }
+            solutionNumber++;
         }
 
         writeSolutionsFailingAllUnitTests();
