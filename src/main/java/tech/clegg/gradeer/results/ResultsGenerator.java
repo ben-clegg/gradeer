@@ -50,10 +50,9 @@ public class ResultsGenerator implements Runnable
         {
             System.out.println("\nProcessing solution " + s.getIdentifier() +
                     " ( " + solutionNumber + " / " + studentSolutions.size() + " ) ");
-            for (CheckProcessor checkProcessor : checkProcessors)
-            {
-                checkProcessor.runChecks(s);
-            }
+
+            processSolution(s);
+
             solutionNumber++;
         }
 
@@ -63,6 +62,16 @@ public class ResultsGenerator implements Runnable
         writeGrades();
         writeFeedback();
         writeSplitResultsWithWeights();
+    }
+
+    private void processSolution(Solution solution)
+    {
+        // TODO attempt load of stored check results for solution; allow for skipping
+        for (CheckProcessor checkProcessor : checkProcessors)
+        {
+            checkProcessor.runChecks(solution);
+            // TODO store check results of solution
+        }
     }
 
     private void writeSolutionsFailingAllUnitTests()
