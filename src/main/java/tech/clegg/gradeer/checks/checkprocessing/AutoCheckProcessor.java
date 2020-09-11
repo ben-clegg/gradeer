@@ -41,7 +41,7 @@ public class AutoCheckProcessor extends CheckProcessor
         if(configuration.isMultiThreadingEnabled())
             checks.parallelStream().forEach(c -> c.run(solution));
         else
-            checks.forEach(c -> c.run(solution));
+            checks.stream().forEach(c -> c.run(solution));
 
         executedSolutions.add(solution);
     }
