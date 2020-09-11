@@ -1,7 +1,6 @@
 package tech.clegg.gradeer.results;
 
 import tech.clegg.gradeer.checks.Check;
-import tech.clegg.gradeer.checks.checkprocessing.AutoCheckProcessor;
 import tech.clegg.gradeer.checks.checkprocessing.CheckProcessor;
 import tech.clegg.gradeer.configuration.Configuration;
 import tech.clegg.gradeer.results.io.CSVWriter;
@@ -64,6 +63,14 @@ public class ResultsGenerator implements Runnable
         writeSplitResultsWithWeights();
     }
 
+    /**
+     * Process the checks for an individual Solution.
+     * If resuming is enabled (default behaviour), the method
+     * first attempts to restore stored grading state (i.e. CheckResults) from existing files for the Solution.
+     * Next executes any checks that have no existing results.
+     * Finally writes the Collection of CheckResults for the Solution to a file to allow for future restoring.
+     * @param solution the Solution to process Checks for.
+     */
     private void processSolution(Solution solution)
     {
         // TODO attempt load of stored check results for solution; allow for skipping
@@ -184,7 +191,7 @@ public class ResultsGenerator implements Runnable
         {
             for (Check c : checkProcessor.getChecks())
             {
-                String feedback = c.getFeedback(solution);
+                String feedback = c.generateFeedback(solution);
                 if(!feedback.isEmpty())
                     sb.append(feedback + "\n");
             }
@@ -255,7 +262,7 @@ public class ResultsGenerator implements Runnable
             for (Check c : allChecks)
             {
                 row.add(String.valueOf(c.getUnweightedScore(s)));
-                row.add(c.getFeedback(s));
+                row.add(c.generateFeedback(s));
             }
 
             row.add(generateFeedback(s));

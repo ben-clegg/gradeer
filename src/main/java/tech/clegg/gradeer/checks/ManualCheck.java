@@ -1,5 +1,6 @@
 package tech.clegg.gradeer.checks;
 
+import tech.clegg.gradeer.checks.checkresults.CheckResult;
 import tech.clegg.gradeer.checks.generation.json.FeedbackEntry;
 import tech.clegg.gradeer.checks.generation.json.ManualCheckJSONEntry;
 import tech.clegg.gradeer.solution.Solution;
@@ -21,7 +22,6 @@ public class ManualCheck extends Check
     private boolean arbitraryFeedback;
 
     private Map<Double, String> feedbackForUnweightedScoreBounds;
-    private Map<Solution, String> arbitraryFeedbackPerSolution;
 
     public ManualCheck(ManualCheckJSONEntry jsonEntry)
     {
@@ -57,6 +57,7 @@ public class ManualCheck extends Check
         System.out.println(prompt);
 
         // Calculate unweighted grade
+        double unweightedScore = 1.0; // Default to full score (in case no weight set)
         if(weight > 0)
         {
             System.out.print("Enter a value in the range 0 - " + maxRange);
@@ -65,24 +66,16 @@ public class ManualCheck extends Check
             System.out.println();
 
             int inputResult = getNumericInputResult();
-            double unweightedScore = (double) inputResult / maxRange;
-            unweightedScores.put(solution, unweightedScore);
-            System.out.println("Entered value [" + inputResult + "] (unweighted score of " + unweightedScore + " / 1.0)");
-        }
-        else
-        {
-            // Skip if no weight for check (check disabled or ungraded)
-            unweightedScores.put(solution, 1.0);
+            unweightedScore = (double) inputResult / maxRange;
+            System.out.println("Entered value [" + inputResult + "] " +
+                    "(unweighted score of " + unweightedScore + " / 1.0)");
         }
 
-        // Determine arbitrary feedback to add (if enabled)
-        if(arbitraryFeedback)
-        {
-            System.out.println("Enter feedback:");
-            String feedback = getStringInputResult();
-            arbitraryFeedbackPerSolution.put(solution, feedback);
-        }
+        // Determine feedback
+        String feedback = generateFeedback(unweightedScore);
 
+        // Store result
+        solution.addCheckResult(this, new CheckResult(unweightedScore, feedback));
     }
 
     private String getStringInputResult()
@@ -192,23 +185,28 @@ public class ManualCheck extends Check
     }
 
     @Override
-    public String getFeedback(Solution solution)
+    protected String generateFeedback(double unweightedScore)
     {
         StringBuilder feedback = new StringBuilder();
 
         // Tiered feedback
-        String boundedFeedback = getBoundedFeedbackForScore(getUnweightedScore(solution));
+        String boundedFeedback = getBoundedFeedbackForScore(unweightedScore);
         if(!boundedFeedback.isEmpty())
             feedback.append(boundedFeedback);
 
-        // Arbitrary feedback
-        String arbitraryFeedback = arbitraryFeedbackPerSolution.getOrDefault(solution, "");
-        if(!arbitraryFeedback.isEmpty())
+        // Determine arbitrary feedback to add (if enabled)
+        if(arbitraryFeedback)
         {
-            if(!feedback.toString().isEmpty())
-                feedback.append("\n");
-            feedback.append(arbitraryFeedback);
+            System.out.println("Enter feedback:");
+            String arbitraryFeedback = getStringInputResult();
+            if(!arbitraryFeedback.isEmpty())
+            {
+                if(!feedback.toString().isEmpty())
+                    feedback.append("\n");
+                feedback.append(arbitraryFeedback);
+            }
         }
+
         return feedback.toString();
     }
 

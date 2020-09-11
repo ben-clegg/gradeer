@@ -1,5 +1,6 @@
 package tech.clegg.gradeer.checks;
 
+import tech.clegg.gradeer.checks.checkresults.CheckResult;
 import tech.clegg.gradeer.configuration.Configuration;
 import tech.clegg.gradeer.execution.junit.TestExecutor;
 import tech.clegg.gradeer.execution.junit.TestResult;
@@ -22,7 +23,12 @@ public class TestSuiteCheck extends Check
     public void run(Solution solution)
     {
         TestResult testResult = testExecutor.execute(solution);
-        unweightedScores.put(solution, testResult.proportionPassing());
+
+        double unweightedScore = testResult.proportionPassing();
+        solution.addCheckResult(this, new CheckResult(
+                unweightedScore,
+                generateFeedback(unweightedScore)
+        ));
     }
 
     public TestSuite getTestSuite()

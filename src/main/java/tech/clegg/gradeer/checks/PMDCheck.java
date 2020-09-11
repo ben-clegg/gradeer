@@ -1,5 +1,6 @@
 package tech.clegg.gradeer.checks;
 
+import tech.clegg.gradeer.checks.checkresults.CheckResult;
 import tech.clegg.gradeer.checks.generation.json.StaticAnalysisCheckJSONEntry;
 import tech.clegg.gradeer.execution.staticanalysis.pmd.PMDViolation;
 import tech.clegg.gradeer.solution.Solution;
@@ -32,12 +33,17 @@ public class PMDCheck extends Check
         if(solution.getPmdProcessResults() == null)
             return;
 
+        // Determine grade and feedback
+        solution.addCheckResult(this, generateResult(solution));
+    }
+
+    private CheckResult generateResult(Solution solution)
+    {
         Collection<PMDViolation> violations = solution.getPmdProcessResults().getViolations(name);
 
         if(violations == null || violations.isEmpty())
         {
-            unweightedScores.put(solution, 1.0);
-            return;
+            return new CheckResult(1.0, generateFeedback(1.0));
         }
 
         int totalTrackedViolations = violations.size();
@@ -45,18 +51,15 @@ public class PMDCheck extends Check
         // Derive score from maximum & minimum violations
         if(totalTrackedViolations >= maximumViolations)
         {
-            unweightedScores.put(solution, 0.0);
-            return;
+            return new CheckResult(0.0, generateFeedback(0.0));
         }
         if(totalTrackedViolations <= minimumViolations)
         {
-            unweightedScores.put(solution, 1.0);
-            return;
+            return new CheckResult(1.0, generateFeedback(1.0));
         }
 
         totalTrackedViolations -= minimumViolations;
-        double score = 1.0 - (double) totalTrackedViolations / (maximumViolations - minimumViolations);
-        unweightedScores.put(solution, score);
-
+        double unweightedScore = 1.0 - (double) totalTrackedViolations / (maximumViolations - minimumViolations);
+        return new CheckResult(unweightedScore, generateFeedback(unweightedScore));
     }
 }

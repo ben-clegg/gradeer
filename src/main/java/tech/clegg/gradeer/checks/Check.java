@@ -1,9 +1,7 @@
 package tech.clegg.gradeer.checks;
 
+import tech.clegg.gradeer.checks.checkresults.CheckResult;
 import tech.clegg.gradeer.solution.Solution;
-
-import java.util.HashMap;
-import java.util.Map;
 
 public abstract class Check
 {
@@ -12,19 +10,7 @@ public abstract class Check
     protected String feedbackCorrect = "";
     protected String feedbackIncorrect = "";
 
-    protected Map<Solution, Double> unweightedScores = new HashMap<>();
-
     public abstract void run(Solution solution);
-
-    public double getWeightedScore(Solution solution)
-    {
-        return weight * getUnweightedScore(solution);
-    }
-
-    public double getUnweightedScore(Solution solution)
-    {
-        return unweightedScores.get(solution);
-    }
 
     public void setWeight(double weight)
     {
@@ -41,9 +27,8 @@ public abstract class Check
         return name;
     }
 
-    public String getFeedback(Solution solution)
+    protected String generateFeedback(double unweightedScore)
     {
-        double unweightedScore = this.unweightedScores.get(solution);
         if(unweightedScore < 1)
         {
             if(feedbackIncorrect.isEmpty())
@@ -63,12 +48,9 @@ public abstract class Check
 
     public void setSolutionAsFailed(Solution solution)
     {
-        unweightedScores.put(solution, 0.0);
-    }
-
-    public boolean wasSolutionExecuted(Solution solution)
-    {
-        return unweightedScores.containsKey(solution);
+        solution.addCheckResult(this, new CheckResult(
+                0.0, feedbackIncorrect
+        ));
     }
 
     @Override

@@ -1,5 +1,6 @@
 package tech.clegg.gradeer.checks;
 
+import tech.clegg.gradeer.checks.checkresults.CheckResult;
 import tech.clegg.gradeer.checks.generation.json.StaticAnalysisCheckJSONEntry;
 import tech.clegg.gradeer.solution.Solution;
 
@@ -31,13 +32,18 @@ public class CheckstyleCheck extends Check
         if(solution.getCheckstyleProcessResults() == null)
             return;
 
+        // Determine grade and feedback
+        solution.addCheckResult(this, generateResult(solution));
+    }
+
+    private CheckResult generateResult(Solution solution)
+    {
         Map<Path, Integer> violations = solution.getCheckstyleProcessResults().getViolations().get(this);
 
         // If no violations defined for this check and solution, assume it is correct
         if(violations == null || violations.isEmpty())
         {
-            unweightedScores.put(solution, 1.0);
-            return;
+            return new CheckResult(1.0, generateFeedback(1.0));
         }
 
         // Get number of violations
@@ -48,18 +54,16 @@ public class CheckstyleCheck extends Check
         // Derive score from maximum & minimum violations
         if(totalTrackedViolations >= maximumViolations)
         {
-            unweightedScores.put(solution, 0.0);
-            return;
+            return new CheckResult(0.0, generateFeedback(0.0));
         }
         if(totalTrackedViolations <= minimumViolations)
         {
-            unweightedScores.put(solution, 1.0);
-            return;
+            return new CheckResult(1.0, generateFeedback(1.0));
         }
 
         totalTrackedViolations -= minimumViolations;
-        double score = 1.0 - (double) totalTrackedViolations / (maximumViolations - minimumViolations);
-        unweightedScores.put(solution, score);
+        double unweightedScore = 1.0 - (double) totalTrackedViolations / (maximumViolations - minimumViolations);
+        return new CheckResult(unweightedScore, generateFeedback(unweightedScore));
     }
 
     @Override
