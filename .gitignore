@@ -3,3 +3,4 @@ test/resources/testEnvironment/**/*.class
 test/resources/testEnvironments/wine
 jars
 /test/resources/testEnvironments/problemSheet2/
+/test/resources/testEnvironments/fitnessAssignment/

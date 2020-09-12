@@ -59,7 +59,7 @@ public abstract class CheckProcessor
         // Doesn't fail if any unit test passes
         for (Check c : checks)
         {
-            if(c.getUnweightedScore(solution) > 0.0 && c.getClass().equals(TestSuiteCheck.class))
+            if(solution.getCheckResult(c).getUnweightedScore() > 0.0 && c.getClass().equals(TestSuiteCheck.class))
                 return false;
         }
 

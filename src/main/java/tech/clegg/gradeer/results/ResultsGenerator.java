@@ -125,7 +125,7 @@ public class ResultsGenerator implements Runnable
                             " - " +
                             c.getName() +
                             ": " +
-                            c.getWeightedScore(s) +
+                            s.calculateWeightedScore(c) +
                             " / " +
                             c.getWeight()
                     );
@@ -136,8 +136,10 @@ public class ResultsGenerator implements Runnable
         }
     }
 
+
+
     /**
-     * Creates a matrix of unweighted scores for each check on each solution
+     * Creates a matrix of unweighted scores for each check on each solution, stored as a CSV
      */
     private void writeCombinedCheckResults()
     {
@@ -158,7 +160,7 @@ public class ResultsGenerator implements Runnable
             row.add(s.getIdentifier());
             for (Check c : allChecks)
             {
-                row.add(String.valueOf(c.getUnweightedScore(s)));
+                row.add(String.valueOf(s.getCheckResult(c).getUnweightedScore()));
             }
             w.addEntry(row);
         }
@@ -176,13 +178,18 @@ public class ResultsGenerator implements Runnable
         {
             double grade = gradeGenerator.generateGrade(s);
 
-            String[] line = {s.getIdentifier(), String.valueOf(grade), "\"" + generateFeedback(s) + "\""};
+            String[] line = {s.getIdentifier(), String.valueOf(grade), generateFeedback(s)};
             gradeWriter.addEntry(Arrays.asList(line));
             logger.info("Grade Generated: " + Arrays.toString(line));
         }
         gradeWriter.write(Paths.get(configuration.getOutputDir() + File.separator + "AssignmentMarks.csv"));
     }
 
+    /**
+     * Generate the complete feedback text for a Solution.
+     * @param solution the Solution to generate the feedback text for.
+     * @return the Solution's feedback text block.
+     */
     private String generateFeedback(Solution solution)
     {
         StringBuilder sb = new StringBuilder();
@@ -191,7 +198,7 @@ public class ResultsGenerator implements Runnable
         {
             for (Check c : checkProcessor.getChecks())
             {
-                String feedback = c.generateFeedback(solution);
+                String feedback = solution.getCheckResult(c).getFeedback();
                 if(!feedback.isEmpty())
                     sb.append(feedback + "\n");
             }
@@ -261,8 +268,8 @@ public class ResultsGenerator implements Runnable
 
             for (Check c : allChecks)
             {
-                row.add(String.valueOf(c.getUnweightedScore(s)));
-                row.add(c.generateFeedback(s));
+                row.add(String.valueOf(s.getCheckResult(c).getUnweightedScore()));
+                row.add(s.getCheckResult(c).getFeedback());
             }
 
             row.add(generateFeedback(s));

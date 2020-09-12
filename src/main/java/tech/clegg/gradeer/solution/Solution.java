@@ -106,4 +106,9 @@ public class Solution
     {
         return checkResultsMap.get(check);
     }
+
+    public double calculateWeightedScore(Check check)
+    {
+        return getCheckResult(check).getUnweightedScore() * check.getWeight();
+    }
 }

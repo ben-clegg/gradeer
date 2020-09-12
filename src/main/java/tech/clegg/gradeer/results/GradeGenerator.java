@@ -40,12 +40,12 @@ public class GradeGenerator
                 checkProcessor.runChecks(solution);
 
             for (Check c : checkProcessor.getChecks())
-                logger.info("Solution " + solution.getIdentifier() + ": " + c.getName() + " " + c.getWeightedScore(solution));
+                logger.info("Solution " + solution.getIdentifier() + ": " + c.getName() + " " + solution.calculateWeightedScore(c));
         }
 
         return 100 * checkProcessors.stream()
                 .mapToDouble(cp -> cp.getChecks().stream()
-                        .mapToDouble(c -> c.getWeightedScore(solution)).sum())
+                        .mapToDouble(solution::calculateWeightedScore).sum())
                 .sum() / totalWeight;
     }
 }

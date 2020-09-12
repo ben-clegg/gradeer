@@ -42,7 +42,7 @@ public class FileWriter
 
             writer = new java.io.FileWriter(location.toString(), appendMode);
             for (String l : lines)
-                writer.append(l + "\n");
+                writer.append(l).append("\n");
             writer.close();
             // Clear lines
             lines.clear();

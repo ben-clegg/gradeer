@@ -61,7 +61,7 @@ public class PMDCheckGenerator extends CheckGenerator
             for (Solution m : getModelSolutions())
             {
                 List<Check> toRemove = getChecks().stream()
-                        .filter(c -> c.getUnweightedScore(m) == 0.0)
+                        .filter(c -> m.getCheckResult(c).getUnweightedScore() == 0.0)
                         .map(c -> (PMDCheck) c)
                         .collect(Collectors.toList());
                 reportRemovedChecks(toRemove, this.getClass().getName());
