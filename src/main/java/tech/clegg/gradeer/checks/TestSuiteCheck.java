@@ -26,6 +26,7 @@ public class TestSuiteCheck extends Check
 
         double unweightedScore = testResult.proportionPassing();
         solution.addCheckResult(this, new CheckResult(
+                this,
                 unweightedScore,
                 generateFeedback(unweightedScore)
         ));

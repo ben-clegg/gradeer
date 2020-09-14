@@ -383,6 +383,11 @@ public class Configuration
     public boolean isMultiThreadingEnabled() {
         return multiThreadingEnabled;
     }
+
+    public Path getSolutionCheckResultsStoragePath()
+    {
+        return Paths.get(getOutputDir() + File.separator + "perSolutionCheckResults");
+    }
 }
 
 class ConfigurationJSON

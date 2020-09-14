@@ -43,7 +43,7 @@ public class CheckstyleCheck extends Check
         // If no violations defined for this check and solution, assume it is correct
         if(violations == null || violations.isEmpty())
         {
-            return new CheckResult(1.0, generateFeedback(1.0));
+            return new CheckResult(this, 1.0, generateFeedback(1.0));
         }
 
         // Get number of violations
@@ -54,16 +54,16 @@ public class CheckstyleCheck extends Check
         // Derive score from maximum & minimum violations
         if(totalTrackedViolations >= maximumViolations)
         {
-            return new CheckResult(0.0, generateFeedback(0.0));
+            return new CheckResult(this, 0.0, generateFeedback(0.0));
         }
         if(totalTrackedViolations <= minimumViolations)
         {
-            return new CheckResult(1.0, generateFeedback(1.0));
+            return new CheckResult(this, 1.0, generateFeedback(1.0));
         }
 
         totalTrackedViolations -= minimumViolations;
         double unweightedScore = 1.0 - (double) totalTrackedViolations / (maximumViolations - minimumViolations);
-        return new CheckResult(unweightedScore, generateFeedback(unweightedScore));
+        return new CheckResult(this, unweightedScore, generateFeedback(unweightedScore));
     }
 
     @Override

@@ -75,7 +75,7 @@ public class ManualCheck extends Check
         String feedback = generateFeedback(unweightedScore);
 
         // Store result
-        solution.addCheckResult(this, new CheckResult(unweightedScore, feedback));
+        solution.addCheckResult(this, new CheckResult(this, unweightedScore, feedback));
     }
 
     private String getStringInputResult()

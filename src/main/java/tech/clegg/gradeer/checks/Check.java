@@ -49,7 +49,7 @@ public abstract class Check
     public void setSolutionAsFailed(Solution solution)
     {
         solution.addCheckResult(this, new CheckResult(
-                0.0, feedbackIncorrect
+                this, 0.0, feedbackIncorrect
         ));
     }
 
@@ -60,5 +60,13 @@ public abstract class Check
                 "weight=" + weight +
                 ", name='" + name +
                 '}';
+    }
+
+    public String identifier()
+    {
+        return this.getClass().getSimpleName() + "_" +
+                getName() + "_" +
+                feedbackCorrect.hashCode() + "_" +
+                feedbackIncorrect.hashCode();
     }
 }

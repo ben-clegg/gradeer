@@ -73,11 +73,14 @@ public class ResultsGenerator implements Runnable
      */
     private void processSolution(Solution solution)
     {
-        // TODO attempt load of stored check results for solution; allow for skipping
+        GradeResultsStorage gradeResultsStorage = new GradeResultsStorage(configuration);
+
+        // TODO Attempt load of stored check results for solution; allow for skipping
         for (CheckProcessor checkProcessor : checkProcessors)
         {
             checkProcessor.runChecks(solution);
-            // TODO store check results of solution
+            // Store check results of solution
+            gradeResultsStorage.store(solution);
         }
     }
 

@@ -111,4 +111,9 @@ public class Solution
     {
         return getCheckResult(check).getUnweightedScore() * check.getWeight();
     }
+
+    public Collection<CheckResult> getAllCheckResults()
+    {
+        return checkResultsMap.values();
+    }
 }
