@@ -2,6 +2,7 @@ package tech.clegg.gradeer.checks;
 
 import tech.clegg.gradeer.checks.checkresults.CheckResult;
 import tech.clegg.gradeer.checks.generation.json.StaticAnalysisCheckJSONEntry;
+import tech.clegg.gradeer.solution.Flag;
 import tech.clegg.gradeer.solution.Solution;
 
 import java.nio.file.Path;
@@ -27,13 +28,19 @@ public class CheckstyleCheck extends Check
     }
 
     @Override
-    public void run(Solution solution)
+    public void execute(Solution solution)
     {
         if(solution.getCheckstyleProcessResults() == null)
+        {
+            System.err.println("No CheckStyle process results for Solution " + solution.getIdentifier());
+            solution.addFlag(Flag.NO_CHECKSTYLE_RESULTS);
+            double score = 0.0;
+            solution.addCheckResult(new CheckResult(this, score, generateFeedback(score)));
             return;
+        }
 
         // Determine grade and feedback
-        solution.addCheckResult(this, generateResult(solution));
+        solution.addCheckResult(generateResult(solution));
     }
 
     private CheckResult generateResult(Solution solution)

@@ -3,6 +3,8 @@ package tech.clegg.gradeer.checks;
 import tech.clegg.gradeer.checks.checkresults.CheckResult;
 import tech.clegg.gradeer.solution.Solution;
 
+import java.util.Objects;
+
 public abstract class Check
 {
     protected double weight = 1.0;
@@ -10,7 +12,14 @@ public abstract class Check
     protected String feedbackCorrect = "";
     protected String feedbackIncorrect = "";
 
-    public abstract void run(Solution solution);
+    protected abstract void execute(Solution solution);
+
+    public void run(Solution solution)
+    {
+        // Skip if CheckResult exists for the Solution for this Check
+        if(!solution.hasCheckResult(this))
+            execute(solution);
+    }
 
     public void setWeight(double weight)
     {
@@ -48,7 +57,7 @@ public abstract class Check
 
     public void setSolutionAsFailed(Solution solution)
     {
-        solution.addCheckResult(this, new CheckResult(
+        solution.addCheckResult(new CheckResult(
                 this, 0.0, feedbackIncorrect
         ));
     }
@@ -68,5 +77,23 @@ public abstract class Check
                 getName() + "_" +
                 feedbackCorrect.hashCode() + "_" +
                 feedbackIncorrect.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object o)
+    {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Check check = (Check) o;
+        return Double.compare(check.getWeight(), getWeight()) == 0 &&
+                getName().equals(check.getName()) &&
+                Objects.equals(feedbackCorrect, check.feedbackCorrect) &&
+                Objects.equals(feedbackIncorrect, check.feedbackIncorrect);
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return Objects.hash(getWeight(), getName(), feedbackCorrect, feedbackIncorrect);
     }
 }

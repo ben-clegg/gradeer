@@ -41,7 +41,7 @@ public class ManualCheck extends Check
     }
 
     @Override
-    public void run(Solution solution)
+    public void execute(Solution solution)
     {
         // Force clear past input to prevent state infection
         try
@@ -75,7 +75,7 @@ public class ManualCheck extends Check
         String feedback = generateFeedback(unweightedScore);
 
         // Store result
-        solution.addCheckResult(this, new CheckResult(this, unweightedScore, feedback));
+        solution.addCheckResult(new CheckResult(this, unweightedScore, feedback));
     }
 
     private String getStringInputResult()

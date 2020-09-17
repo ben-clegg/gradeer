@@ -20,12 +20,12 @@ public class TestSuiteCheck extends Check
     }
 
     @Override
-    public void run(Solution solution)
+    public void execute(Solution solution)
     {
         TestResult testResult = testExecutor.execute(solution);
 
         double unweightedScore = testResult.proportionPassing();
-        solution.addCheckResult(this, new CheckResult(
+        solution.addCheckResult(new CheckResult(
                 this,
                 unweightedScore,
                 generateFeedback(unweightedScore)

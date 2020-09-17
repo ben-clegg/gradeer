@@ -97,9 +97,14 @@ public class Solution
         flags.add(flag);
     }
 
-    public void addCheckResult(Check check, CheckResult result)
+    public void addCheckResult(CheckResult result)
     {
-        checkResultsMap.put(check, result);
+        checkResultsMap.put(result.getCheck(), result);
+    }
+
+    public void addAllCheckResults(Collection<CheckResult> checkResults)
+    {
+        checkResults.forEach(this::addCheckResult);
     }
 
     public CheckResult getCheckResult(Check check)
@@ -110,6 +115,11 @@ public class Solution
     public double calculateWeightedScore(Check check)
     {
         return getCheckResult(check).getUnweightedScore() * check.getWeight();
+    }
+
+    public boolean hasCheckResult(Check check)
+    {
+        return checkResultsMap.containsKey(check);
     }
 
     public Collection<CheckResult> getAllCheckResults()

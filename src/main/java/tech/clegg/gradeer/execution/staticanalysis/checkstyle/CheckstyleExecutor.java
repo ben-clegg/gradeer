@@ -32,7 +32,7 @@ public class CheckstyleExecutor
         // Update check results for this solution
         solution.setCheckstyleProcessResults(checkstyleProcess.getResults());
         for (CheckstyleCheck c : checkstyleChecks)
-            c.run(solution);
+            c.execute(solution);
     }
 
     public Collection<CheckstyleCheck> getCheckstyleChecks()

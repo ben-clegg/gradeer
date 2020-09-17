@@ -2,6 +2,7 @@ package tech.clegg.gradeer.checks.checkprocessing;
 
 import tech.clegg.gradeer.checks.Check;
 import tech.clegg.gradeer.checks.TestSuiteCheck;
+import tech.clegg.gradeer.checks.checkresults.CheckResult;
 import tech.clegg.gradeer.configuration.Configuration;
 import tech.clegg.gradeer.solution.Solution;
 
@@ -50,6 +51,11 @@ public abstract class CheckProcessor
         return sorted;
     }
 
+    /**
+     * Determine if a Solution fails every single defined unit test
+     * @param solution the Solution to evaluate
+     * @return true if solution does not pass a single unit test, false otherwise
+     */
     public boolean failsAllUnitTests(Solution solution)
     {
         // Only fails if TestSuiteChecks are present
@@ -59,7 +65,15 @@ public abstract class CheckProcessor
         // Doesn't fail if any unit test passes
         for (Check c : checks)
         {
-            if(solution.getCheckResult(c).getUnweightedScore() > 0.0 && c.getClass().equals(TestSuiteCheck.class))
+            // Skip if not a unit test
+            if(!c.getClass().equals(TestSuiteCheck.class))
+                continue;
+
+            CheckResult checkResult = solution.getCheckResult(c);
+            if(checkResult == null)
+                continue;
+
+            if(checkResult.getUnweightedScore() > 0.0)
                 return false;
         }
 

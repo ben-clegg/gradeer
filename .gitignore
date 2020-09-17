@@ -5,3 +5,4 @@ jars
 /test/resources/testEnvironments/problemSheet2
 /test/resources/testEnvironments/problemSheet2/**/*
 /test/resources/testEnvironments/fitnessAssignment/
+/test/resources/testEnvironments/**/*.tar.gz
