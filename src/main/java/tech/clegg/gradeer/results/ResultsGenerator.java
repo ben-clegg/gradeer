@@ -76,7 +76,8 @@ public class ResultsGenerator implements Runnable
         CheckResultsStorage checkResultsStorage = new CheckResultsStorage(configuration);
 
         // Attempt load of stored CheckResults for solution; allow for skipping
-        checkResultsStorage.recoverCheckResults(solution, checkProcessors);
+        if(configuration.isCheckResultRecoveryEnabled())
+            checkResultsStorage.recoverCheckResults(solution, checkProcessors);
 
         // Run Checks for solution
         for (CheckProcessor checkProcessor : checkProcessors)

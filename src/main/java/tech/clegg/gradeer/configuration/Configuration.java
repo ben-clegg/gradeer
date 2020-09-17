@@ -70,6 +70,7 @@ public class Configuration
     private boolean skipChecksFailingOnAnyModel = false;
     private boolean forceRecompilation = false;
     private boolean multiThreadingEnabled = true;
+    private boolean checkResultRecoveryEnabled = true;
 
     private LogFile logFile;
 
@@ -162,6 +163,7 @@ public class Configuration
         skipChecksFailingOnAnyModel = json.skipChecksFailingOnAnyModel;
         forceRecompilation = json.forceRecompilation;
         multiThreadingEnabled = json.multiThreadingEnabled;
+        checkResultRecoveryEnabled = json.checkResultRecoveryEnabled;
     }
 
     private void loadBuiltLibComponents()
@@ -388,6 +390,11 @@ public class Configuration
     {
         return Paths.get(getOutputDir() + File.separator + "perSolutionCheckResults");
     }
+
+    public boolean isCheckResultRecoveryEnabled()
+    {
+        return checkResultRecoveryEnabled;
+    }
 }
 
 class ConfigurationJSON
@@ -431,6 +438,7 @@ class ConfigurationJSON
     boolean skipChecksFailingOnAnyModel = false;
     boolean forceRecompilation = false;
     boolean multiThreadingEnabled = true;
+    boolean checkResultRecoveryEnabled = true;
 
     public static ConfigurationJSON loadJSON(Path jsonFile) throws FileNotFoundException
     {
