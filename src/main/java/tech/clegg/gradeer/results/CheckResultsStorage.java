@@ -100,8 +100,8 @@ public class CheckResultsStorage
             // Match each check to each available CheckResultEntry; construct CheckResults
             Collection<CheckResult> checkResults = matchedCheckResults(getAllChecks(checkProcessors), entries);
 
-            // Populate Solution with matched CheckResults
-            solution.addAllCheckResults(checkResults);
+            // Populate Solution with matched CheckResults; don't overwrite existing entries
+            solution.addAllCheckResults(checkResults, false);
             System.out.println("Sucessfully recovered " + checkResults.size() +
                     " Check results for Solution " + solution.getIdentifier());
 

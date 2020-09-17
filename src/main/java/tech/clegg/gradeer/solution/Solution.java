@@ -102,9 +102,18 @@ public class Solution
         checkResultsMap.put(result.getCheck(), result);
     }
 
-    public void addAllCheckResults(Collection<CheckResult> checkResults)
+    public void addAllCheckResults(Collection<CheckResult> checkResults, boolean overwrite)
     {
-        checkResults.forEach(this::addCheckResult);
+        if (overwrite)
+            checkResults.forEach(this::addCheckResult);
+        else
+        {
+            for (CheckResult checkResult : checkResults)
+            {
+                if (!this.checkResultsMap.containsKey(checkResult.getCheck()))
+                    addCheckResult(checkResult);
+            }
+        }
     }
 
     public CheckResult getCheckResult(Check check)
