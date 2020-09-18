@@ -61,6 +61,10 @@ public class ResultsGenerator implements Runnable
         writeGrades();
         writeFeedback();
         writeSplitResultsWithWeights();
+
+        // Write summary of solution flags
+        SolutionFlagWriter solutionFlagWriter = new SolutionFlagWriter(configuration);
+        solutionFlagWriter.write(studentSolutions);
     }
 
     /**

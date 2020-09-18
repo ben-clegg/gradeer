@@ -97,6 +97,11 @@ public class Solution
         flags.add(flag);
     }
 
+    public Collection<Flag> getFlags()
+    {
+        return flags;
+    }
+
     public void addCheckResult(CheckResult result)
     {
         checkResultsMap.put(result.getCheck(), result);
