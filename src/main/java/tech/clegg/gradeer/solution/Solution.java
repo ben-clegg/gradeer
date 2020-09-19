@@ -47,6 +47,35 @@ public class Solution
         }
     }
 
+    public void checkForMissingSources(Collection<String> complexClassNames)
+    {
+        if (complexClassNames == null || complexClassNames.isEmpty())
+            return;
+
+        Collection<String> presentClasses = sources.stream()
+                .map(JavaSource::getComplexClassName)
+                .collect(Collectors.toSet());
+
+        Collection<String> missing = new HashSet<>();
+
+        for (String c : complexClassNames)
+        {
+            if(!presentClasses.contains(c))
+            {
+                missing.add(c);
+            }
+        }
+
+        if(!missing.isEmpty())
+        {
+            addFlag(Flag.MISSING_CLASS);
+            System.err.println("Solution " + getIdentifier() + " has missing required class(es):");
+            System.err.println(missing);
+            System.err.println("\n");
+        }
+
+    }
+
     public void setCheckstyleProcessResults(CheckstyleProcessResults checkstyleProcessResults)
     {
         this.checkstyleProcessResults = checkstyleProcessResults;

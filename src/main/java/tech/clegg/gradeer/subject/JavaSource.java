@@ -55,6 +55,11 @@ public class JavaSource
         return fullPackage;
     }
 
+    public String getComplexClassName()
+    {
+        return getPackage() + "." + getBaseName();
+    }
+
 
     @Override
     public boolean equals(Object o)

@@ -94,7 +94,11 @@ public class Gradeer
             Files.newDirectoryStream(solutionsRootDir).forEach(
                     p -> {
                         if(Files.isDirectory(p))
-                            solutions.add(new Solution(p));
+                        {
+                            Solution s = new Solution(p);
+                            s.checkForMissingSources(getConfiguration().getRequiredClasses());
+                            solutions.add(s);
+                        }
                     });
         }
         catch (IOException ioEx)

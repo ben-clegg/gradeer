@@ -72,6 +72,8 @@ public class Configuration
     private boolean multiThreadingEnabled = true;
     private boolean checkResultRecoveryEnabled = true;
 
+    private Collection<String> requiredClasses = new HashSet<>();
+
     private LogFile logFile;
 
 
@@ -164,6 +166,18 @@ public class Configuration
         forceRecompilation = json.forceRecompilation;
         multiThreadingEnabled = json.multiThreadingEnabled;
         checkResultRecoveryEnabled = json.checkResultRecoveryEnabled;
+
+        loadRequiredClasses(json);
+    }
+
+    private void loadRequiredClasses(ConfigurationJSON json)
+    {
+        String[] classStrings = json.requiredClasses;
+
+        if(classStrings == null)
+            return;
+
+        requiredClasses.addAll(Arrays.asList(classStrings));
     }
 
     private void loadBuiltLibComponents()
@@ -395,6 +409,11 @@ public class Configuration
     {
         return checkResultRecoveryEnabled;
     }
+
+    public Collection<String> getRequiredClasses()
+    {
+        return requiredClasses;
+    }
 }
 
 class ConfigurationJSON
@@ -439,6 +458,8 @@ class ConfigurationJSON
     boolean forceRecompilation = false;
     boolean multiThreadingEnabled = true;
     boolean checkResultRecoveryEnabled = true;
+
+    String[] requiredClasses;
 
     public static ConfigurationJSON loadJSON(Path jsonFile) throws FileNotFoundException
     {
