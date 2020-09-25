@@ -1,6 +1,7 @@
 package tech.clegg.gradeer.configuration;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import tech.clegg.gradeer.execution.java.ClassExecutionTemplate;
@@ -11,6 +12,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class Configuration
 {
@@ -75,6 +77,9 @@ public class Configuration
     private Collection<String> requiredClasses = new HashSet<>();
 
     private LogFile logFile;
+
+    private Collection<String> includeSolutions;
+    private Collection<String> excludeSolutions;
 
 
     public Configuration(Path jsonFile)
@@ -168,6 +173,18 @@ public class Configuration
         checkResultRecoveryEnabled = json.checkResultRecoveryEnabled;
 
         loadRequiredClasses(json);
+
+        includeSolutions = loadJsonStringArray(json.includeSolutions);
+        excludeSolutions = loadJsonStringArray(json.excludeSolutions);
+    }
+
+    private Collection<String> loadJsonStringArray(String[] jsonStringArray)
+    {
+        if(jsonStringArray == null || jsonStringArray.length < 1)
+            return Collections.emptyList();
+
+        return Arrays.asList(jsonStringArray);
+
     }
 
     private void loadRequiredClasses(ConfigurationJSON json)
@@ -414,6 +431,16 @@ public class Configuration
     {
         return requiredClasses;
     }
+
+    public Collection<String> getIncludeSolutions()
+    {
+        return includeSolutions;
+    }
+
+    public Collection<String> getExcludeSolutions()
+    {
+        return excludeSolutions;
+    }
 }
 
 class ConfigurationJSON
@@ -460,6 +487,9 @@ class ConfigurationJSON
     boolean checkResultRecoveryEnabled = true;
 
     String[] requiredClasses;
+
+    String[] includeSolutions;
+    String[] excludeSolutions;
 
     public static ConfigurationJSON loadJSON(Path jsonFile) throws FileNotFoundException
     {

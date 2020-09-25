@@ -18,10 +18,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class Gradeer
@@ -126,6 +123,25 @@ public class Gradeer
     private void loadStudentSolutions()
     {
         studentSolutions = loadSolutions(configuration.getStudentSolutionsDir());
+        System.out.println(studentSolutions.size() + " students' solutions loaded.");
+
+        // Filter solutions
+        // Include
+        if(!configuration.getIncludeSolutions().isEmpty())
+        {
+            studentSolutions = studentSolutions.stream()
+                    .filter(s -> configuration.getIncludeSolutions().contains(s.getIdentifier()))
+                    .collect(Collectors.toSet());
+        }
+        // Exclude
+        if(!configuration.getExcludeSolutions().isEmpty())
+        {
+            studentSolutions = studentSolutions.stream()
+                    .filter(s -> !configuration.getExcludeSolutions().contains(s.getIdentifier()))
+                    .collect(Collectors.toSet());
+        }
+        System.out.println(studentSolutions.size() + " students' solutions present after filtering.");
+
     }
 
     private void loadModelSolutions()
