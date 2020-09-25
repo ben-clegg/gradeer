@@ -44,6 +44,7 @@ public class ResultsGenerator implements Runnable
     @Override
     public void run()
     {
+        configuration.getTimer().split("Completed initialisation stage.");
         int solutionNumber = 1;
         for (Solution s : studentSolutions)
         {

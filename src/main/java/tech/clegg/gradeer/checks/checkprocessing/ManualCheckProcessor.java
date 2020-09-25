@@ -49,6 +49,9 @@ public class ManualCheckProcessor extends CheckProcessor
 
         // Check for restart
         restart(solution);
+
+        // Write timer split
+        configuration.getTimer().split("Completed manual checks for Solution " + solution.getIdentifier());
     }
 
     private void restart(Solution solution)

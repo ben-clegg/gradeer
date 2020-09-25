@@ -44,6 +44,7 @@ public class AutoCheckProcessor extends CheckProcessor
             checks.stream().forEach(c -> c.run(solution));
 
         executedSolutions.add(solution);
+        configuration.getTimer().split("Completed auto checks for Solution " + solution.getIdentifier());
     }
 
     private void runCheckstyle(Solution solution)

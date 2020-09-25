@@ -6,6 +6,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import tech.clegg.gradeer.execution.java.ClassExecutionTemplate;
 import tech.clegg.gradeer.results.io.LogFile;
+import tech.clegg.gradeer.timing.TimerService;
 
 import java.io.*;
 import java.nio.file.Files;
@@ -17,6 +18,9 @@ import java.util.stream.Collectors;
 public class Configuration
 {
     private static Logger logger = LogManager.getLogger(Configuration.class);
+
+    private LogFile logFile;
+    private TimerService timer;
 
     private Path rootDir;
     private Path studentSolutionsDir;
@@ -76,8 +80,6 @@ public class Configuration
 
     private Collection<String> requiredClasses = new HashSet<>();
 
-    private LogFile logFile;
-
     private Collection<String> includeSolutions;
     private Collection<String> excludeSolutions;
 
@@ -93,6 +95,8 @@ public class Configuration
 
             // Setup log file
             logFile = new LogFile(Paths.get(outputDir + File.separator + "logOutput.log"));
+            // Timer
+            timer = new TimerService(Paths.get(outputDir + File.separator + "timer.csv"));
         }
         catch (IOException ioEx)
         {
@@ -242,6 +246,11 @@ public class Configuration
     public Path getRootDir()
     {
         return rootDir;
+    }
+
+    public TimerService getTimer()
+    {
+        return timer;
     }
 
     public Path getStudentSolutionsDir()

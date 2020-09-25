@@ -47,6 +47,7 @@ public class Gradeer
         resultsGenerator.run();
 
         System.out.println("Completed grading for config " + configJSON.getFileName());
+        config.getTimer().end();
     }
 
     public Gradeer(Configuration config)
@@ -64,6 +65,7 @@ public class Gradeer
     {
         loadModelSolutions();
         loadStudentSolutions();
+        configuration.getTimer().split("Finished solution loading.");
     }
 
     public ResultsGenerator startEnvironment()
