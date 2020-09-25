@@ -13,6 +13,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Scanner;
 
 public class ManualCheckProcessor extends CheckProcessor
 {
@@ -43,6 +44,74 @@ public class ManualCheckProcessor extends CheckProcessor
 
         // Stop running classes
         classExec.stopExecutions();
+
+        System.out.println("Completed manual checks for Solution " + solution.getIdentifier());
+
+        // Check for restart
+        restart(solution);
+    }
+
+    private void restart(Solution solution)
+    {
+        final boolean CHECK_CONFIRM = false;
+
+
+        // Check if should restart
+        System.out.println("Restart manual checks for Solution " + solution.getIdentifier() + "?");
+        System.out.println("(Y)es / (N)o");
+        boolean restart = promptResponse();
+
+        // Confirm
+        boolean confirmed = true;
+        if(CHECK_CONFIRM)
+        {
+            System.out.println("Are you sure?");
+            System.out.println("(Y)es / (N)o");
+            confirmed = promptResponse();
+        }
+        if(!confirmed)
+            restart(solution);
+
+        // Perform restart
+        else if(restart)
+        {
+            // Clear existing manual check results for solution
+            solution.clearChecks(checks);
+            // Re-run checks
+            runChecks(solution);
+        }
+
+    }
+
+    private boolean promptResponse()
+    {
+        // Get input
+        Scanner scanner = new Scanner(System.in);
+
+        if(!scanner.hasNext())
+        {
+            System.err.println("No input provided!");
+            System.err.println("Please re-enter.");
+            return promptResponse();
+        }
+
+        String input = scanner.next().trim().toLowerCase();
+
+        if(input.isEmpty())
+        {
+            System.out.println("No input provided!");
+            System.err.println("Please re-enter.");
+            return promptResponse();
+        }
+
+        if(input.equals("n") || input.equals("no"))
+            return false;
+        if(input.equals("y") || input.equals("yes"))
+            return true;
+
+        System.out.println("Invalid input!");
+        System.err.println("Please re-enter.");
+        return promptResponse();
     }
 
 

@@ -91,7 +91,6 @@ public class ManualCheck extends Check
         }
 
         String input = scanner.next().trim();
-        scanner.close();
 
         if(input.isEmpty())
         {
@@ -116,12 +115,10 @@ public class ManualCheck extends Check
 
         if(!scanner.hasNext())
         {
-            scanner.close();
             return getAffirmation();
         }
 
         String input = scanner.next().trim();
-        scanner.close();
 
         if(input.equalsIgnoreCase("y") || input.equalsIgnoreCase("yes"))
             return true;
@@ -140,12 +137,10 @@ public class ManualCheck extends Check
         {
             System.err.println("No input provided.");
             System.err.println("Please re-enter.");
-            scanner.close();
             return getNumericInputResult();
         }
 
         String input = scanner.next().trim();
-        scanner.close();
 
         if(input.isEmpty())
         {

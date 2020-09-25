@@ -44,11 +44,11 @@ public class SinglePrintingAntRunner extends AntRunner
             stdErr = new BufferedReader(new InputStreamReader(process.getErrorStream()));
 
             String stdOutLine;
-            while ((stdOutLine = stdOut.readLine()) != null)
+            while (stdOut.ready() && (stdOutLine = stdOut.readLine()) != null)
                 System.out.println("[StdOut] " + stdOutLine);
 
             String stdErrLine;
-            while ((stdErrLine = stdErr.readLine()) != null)
+            while (stdErr.ready() && (stdErrLine = stdErr.readLine()) != null)
                 System.err.println("[StdErr] " + stdErrLine);
 
         }

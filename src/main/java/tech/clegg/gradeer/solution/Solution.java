@@ -169,4 +169,10 @@ public class Solution
     {
         return checkResultsMap.values();
     }
+
+    public void clearChecks(Collection<Check> checks)
+    {
+        for (Check c : checks)
+            this.checkResultsMap.remove(c);
+    }
 }
