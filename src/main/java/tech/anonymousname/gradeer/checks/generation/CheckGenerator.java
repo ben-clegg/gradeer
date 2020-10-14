@@ -3,7 +3,6 @@ package tech.anonymousname.gradeer.checks.generation;
 import com.google.gson.*;
 import com.google.gson.stream.JsonReader;
 import tech.anonymousname.gradeer.checks.Check;
-import tech.anonymousname.gradeer.checks.exceptions.InvalidCheckException;
 import tech.anonymousname.gradeer.configuration.Configuration;
 import tech.anonymousname.gradeer.results.io.FileWriter;
 import tech.anonymousname.gradeer.solution.Solution;
@@ -53,14 +52,20 @@ public class CheckGenerator
 
         for (JsonElement e : jsonElements)
         {
-            System.out.println(e.toString());
             try
             {
                 // Get target Check class with reflection
+                JsonElement typeEntry = e.getAsJsonObject().get("type");
+                if (typeEntry == null)
+                {
+                    System.err.println("No type defined for Check entry " + e.toString());
+                    continue;
+                }
+
                 Class<Check> clazz = (Class<Check>) Class.forName(Check.class.getPackage().getName() + "." + e.getAsJsonObject().get("type").getAsString());
-                System.out.println(clazz.toString());
+
                 Check c = clazz.getConstructor(JsonObject.class, Configuration.class).newInstance(e.getAsJsonObject(), configuration);
-                System.out.println(c.toString());
+
                 checks.add(c);
 
             } catch (ClassNotFoundException | NoSuchMethodException ex)
@@ -78,8 +83,6 @@ public class CheckGenerator
             }
         }
 
-        for (Check c : checks)
-            System.out.println(c);
     }
 
     protected Configuration getConfiguration()

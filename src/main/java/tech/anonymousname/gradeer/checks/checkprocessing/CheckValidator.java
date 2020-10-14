@@ -2,6 +2,7 @@
 
 import tech.anonymousname.gradeer.checks.Check;
 import tech.anonymousname.gradeer.checks.CheckstyleCheck;
+import tech.anonymousname.gradeer.checks.ManualCheck;
 import tech.anonymousname.gradeer.configuration.Configuration;
 import tech.anonymousname.gradeer.results.io.FileWriter;
 import tech.anonymousname.gradeer.solution.Solution;
@@ -14,8 +15,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.stream.Collectors;
 
-public class CheckValidator
+    public class CheckValidator
 {
     private final Collection<Solution> modelSolutions;
     private final Configuration configuration;
@@ -32,13 +34,21 @@ public class CheckValidator
         Collection<Check> checkPool = new ArrayList<>(checks);
         Collection<Check> validChecks = new HashSet<>();
 
+        // Manual Checks are a special case ; skipped
+        Collection<Check> manualChecks = checks.stream()
+                .filter(c -> c.getClass().equals(ManualCheck.class))
+                .collect(Collectors.toSet());
+        validChecks.addAll(manualChecks);
+        checkPool.removeAll(manualChecks);
+
         // Find checks that do not achieve a score of 1.0 on any model solution
         for (Solution m : modelSolutions)
         {
             Collection<Check> toRemove = new ArrayList<>();
+            CheckProcessor checkProcessor = new CheckProcessor(checkPool, configuration);
+            checkProcessor.runChecks(m);
             for(Check c : checkPool)
             {
-                c.run(m);
                 // Any non-perfect score is an invalid check
                 if (m.getCheckResult(c).getUnweightedScore() < 1.0)
                 {

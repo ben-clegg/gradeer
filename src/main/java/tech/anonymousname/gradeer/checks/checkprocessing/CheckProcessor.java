@@ -1,16 +1,20 @@
 package tech.anonymousname.gradeer.checks.checkprocessing;
 
 import com.puppycrawl.tools.checkstyle.api.CheckstyleException;
-import tech.anonymousname.gradeer.checks.Check;
-import tech.anonymousname.gradeer.checks.PMDCheck;
+import tech.anonymousname.gradeer.auxiliaryprocesses.InspectionCommandProcess;
+import tech.anonymousname.gradeer.auxiliaryprocesses.MergedSolutionWriter;
+import tech.anonymousname.gradeer.checks.*;
 import tech.anonymousname.gradeer.checks.checkresults.CheckResult;
-import tech.anonymousname.gradeer.checks.CheckstyleCheck;
-import tech.anonymousname.gradeer.checks.TestSuiteCheck;
 import tech.anonymousname.gradeer.configuration.Configuration;
+import tech.anonymousname.gradeer.execution.java.JavaClassBatchExecutor;
 import tech.anonymousname.gradeer.execution.staticanalysis.checkstyle.CheckstyleExecutor;
 import tech.anonymousname.gradeer.execution.staticanalysis.pmd.PMDExecutor;
 import tech.anonymousname.gradeer.solution.Solution;
 
+import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -59,7 +63,7 @@ public class CheckProcessor
     public boolean failsAllUnitTests(Solution solution)
     {
         // Only fails if TestSuiteChecks are present
-        if(checks.stream().noneMatch(c -> c.getClass().equals(TestSuiteCheck.class)))
+        if(!checkTypeIsPresent(TestSuiteCheck.class))
             return false;
 
         // Doesn't fail if any unit test passes
@@ -99,30 +103,63 @@ public class CheckProcessor
         }
 
         // Run PMD on student solutions
-        if(checks.stream().anyMatch(c -> c.getClass().equals(PMDCheck.class)))
+        if(checkTypeIsPresent(PMDCheck.class))
         {
             PMDExecutor pmdExecutor = new PMDExecutor(configuration);
             pmdExecutor.execute(solution);
         }
 
         // Run Checkstyle on student solutions if present
-        if(checks.stream().anyMatch(c -> c.getClass().equals(CheckstyleCheck.class)))
+        if(checkTypeIsPresent(CheckstyleCheck.class))
             runCheckstyle(solution);
 
-        // Execute checks
+
+        // Execute non-manual checks
         if(configuration.isMultiThreadingEnabled())
         {
             // Split concurrent compatible and incompatible checks; run separately
             // Concurrent
-            checks.parallelStream().filter(Check::isConcurrentCompatible).forEach(c -> c.run(solution));
-            // Single Thread
-            checks.stream().filter(c -> !c.isConcurrentCompatible()).forEach(c -> c.run(solution));
+            checks.parallelStream()
+                    .filter(c -> !c.getClass().equals(ManualCheck.class))
+                    .filter(Check::isConcurrentCompatible)
+                    .forEach(c -> c.run(solution));
+
+            // Single Thread - non-manual
+            checks.stream()
+                    .filter(c -> !c.getClass().equals(ManualCheck.class))
+                    .filter(c -> !c.isConcurrentCompatible())
+                    .forEach(c -> c.run(solution));
         }
         else
-            checks.stream().forEach(c -> c.run(solution));
+            checks.stream()
+                    .filter(c -> !c.getClass().equals(ManualCheck.class))
+                    .forEach(c -> c.run(solution));
+
+
+        // Run Manual checks - special case
+        if(checkTypeIsPresent(ManualCheck.class))
+        {
+            // Run each of the defined ClassExecutionTemplates
+            JavaClassBatchExecutor classExec = generateClassExecutor(solution);
+            classExec.runClasses();
+
+            // Run inspection command (e.g. vscode)
+            runInspectionCommand(solution);
+
+            // Run manual checks
+            checks.stream()
+                    .filter(c -> c.getClass().equals(ManualCheck.class))
+                    .forEach(c -> c.run(solution));
+
+            // Stop running classes
+            classExec.stopExecutions();
+
+            // Restart ManualChecks if selected
+            restartManualChecks(solution);
+        }
 
         executedSolutions.add(solution);
-        configuration.getTimer().split("Completed auto checks for Solution " + solution.getIdentifier());
+        configuration.getTimer().split("Completed checks for Solution " + solution.getIdentifier());
     }
 
     // TODO move to preprocessor
@@ -147,7 +184,105 @@ public class CheckProcessor
             for (CheckstyleCheck c : checkstyleExecutor.getCheckstyleChecks())
                 c.setSolutionAsFailed(solution);
         }
+    }
 
+    private boolean checkTypeIsPresent(Class<? extends Check> checkType)
+    {
+        return checks.stream().anyMatch(c -> c.getClass().equals(checkType));
+    }
+
+    private void restartManualChecks(Solution solution)
+    {
+        final boolean CHECK_CONFIRM = false;
+
+
+        // Check if should restart
+        System.out.println("Restart manual checks for Solution " + solution.getIdentifier() + "?");
+        System.out.println("(Y)es / (N)o");
+        boolean restart = promptResponse();
+
+        // Confirm
+        boolean confirmed = true;
+        if(CHECK_CONFIRM)
+        {
+            System.out.println("Are you sure?");
+            System.out.println("(Y)es / (N)o");
+            confirmed = promptResponse();
+        }
+        if(!confirmed)
+            restartManualChecks(solution);
+
+        // Perform restart
+        else if(restart)
+        {
+            Collection<Check> manualChecks = checks.stream()
+                    .filter(c -> c.getClass().equals(ManualCheck.class))
+                    .collect(Collectors.toSet());
+            // Clear existing manual check results for solution
+            solution.clearChecks(manualChecks);
+            // Re-run checks
+            runChecks(solution);
+        }
+
+    }
+
+    private boolean promptResponse()
+    {
+        // Get input
+        Scanner scanner = new Scanner(System.in);
+
+        if(!scanner.hasNext())
+        {
+            System.err.println("No input provided!");
+            System.err.println("Please re-enter.");
+            return promptResponse();
+        }
+
+        String input = scanner.next().trim().toLowerCase();
+
+        if(input.isEmpty())
+        {
+            System.out.println("No input provided!");
+            System.err.println("Please re-enter.");
+            return promptResponse();
+        }
+
+        if(input.equals("n") || input.equals("no"))
+            return false;
+        if(input.equals("y") || input.equals("yes"))
+            return true;
+
+        System.out.println("Invalid input!");
+        System.err.println("Please re-enter.");
+        return promptResponse();
+    }
+
+    private JavaClassBatchExecutor generateClassExecutor(Solution solution)
+    {
+        return new JavaClassBatchExecutor(solution, configuration);
+    }
+
+    private void runInspectionCommand(Solution solution)
+    {
+        if(configuration.getInspectionCommand() == null)
+            return;
+        if(configuration.getInspectionCommand().isEmpty())
+            return;
+
+        if(!checkTypeIsPresent(ManualCheck.class))
+            return;
+
+        Collection<Path> toInspect = new ArrayList<>();
+
+        // TODO find a more elegant solution for this
+        // method inside corresponding classes?
+
+        if(Files.exists(configuration.getTestOutputDir()))
+            toInspect.add(Paths.get(configuration.getTestOutputDir() + File.separator + solution.getIdentifier()));
+        if(Files.exists(configuration.getMergedSolutionsDir()))
+            toInspect.add(Paths.get(configuration.getMergedSolutionsDir() + File.separator + solution.getIdentifier() + ".java"));
+
+        new InspectionCommandProcess(configuration, toInspect).run();
     }
 
 }

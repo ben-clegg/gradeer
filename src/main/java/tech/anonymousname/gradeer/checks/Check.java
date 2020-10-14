@@ -31,6 +31,7 @@ public abstract class Check
     {
         this.configuration = configuration;
 
+        // Load name
         try
         {
             // Purposefully unsafe; names are required and have no default
@@ -41,6 +42,7 @@ public abstract class Check
             throw new InvalidCheckException("No name defined for Check " + jsonObject.getAsString() + " , skipping.");
         }
 
+        // Load weight
         this.weight = getElementOrDefault(jsonObject, "weight", JsonElement::getAsDouble, weight);
 
         // Load Feedback

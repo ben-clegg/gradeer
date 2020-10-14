@@ -1,5 +1,6 @@
 package tech.anonymousname.gradeer;
 
+import tech.anonymousname.gradeer.auxiliaryprocesses.MergedSolutionWriter;
 import tech.anonymousname.gradeer.checks.Check;
 import tech.anonymousname.gradeer.checks.TestSuiteCheck;
 import tech.anonymousname.gradeer.checks.checkprocessing.CheckProcessor;
@@ -169,6 +170,10 @@ public class Gradeer
         });
         // Remove solutions that cannot be compiled to prevent further processing.
         solutions.removeAll(uncompilableSolutions);
+
+        // Merge the source files of each Solution if enabled
+        if(configuration.getMergedSolutionsDir() != null)
+            new MergedSolutionWriter(configuration, solutions).run();
 
         return solutions;
     }
