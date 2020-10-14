@@ -1,4 +1,4 @@
-package tech.anonymousname.gradeer.misc;
+package tech.anonymousname.gradeer.error;
 
 public enum ErrorCode
 {

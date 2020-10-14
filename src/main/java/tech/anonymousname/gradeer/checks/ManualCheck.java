@@ -1,28 +1,43 @@
 package tech.anonymousname.gradeer.checks;
 
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import tech.anonymousname.gradeer.checks.checkresults.CheckResult;
 import tech.anonymousname.gradeer.checks.exceptions.InvalidCheckException;
+import tech.anonymousname.gradeer.configuration.Configuration;
 import tech.anonymousname.gradeer.solution.Solution;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
+import java.util.NoSuchElementException;
 import java.util.Scanner;
 
 public class ManualCheck extends Check
 {
     private static Logger logger = LogManager.getLogger(ManualCheck.class);
 
-    String prompt;
-    int maxRange;
-    boolean arbitraryFeedback;
+    private String prompt;
+    private int maxRange = 1;
+    private boolean arbitraryFeedback = false;
 
-
-    public ManualCheck(JsonObject jsonObject) throws InvalidCheckException
+    public ManualCheck(JsonObject jsonObject, Configuration configuration) throws InvalidCheckException
     {
-        super(jsonObject);
-        // TODO implement
+        super(jsonObject, configuration);
+        concurrentCompatible = false;
+
+        try
+        {
+            this.prompt = getOptionalElement(jsonObject, "prompt").get().getAsString();
+        } catch (NoSuchElementException noElem)
+        {
+            throw new InvalidCheckException("ManualCheck " + getName() + " requires a prompt to be used.");
+        }
+
+
+        this.maxRange = getElementOrDefault(jsonObject, "maxRange", JsonElement::getAsInt, maxRange);
+        this.arbitraryFeedback = getElementOrDefault(jsonObject, "arbitraryFeedback",
+                JsonElement::getAsBoolean, arbitraryFeedback);
     }
 
 

@@ -7,6 +7,7 @@ import com.google.gson.JsonSyntaxException;
 import tech.anonymousname.gradeer.checks.checkresults.CheckResult;
 import tech.anonymousname.gradeer.checks.exceptions.InvalidCheckException;
 import tech.anonymousname.gradeer.checks.generation.FeedbackEntry;
+import tech.anonymousname.gradeer.configuration.Configuration;
 import tech.anonymousname.gradeer.solution.Solution;
 
 import java.util.*;
@@ -14,12 +15,22 @@ import java.util.function.Function;
 
 public abstract class Check
 {
+    protected boolean concurrentCompatible = true;
+    private final Configuration configuration;
     protected String name;
     protected double weight = 1.0;
     protected Map<Double, String> feedbackForUnweightedScoreBounds = new TreeMap<>();
 
-    public Check(JsonObject jsonObject) throws InvalidCheckException
+    protected Check(String name, Configuration configuration)
     {
+        this.name = name;
+        this.configuration = configuration;
+    }
+
+    public Check(JsonObject jsonObject, Configuration configuration) throws InvalidCheckException
+    {
+        this.configuration = configuration;
+
         // TODO replace name loading with a custom exception for invalid Checks
         try
         {
@@ -90,6 +101,11 @@ public abstract class Check
         this.weight = weight;
     }
 
+    protected Configuration getConfiguration()
+    {
+        return configuration;
+    }
+
     public double getWeight()
     {
         return weight;
@@ -98,6 +114,11 @@ public abstract class Check
     public String getName()
     {
         return name;
+    }
+
+    public boolean isConcurrentCompatible()
+    {
+        return concurrentCompatible;
     }
 
     protected String generateFeedback(double unweightedScore)
@@ -131,6 +152,11 @@ public abstract class Check
         solution.addCheckResult(new CheckResult(
                 this, 0.0, generateFeedback(0.0)
         ));
+    }
+
+    protected CheckResult generateCheckResult(double unweightedScore)
+    {
+        return new CheckResult(this, unweightedScore, generateFeedback(unweightedScore));
     }
 
     @Override

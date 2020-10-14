@@ -24,6 +24,7 @@ public class Configuration
     private Path studentSolutionsDir;
     private Path modelSolutionsDir;
     private Path testsDir;
+    private boolean autoGenerateTestSuiteChecks = true;
 
     private Collection<Path> checkJSONs;
 
@@ -69,6 +70,7 @@ public class Configuration
 
     private Collection<String> includeSolutions;
     private Collection<String> excludeSolutions;
+    private boolean removeInvalidChecks;
 
 
     public Configuration(Path jsonFile)
@@ -106,6 +108,7 @@ public class Configuration
         modelSolutionsDir = loadLocalOrAbsolutePath(json.modelSolutionsDirPath);
 
         testsDir = loadLocalOrAbsolutePath(json.testsDirPath);
+        autoGenerateTestSuiteChecks = json.autoGenerateTestSuiteChecks;
 
         runtimeDependenciesDir = loadLocalOrAbsolutePath(json.runtimeDependenciesDirPath);
         testDependenciesDir = loadLocalOrAbsolutePath(json.testDependenciesDirPath);
@@ -161,6 +164,8 @@ public class Configuration
 
         includeSolutions = loadJsonStringArray(json.includeSolutions);
         excludeSolutions = loadJsonStringArray(json.excludeSolutions);
+
+        removeInvalidChecks = json.removeInvalidChecks;
     }
 
     private Collection<String> loadJsonStringArray(String[] jsonStringArray)
@@ -252,6 +257,11 @@ public class Configuration
     public Path getTestsDir()
     {
         return testsDir;
+    }
+
+    public boolean isAutoGenerateTestSuiteChecks()
+    {
+        return autoGenerateTestSuiteChecks;
     }
 
     public Path getTestDependenciesDir()
@@ -381,6 +391,11 @@ public class Configuration
     {
         return excludeSolutions;
     }
+
+    public boolean isRemoveInvalidChecks()
+    {
+        return removeInvalidChecks;
+    }
 }
 
 class ConfigurationJSON
@@ -389,6 +404,7 @@ class ConfigurationJSON
     String studentSolutionsDirPath;
     String modelSolutionsDirPath;
     String testsDirPath;
+    boolean autoGenerateTestSuiteChecks = true;
     String runtimeDependenciesDirPath;
     String testDependenciesDirPath;
     String sourceDependenciesDirPath;
@@ -419,6 +435,7 @@ class ConfigurationJSON
 
     String[] includeSolutions;
     String[] excludeSolutions;
+    boolean removeInvalidChecks = true;
 
     public static ConfigurationJSON loadJSON(Path jsonFile) throws FileNotFoundException
     {

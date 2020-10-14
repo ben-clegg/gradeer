@@ -59,7 +59,7 @@ public class CheckGenerator
                 // Get target Check class with reflection
                 Class<Check> clazz = (Class<Check>) Class.forName(Check.class.getPackage().getName() + "." + e.getAsJsonObject().get("type").getAsString());
                 System.out.println(clazz.toString());
-                Check c = clazz.getConstructor(JsonObject.class).newInstance(e.getAsJsonObject());
+                Check c = clazz.getConstructor(JsonObject.class, Configuration.class).newInstance(e.getAsJsonObject(), configuration);
                 System.out.println(c.toString());
                 checks.add(c);
 

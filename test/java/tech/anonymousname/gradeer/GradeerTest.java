@@ -16,7 +16,7 @@ class GradeerTest
     {
         assertFalse(gradeer.getStudentSolutions().isEmpty());
         assertFalse(gradeer.getModelSolutions().isEmpty());
-        assertFalse(gradeer.getEnabledTestSuites().isEmpty());
+        assertTrue(gradeer.getEnabledTestSuites().isEmpty());
     }
 
     @Test
@@ -28,6 +28,8 @@ class GradeerTest
     @Test
     void testSourcesCompiled()
     {
+        gradeer.startEnvironment();
+
         // Model solutions
         gradeer.getModelSolutions().forEach(m -> m.getSources().forEach(src -> Assertions.assertTrue(src.isCompiled())));
         // Unit tests

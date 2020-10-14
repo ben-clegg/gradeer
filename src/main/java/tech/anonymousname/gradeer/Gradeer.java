@@ -2,13 +2,16 @@ package tech.anonymousname.gradeer;
 
 import tech.anonymousname.gradeer.checks.Check;
 import tech.anonymousname.gradeer.checks.TestSuiteCheck;
+import tech.anonymousname.gradeer.checks.checkprocessing.CheckProcessor;
+import tech.anonymousname.gradeer.checks.checkprocessing.CheckValidator;
 import tech.anonymousname.gradeer.checks.generation.CheckGenerator;
 import tech.anonymousname.gradeer.configuration.Configuration;
 import tech.anonymousname.gradeer.configuration.Environment;
 import tech.anonymousname.gradeer.execution.junit.TestSuite;
+import tech.anonymousname.gradeer.execution.junit.TestSuiteLoader;
 import tech.anonymousname.gradeer.results.ResultsGenerator;
 import tech.anonymousname.gradeer.subject.compilation.JavaCompiler;
-import tech.anonymousname.gradeer.misc.ErrorCode;
+import tech.anonymousname.gradeer.error.ErrorCode;
 import tech.anonymousname.gradeer.solution.Solution;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -71,15 +74,65 @@ public class Gradeer
     {
         ResultsGenerator resultsGenerator = new ResultsGenerator(studentSolutions, configuration);
 
-        // TODO Load checks from JSON
+        //  Load checks from JSON
         CheckGenerator checkGenerator = new CheckGenerator(configuration, modelSolutions);
+        checks = checkGenerator.getChecks();
+        // For TestSuiteChecks, load TestSuites
+        loadTests(checks);
 
-        // TODO For TestSuiteChecks, add specific TestExecutors and TestSuites
+        // Report & remove Checks that fail on a model solution
+        CheckValidator checkValidator = new CheckValidator(modelSolutions, configuration);
+        checks = checkValidator.filterValidChecks(checks);
 
-        // TODO Add CheckProcessor for checks to results generator
-        // TODO Report & remove Checks that fail on a model solution
+        // Add CheckProcessor for Checks to ResultsGenerator
+        CheckProcessor checkProcessor = new CheckProcessor(checks, configuration);
+        resultsGenerator.addCheckProcessor(checkProcessor);
 
         return resultsGenerator;
+    }
+
+    private void loadTests(Collection<Check> checks)
+    {
+        // Get existing TestSuiteChecks to attach TestSuites to
+        Collection<TestSuiteCheck> testSuiteChecks = checks.stream()
+                .filter(c -> c.getClass().equals(TestSuiteCheck.class))
+                .map(c -> (TestSuiteCheck)c)
+                .collect(Collectors.toList());
+
+        // Load and compile tests
+        Collection<TestSuite> testSuites = new TestSuiteLoader(getConfiguration().getTestsDir()).getTestSuites();
+        System.out.println("Compiling " + testSuites.size() + " unit tests...");
+        JavaCompiler compiler = JavaCompiler.createCompiler(getConfiguration());
+        if(getModelSolutions().size() < 1)
+            logger.error("No compiled model solutions available.");
+        Solution modelSolution = new ArrayList<>(getModelSolutions()).get(0);
+        if (getConfiguration().getTestDependenciesDir() != null &&
+                Files.exists(getConfiguration().getTestDependenciesDir()))
+        {
+            logger.info("Compiling test dependencies at " + getConfiguration().getTestDependenciesDir());
+            compiler.compileDir(getConfiguration().getTestDependenciesDir(), modelSolution);
+        }
+        compiler.compileTests(modelSolution);
+
+        // Link compiled TestSuites to TestSuiteChecks
+        for (TestSuiteCheck c : testSuiteChecks)
+            c.loadTestSuite(testSuites);
+
+
+        // Create default checks for unlinked TestSuites if enabled
+        if(configuration.isAutoGenerateTestSuiteChecks())
+        {
+            Collection<TestSuite> unlinkedSuites = new HashSet<>(testSuites);
+            unlinkedSuites.removeAll(
+                    testSuiteChecks.stream()
+                    .map(TestSuiteCheck::getTestSuite)
+                    .filter(Objects::nonNull)
+                    .collect(Collectors.toSet())
+            );
+
+            for (TestSuite t : unlinkedSuites)
+                checks.add(new TestSuiteCheck(t, configuration));
+        }
     }
 
 

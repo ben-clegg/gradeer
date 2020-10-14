@@ -4,6 +4,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import tech.anonymousname.gradeer.checks.checkresults.CheckResult;
 import tech.anonymousname.gradeer.checks.exceptions.InvalidCheckException;
+import tech.anonymousname.gradeer.configuration.Configuration;
 import tech.anonymousname.gradeer.solution.Flag;
 import tech.anonymousname.gradeer.solution.Solution;
 
@@ -15,9 +16,9 @@ public class CheckstyleCheck extends Check
     int minimumViolations = 0;
     int maximumViolations = 4;
 
-    public CheckstyleCheck(JsonObject jsonObject) throws InvalidCheckException
+    public CheckstyleCheck(JsonObject jsonObject, Configuration configuration) throws InvalidCheckException
     {
-        super(jsonObject);
+        super(jsonObject, configuration);
         this.minimumViolations = getElementOrDefault(jsonObject, "minimumViolations",
                 JsonElement::getAsInt, minimumViolations);
         this.maximumViolations = getElementOrDefault(jsonObject, "maximumViolations",

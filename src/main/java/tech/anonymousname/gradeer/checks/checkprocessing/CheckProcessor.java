@@ -14,7 +14,7 @@ import tech.anonymousname.gradeer.solution.Solution;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public abstract class CheckProcessor
+public class CheckProcessor
 {
     final Collection<Check> checks;
     final Configuration configuration;
@@ -111,7 +111,13 @@ public abstract class CheckProcessor
 
         // Execute checks
         if(configuration.isMultiThreadingEnabled())
-            checks.parallelStream().forEach(c -> c.run(solution));
+        {
+            // Split concurrent compatible and incompatible checks; run separately
+            // Concurrent
+            checks.parallelStream().filter(Check::isConcurrentCompatible).forEach(c -> c.run(solution));
+            // Single Thread
+            checks.stream().filter(c -> !c.isConcurrentCompatible()).forEach(c -> c.run(solution));
+        }
         else
             checks.stream().forEach(c -> c.run(solution));
 
