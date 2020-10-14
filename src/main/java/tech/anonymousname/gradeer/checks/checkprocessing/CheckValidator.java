@@ -3,8 +3,13 @@
 import tech.anonymousname.gradeer.checks.Check;
 import tech.anonymousname.gradeer.checks.CheckstyleCheck;
 import tech.anonymousname.gradeer.configuration.Configuration;
+import tech.anonymousname.gradeer.results.io.FileWriter;
 import tech.anonymousname.gradeer.solution.Solution;
 
+import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -53,6 +58,9 @@ public class CheckValidator
             validChecks.add(c);
         }
 
+        // Report invalid checks
+        writeCheckIssuesReport(checkIssues);
+
         // Only return valid checks
         if(configuration.isRemoveInvalidChecks())
         {
@@ -60,5 +68,18 @@ public class CheckValidator
         }
         // Only report invalid checks and not remove them
         return checks;
+    }
+
+    private void writeCheckIssuesReport(Collection<String> checkIssues)
+    {
+        FileWriter fileWriter = new FileWriter();
+        for (String s : checkIssues)
+            fileWriter.addLine(s);
+
+        final Path reportLoc = Paths.get(configuration.getOutputDir() + File.separator + "reportedCheckIssues.log");
+
+        if(Files.notExists(reportLoc))
+            reportLoc.getParent().toFile().mkdirs();
+        fileWriter.write(reportLoc);
     }
 }
