@@ -31,7 +31,6 @@ public abstract class Check
     {
         this.configuration = configuration;
 
-        // TODO replace name loading with a custom exception for invalid Checks
         try
         {
             // Purposefully unsafe; names are required and have no default

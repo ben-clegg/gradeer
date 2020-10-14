@@ -223,14 +223,11 @@ public class ResultsGenerator implements Runnable
 
     private void writeFeedback()
     {
-        // TODO implement
-
         for (Solution s : studentSolutions)
         {
             FileWriter file = new FileWriter();
             file.addLine(generateFeedback(s));
             file.write(Paths.get(configuration.getOutputDir() + File.separator + "feedback" + File.separator + s.getIdentifier() + "_feedback.txt"));
-
         }
     }
 
