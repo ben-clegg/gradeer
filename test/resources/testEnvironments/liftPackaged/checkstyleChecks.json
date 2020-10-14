@@ -1,27 +1,40 @@
 [
   {
+    "type": "CheckstyleCheck",
     "name": "LineLength",
-    "feedbackCorrect": "Some of your lines of code are too wide (over 100 characters).",
-    "weight": 1.0
+    "weight": 1.0,
+    "feedbackValues": [
+      {"score": 0.0, "feedback":  "Some of your lines of code are too wide (over 100 characters)."},
+      {"score": 1.0, "feedback":  "Your lines of code are the correct width."}
+    ]
   },
   {
+    "type": "CheckstyleCheck",
     "name": "Indentation",
-    "feedbackCorrect": "Your code is not always indented correctly.",
-    "weight": 1.0
+    "weight": 1.0,
+    "feedbackValues": [
+      {"score": 0.0, "feedback":  "Your code is not always indented correctly."},
+      {"score": 1.0, "feedback":  "Your code is indented correctly."}
+    ]
   },
   {
+    "type": "CheckstyleCheck",
     "name": "TypeName",
-    "feedbackCorrect": "Class names use correct CamelCase.",
-    "feedbackIncorrect": "One or more class names not in CamelCase.",
-    "weight": 1.0
+    "weight": 1.0,
+    "feedbackValues": [
+      {"score": 0.0, "feedback":  "One or more class names not in CamelCase."},
+      {"score": 1.0, "feedback":  "Class names use correct CamelCase."}
+    ]
   },
   {
+    "type": "CheckstyleCheck",
     "name": "MemberName",
     "feedbackCorrect": "Class member (object) names use correct camelCase.",
     "feedbackIncorrect": "One or more class member (object) names not in camelCase.",
     "weight": 1.0
   },
   {
+    "type": "CheckstyleCheck",
     "name": "MethodName",
     "feedbackCorrect": "Method names use correct camelCase.",
     "feedbackIncorrect": "One or more method names not in camelCase.",

@@ -1,10 +1,16 @@
 [
   {
+    "type": "PMDCheck",
     "name": "SystemPrintln",
     "weight": 0.0
   },
   {
+    "type": "PMDCheck",
     "name": "AvoidReassigningParameters",
-    "weight": 1.0
+    "weight": 1.0,
+    "feedbackValues": [
+      {"score": 0.0, "feedback":  "Your methods sometimes re-assign parameters. This harms readability."},
+      {"score": 1.0, "feedback":  "Your methods do not re-assign parameters."}
+    ]
   }
 ]
