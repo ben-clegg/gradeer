@@ -131,7 +131,7 @@
                             <archive>
                                 <manifest>
                                     <mainClass>
-                                        tech.anonymousname.gradeer.Gradeer
+                                        tech.clegg.gradeer.Gradeer
                                     </mainClass>
                                 </manifest>
                             </archive>
