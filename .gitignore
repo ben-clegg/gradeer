@@ -2,3 +2,5 @@ target
 test/resources/testEnvironment/**/*.class
 jars
 /test/resources/testEnvironments/**/*.tar.gz
+
+test/resources/testEnvironment/*/output/**/*
