@@ -10,15 +10,6 @@
   },
   {
     "type": "CheckstyleCheck",
-    "name": "Indentation",
-    "weight": 1.0,
-    "feedbackValues": [
-      {"score": 0.0, "feedback":  "Your code is not always indented correctly."},
-      {"score": 1.0, "feedback":  "Your code is indented correctly."}
-    ]
-  },
-  {
-    "type": "CheckstyleCheck",
     "name": "TypeName",
     "weight": 1.0,
     "feedbackValues": [

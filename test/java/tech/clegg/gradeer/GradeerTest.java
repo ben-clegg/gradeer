@@ -1,8 +1,14 @@
 package tech.clegg.gradeer;
 
+import tech.clegg.gradeer.checks.Check;
+import tech.clegg.gradeer.checks.CheckstyleCheck;
+import tech.clegg.gradeer.checks.PMDCheck;
+import tech.clegg.gradeer.checks.TestSuiteCheck;
 import tech.clegg.gradeer.configuration.Configuration;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+
+import java.util.Collection;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -38,5 +44,17 @@ class GradeerTest
                 .forEach(t -> Assertions.assertTrue(t.isCompiled()));
         // Student solutions
         gradeer.getStudentSolutions().forEach(s -> s.getSources().forEach(src -> Assertions.assertTrue(src.isCompiled())));
+    }
+
+    @Test
+    void testChecksPassOnModel()
+    {
+        gradeer.startEnvironment();
+
+        Collection<Check> checks = gradeer.getChecks();
+
+        assertEquals(3, checks.stream().filter(c -> c.getClass().equals(TestSuiteCheck.class)).count());
+        assertEquals(4, checks.stream().filter(c -> c.getClass().equals(CheckstyleCheck.class)).count());
+        assertEquals(4, checks.stream().filter(c -> c.getClass().equals(PMDCheck.class)).count());
     }
 }

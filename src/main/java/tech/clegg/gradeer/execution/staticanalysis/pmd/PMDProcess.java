@@ -9,6 +9,7 @@ package tech.clegg.gradeer.execution.staticanalysis.pmd;
         import java.io.File;
         import java.io.IOException;
         import java.nio.file.Files;
+        import java.nio.file.Path;
         import java.nio.file.Paths;
         import java.util.*;
 
@@ -16,11 +17,15 @@ public class PMDProcess implements Runnable
 {
     private static final Logger logger = LogManager.getLogger(PMDProcess.class);
 
+    private static final String ENV_VAR = "GRADEER_PMD_LOCATION";
+    private static final Path PMD_LOCATION = loadPmdLocationEnvVar();
+
     private final Solution solution;
     private final String ruleSetNames;
     private final Configuration configuration;
 
     private PMDProcessResults results;
+
 
     public PMDProcess(Solution solution, List<String> ruleSetNames, Configuration configuration)
     {
@@ -43,7 +48,13 @@ public class PMDProcess implements Runnable
         ClassPath cp = new ClassPath();
         try
         {
-            Files.list(Paths.get(configuration.getPmdLocation().toAbsolutePath().toString() +
+            if (PMD_LOCATION == null)
+            {
+                System.err.println("PMD location environment variable (" + ENV_VAR + ") not defined, skipping...");
+                return;
+            }
+
+            Files.list(Paths.get(PMD_LOCATION.toAbsolutePath().toString() +
                     File.separator + "lib"))
                     .forEach(cp::add);
         } catch (IOException e)
@@ -75,5 +86,12 @@ public class PMDProcess implements Runnable
     public PMDProcessResults getResults()
     {
         return results;
+    }
+
+    private static Path loadPmdLocationEnvVar()
+    {
+        if(System.getenv(ENV_VAR) != null && !System.getenv(ENV_VAR).isEmpty())
+            return Paths.get(System.getenv(ENV_VAR));
+        return null;
     }
 }

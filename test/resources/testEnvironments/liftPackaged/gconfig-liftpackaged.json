@@ -6,6 +6,5 @@
   "checkJSONs": ["unittestChecks.json", "checkstyleChecks.json", "pmdChecks.json"],
   "perTestSuiteTimeout": 120,
   "checkstyleXml": "checkstyle.xml",
-  "pmdLocation": "/home/bclegg/Software/pmd-bin-6.22.0",
   "mergedSolutionsDir": "mergedSolutions"
 }

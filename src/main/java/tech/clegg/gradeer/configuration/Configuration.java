@@ -42,7 +42,6 @@ public class Configuration
     private Path checkstyleXml;
     private List<ClassExecutionTemplate> preManualJavaClassesToExecute;
 
-    private Path pmdLocation;
     private String[] pmdRulesets = {
             "category/java/bestpractices.xml",
             "category/java/codestyle.xml",
@@ -130,8 +129,6 @@ public class Configuration
             pmdRulesets = json.pmdRulesets;
 
         checkstyleXml = loadLocalOrAbsolutePath(json.checkstyleXml);
-
-        pmdLocation = loadLocalOrAbsolutePath(json.pmdLocation);
 
         outputDir = Paths.get(rootDir + File.separator + "output");
         if(json.outputDirPath != null)
@@ -309,11 +306,6 @@ public class Configuration
         return testOutputDir;
     }
 
-    public Path getPmdLocation()
-    {
-        return pmdLocation;
-    }
-
     public Path getOutputDir()
     {
         return outputDir;
@@ -416,8 +408,6 @@ class ConfigurationJSON
 
     String checkstyleXml;
     String[] pmdRulesets;
-
-    String pmdLocation;
 
     String checkResultsDirPath;
 
