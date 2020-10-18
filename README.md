@@ -20,7 +20,7 @@ Ant can be installed by `sudo apt install maven` on Ubuntu.
 Gradeer uses [Apache Ant](https://ant.apache.org/) to compile and execute Java solutions. We have tested Gradeer with Ant 1.10.5.
 Ant can be installed by `sudo apt install ant` on Ubuntu.
 
-Ensure that you set the `ANT_HOME` environment variable to the location of your installed ant binary, e.g. `/usr/share/ant/bin/ant`.
+Ensure that you set the `ANT_EXECUTABLE` environment variable to the location of your installed ant binary, e.g. `/usr/share/ant/bin/ant`.
 
 #### PMD
 
@@ -56,9 +56,33 @@ This repository provides an example environment, called "liftPackaged." While st
 This example environment can be executed from the root of the repository by:
 
 ```shell script
-java -jar 
+java -jar target/gradeer-0.98b-jar-with-dependencies.jar src/test/resources/testEnvironments/liftPackaged/gconfig-liftpackaged.json
 ```
 
+Gradeer performs the following in the execution environment:
+- Load checks, model solution, and "students'" solutions.
+- Compile model and "students'" solutions.
+- Run checks on model solution to identify and remove faulty checks (TestSuiteCheck_TestDummyB and TestSuiteCheck_TestDummyC are faulty). These are reported in the environment's `output` directory.
+- Run remaining checks on "students'" solutions.
+- Store grades and feedback in the environment's `output` directory.
+
+### build.xml
+The working directory where Gradeer is executed from (the repository's root directory in the above example) must contain build.xml.
+This file directs Ant in compiling and executing solutions and tests.
+This file can be modified to support different test configurations (e.g. JDK versions).
+
+## Configuration
+
+### Structure
+
+When making a grading environment for Gradeer, it should be contained within its own directory. This should be structured similarly to the example environment, present in `src/test/resources/testEnvironments/liftPackaged`.
+
+### Main Config File
+
+The main configuration file is a .json file, which defines Gradeer's execution parameters. The following is an explanation of the example environment's configuration, `gconfig-liftpackaged.json`:
+```json
+
+```
 
 
 ## Acknowledgements 
