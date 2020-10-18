@@ -147,6 +147,12 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>2.22.2</version>
+                <configuration>
+                    <excludes>
+                        <exclude>**/testEnvironments/**/*.java</exclude>
+                        <exclude>**/testEnvironments/**/*.class</exclude>
+                    </excludes>
+                </configuration>
             </plugin>
 
         </plugins>
