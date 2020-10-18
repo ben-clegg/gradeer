@@ -82,7 +82,7 @@ When making a grading environment for Gradeer, it should be contained within its
 The main configuration file is a JSON file, which defines Gradeer's execution parameters. 
 Any path-based parameters can be defined in an absolute manner, or (preferably) relatively to this JSON file.
 The following is an explanation of the example environment's configuration, `gconfig-liftpackaged.json`:
-```json
+```
 {
   // Location of students' solutions
   "studentSolutionsDirPath": "studentSolutions",
