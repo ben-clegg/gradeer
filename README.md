@@ -79,11 +79,80 @@ When making a grading environment for Gradeer, it should be contained within its
 
 ### Main Config File
 
-The main configuration file is a .json file, which defines Gradeer's execution parameters. The following is an explanation of the example environment's configuration, `gconfig-liftpackaged.json`:
+The main configuration file is a JSON file, which defines Gradeer's execution parameters. 
+Any path-based parameters can be defined in an absolute manner, or (preferably) relatively to this JSON file.
+The following is an explanation of the example environment's configuration, `gconfig-liftpackaged.json`:
 ```json
-
+{
+  // Location of students' solutions
+  "studentSolutionsDirPath": "studentSolutions",
+  // Location of known correct model solution(s)
+  "modelSolutionsDirPath": "modelSolutions",
+  // Location of test suites
+  "testsDirPath": "testSuites",
+  // Locations of check definition JSON files. Files can contain different types of checks, but it may be beneficial to group them.
+  "checkJSONs": ["unittestChecks.json", "checkstyleChecks.json", "pmdChecks.json"],
+  // Time budget for each test suite to execute. Tests are assumed to fail otherwise.
+  "perTestSuiteTimeout": 120,
+  // Location of checkstyle rule definitions
+  "checkstyleXml": "checkstyle.xml"
+}
 ```
 
+### Checks
+
+Checks can be defined across multiple JSON files, each containing an array of one or more check definitions.
+Each check requires a name and a check type. Other parameters can also be defined, such as weights and feedback.
+For example, the following would define a check for each currently implemented type of check:
+```json
+[
+  {
+    "type": "CheckstyleCheck",
+    "name": "MethodName",
+    "feedbackValues": [
+      {"score": 0.0, "feedback":  "One or more method names not in camelCase."},
+      {"score": 1.0, "feedback":  "Method names use correct camelCase."}
+    ]
+  },
+  {
+    "type": "PMDCheck",
+    "name": "EmptyIfStmt",
+    "weight": 0.5,
+    "feedbackValues": [
+      {"score": 1.0, "feedback": ""},
+      {"score": 0.0, "feedback": "Your code contains empty if statements. This should be avoided as it reduces readability."}
+    ],
+    "maxViolations": 2
+  },
+  {
+    "type": "TestSuiteCheck",
+    "name": "TestLiftA",
+    "weight": 8.0,
+    "feedbackValues": [
+      {"score": 0.0, "feedback":  "TestLiftA Incorrect"},
+      {"score": 1.0, "feedback":  "TestLiftA Correct"}
+    ]
+  },
+  {
+    "type": "ManualCheck",
+    "name": "Error Reporting",
+    "prompt": "Quality of error reporting?",
+    "weight": 4.0,
+    "maxRange": 10,
+    "feedbackValues": [
+      {"score": 0.9, "feedback": "Excellent error reporting"},
+      {"score": 0.7, "feedback": "Good error reporting"},
+      {"score": 0.5, "feedback": "Average error reporting"},
+      {"score": 0.0, "feedback": "Poor error reporting"}
+    ]
+  }
+]
+```
+
+When executed, each check calculates a normalized score between 0 (complete failure) and 1 (perfect pass).
+These scores are used to determine which band of feedback to provide, as defined by `"feedbackValues"`.
+
+When calculating the final grade of a solution, the score of each check is multiplied by its weight, then the sum of these values is divided by the sum of checks' weights. 
 
 ## Acknowledgements 
 

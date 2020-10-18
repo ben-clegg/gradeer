@@ -20,15 +20,17 @@
   {
     "type": "CheckstyleCheck",
     "name": "MemberName",
-    "feedbackCorrect": "Class member (object) names use correct camelCase.",
-    "feedbackIncorrect": "One or more class member (object) names not in camelCase.",
-    "weight": 1.0
+    "feedbackValues": [
+      {"score": 0.0, "feedback":  "One or more class member (object) names not in camelCase."},
+      {"score": 1.0, "feedback":  "Class member (object) names use correct camelCase."}
+    ]
   },
   {
     "type": "CheckstyleCheck",
     "name": "MethodName",
-    "feedbackCorrect": "Method names use correct camelCase.",
-    "feedbackIncorrect": "One or more method names not in camelCase.",
-    "weight": 1.0
+    "feedbackValues": [
+      {"score": 0.0, "feedback":  "One or more method names not in camelCase."},
+      {"score": 1.0, "feedback":  "Method names use correct camelCase."}
+    ]
   }
 ]

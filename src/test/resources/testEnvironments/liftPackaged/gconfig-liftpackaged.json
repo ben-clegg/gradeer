@@ -1,10 +1,8 @@
 {
-  "rootDirPath": null,
   "studentSolutionsDirPath": "studentSolutions",
   "modelSolutionsDirPath": "modelSolutions",
   "testsDirPath": "testSuites",
   "checkJSONs": ["unittestChecks.json", "checkstyleChecks.json", "pmdChecks.json"],
   "perTestSuiteTimeout": 120,
-  "checkstyleXml": "checkstyle.xml",
-  "mergedSolutionsDir": "mergedSolutions"
+  "checkstyleXml": "checkstyle.xml"
 }
