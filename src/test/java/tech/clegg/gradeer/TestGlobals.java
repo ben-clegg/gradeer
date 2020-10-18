@@ -7,6 +7,7 @@ import java.nio.file.Paths;
 public class TestGlobals
 {
     public static final Path JSON_CONFIG = Paths.get(System.getProperty("user.dir") + File.separator +
+            "src" + File.separator +
             "test" + File.separator +
             "resources" + File.separator +
             "testEnvironments" + File.separator +

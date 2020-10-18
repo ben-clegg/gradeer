@@ -8,7 +8,7 @@ import java.nio.file.Paths;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class ConfigurationTest
+class TestConfiguration
 {
     @Test
     public void testGenerateConfigurationJSON()

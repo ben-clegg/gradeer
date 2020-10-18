@@ -1,6 +1,6 @@
 target
-test/resources/testEnvironment/**/*.class
 jars
-/test/resources/testEnvironments/**/*.tar.gz
+src/test/resources/testEnvironment/**/*.class
+src/test/resources/testEnvironments/**/*.tar.gz
 
-test/resources/testEnvironment/*/output/**/*
+src/test/resources/testEnvironment/*/output/**/*

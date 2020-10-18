@@ -12,7 +12,7 @@ import java.util.Collection;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class GradeerTest
+class TestGradeer
 {
     Configuration config = new Configuration(TestGlobals.JSON_CONFIG);
     Gradeer gradeer = new Gradeer(config);

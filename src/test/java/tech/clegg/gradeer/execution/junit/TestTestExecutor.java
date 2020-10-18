@@ -9,7 +9,7 @@ import java.util.ArrayList;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class TestExecutorTest
+class TestTestExecutor
 {
     Configuration config = new Configuration(TestGlobals.JSON_CONFIG);
     Gradeer gradeer = new Gradeer(config);
