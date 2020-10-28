@@ -11,6 +11,7 @@ import tech.clegg.gradeer.configuration.Environment;
 import tech.clegg.gradeer.execution.junit.TestSuite;
 import tech.clegg.gradeer.execution.junit.TestSuiteLoader;
 import tech.clegg.gradeer.results.ResultsGenerator;
+import tech.clegg.gradeer.solution.DefaultFlag;
 import tech.clegg.gradeer.subject.compilation.JavaCompiler;
 import tech.clegg.gradeer.error.ErrorCode;
 import tech.clegg.gradeer.solution.Solution;
@@ -162,15 +163,12 @@ public class Gradeer
         solutions.sort(Comparator.comparing(Solution::getIdentifier));
 
         // Attempt to compile solutions
-        List<Solution> uncompilableSolutions = new ArrayList<>();
         solutions.forEach(solution -> {
             JavaCompiler compiler = JavaCompiler.createCompiler(getConfiguration());
-            if (!compiler.compile(solution))
-                uncompilableSolutions.add(solution);
+            // Compile; this flags the solution as uncompilable if compilation fails
+            compiler.compile(solution);
         });
-        // Remove solutions that cannot be compiled to prevent further processing.
-        solutions.removeAll(uncompilableSolutions);
-
+        
         // Merge the source files of each Solution if enabled
         if(configuration.getMergedSolutionsDir() != null)
             new MergedSolutionWriter(configuration, solutions).run();

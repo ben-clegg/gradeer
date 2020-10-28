@@ -1,6 +1,6 @@
 package tech.clegg.gradeer.solution;
 
-public enum Flag
+public enum DefaultFlag
 {
     UNCOMPILABLE,
     MISSING_CLASS,

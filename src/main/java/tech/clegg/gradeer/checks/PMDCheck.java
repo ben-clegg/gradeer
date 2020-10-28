@@ -6,7 +6,7 @@ import tech.clegg.gradeer.checks.checkresults.CheckResult;
 import tech.clegg.gradeer.checks.exceptions.InvalidCheckException;
 import tech.clegg.gradeer.configuration.Configuration;
 import tech.clegg.gradeer.execution.staticanalysis.pmd.PMDViolation;
-import tech.clegg.gradeer.solution.Flag;
+import tech.clegg.gradeer.solution.DefaultFlag;
 import tech.clegg.gradeer.solution.Solution;
 
 import java.util.Collection;
@@ -32,7 +32,7 @@ public class PMDCheck extends Check
         if(solution.getPmdProcessResults() == null)
         {
             System.err.println("No PMD process results for Solution " + solution.getIdentifier());
-            solution.addFlag(Flag.NO_PMD_RESULTS);
+            solution.addFlag(DefaultFlag.NO_PMD_RESULTS);
             double score = 0.0;
             solution.addCheckResult(new CheckResult(this, score, generateFeedback(score)));
             return;

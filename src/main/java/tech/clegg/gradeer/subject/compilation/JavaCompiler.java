@@ -1,6 +1,6 @@
 package tech.clegg.gradeer.subject.compilation;
 
-import tech.clegg.gradeer.solution.Flag;
+import tech.clegg.gradeer.solution.DefaultFlag;
 import tech.clegg.gradeer.subject.ClassPath;
 import tech.clegg.gradeer.configuration.Configuration;
 import tech.clegg.gradeer.execution.AntProcessResult;
@@ -72,7 +72,7 @@ public class JavaCompiler
             fileWriter.write(Paths.get(uncompilableSolutionsDir + File.separator + solutionToCompile.getIdentifier()));
 
             // Set flag for Solution
-            solutionToCompile.addFlag(Flag.UNCOMPILABLE);
+            solutionToCompile.addFlag(DefaultFlag.UNCOMPILABLE);
         }
 
         return result.compiled();

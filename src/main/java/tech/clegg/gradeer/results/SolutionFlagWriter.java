@@ -2,13 +2,14 @@ package tech.clegg.gradeer.results;
 
 import tech.clegg.gradeer.configuration.Configuration;
 import tech.clegg.gradeer.results.io.FileWriter;
-import tech.clegg.gradeer.solution.Flag;
+import tech.clegg.gradeer.solution.DefaultFlag;
 import tech.clegg.gradeer.solution.Solution;
 
 import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.stream.Collectors;
 
@@ -32,10 +33,14 @@ public class SolutionFlagWriter
         ));
         f.addLine("");
 
+        // Identify all available flags
+        Collection<String> flags = new HashSet<>();
+        solutions.forEach(s -> flags.addAll(s.getFlags()));
+
         // Solutions with each flag
-        for (Flag flag : Flag.values())
+        for (String flag : flags)
         {
-            f.addLine(flag.name());
+            f.addLine(flag);
             f.addLine(solutionsToJsonStringArray(
                     solutions.stream().filter(s -> s.getFlags().contains(flag)).collect(Collectors.toSet())
             ));

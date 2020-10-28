@@ -27,7 +27,7 @@ public class Solution
     private CheckstyleProcessResults checkstyleProcessResults;
     private PMDProcessResults pmdProcessResults;
 
-    private Collection<Flag> flags = new HashSet<>();
+    private Collection<String> flags = new HashSet<>();
     private Map<Check, CheckResult> checkResultsMap = new HashMap<>();
 
     public Solution(Path locationDir)
@@ -68,7 +68,7 @@ public class Solution
 
         if(!missing.isEmpty())
         {
-            addFlag(Flag.MISSING_CLASS);
+            addFlag(DefaultFlag.MISSING_CLASS);
             System.err.println("Solution " + getIdentifier() + " has missing required class(es):");
             System.err.println(missing);
             System.err.println("\n");
@@ -121,12 +121,17 @@ public class Solution
         return true;
     }
 
-    public void addFlag(Flag flag)
+    public void addFlag(DefaultFlag flag)
+    {
+        addFlag(flag.name());
+    }
+
+    public void addFlag(String flag)
     {
         flags.add(flag);
     }
 
-    public Collection<Flag> getFlags()
+    public Collection<String> getFlags()
     {
         return flags;
     }
