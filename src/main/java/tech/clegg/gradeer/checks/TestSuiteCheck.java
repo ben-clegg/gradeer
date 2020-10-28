@@ -49,16 +49,24 @@ public class TestSuiteCheck extends Check
         {
             System.err.println("TestSuiteCheck " + getName() + " has no defined TestSuite.");
             solution.addCheckResult(generateCheckResult(0.0));
+            return;
         }
         if(!testSuite.isCompiled())
         {
             System.err.println("TestSuiteCheck " + getName() + "'s TestSuite is not compiled.");
             solution.addCheckResult(generateCheckResult(0.0));
+            return;
         }
 
+        // Process
+        processSolution(solution);
+    }
+
+    @Override
+    protected double generateUnweightedScore(Solution solution)
+    {
         TestResult testResult = testExecutor.execute(solution);
-        double unweightedScore = testResult.proportionPassing();
-        solution.addCheckResult(generateCheckResult(unweightedScore));
+        return testResult.proportionPassing();
     }
 
     public TestSuite getTestSuite()

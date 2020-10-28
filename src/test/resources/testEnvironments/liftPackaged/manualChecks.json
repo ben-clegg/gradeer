@@ -1,0 +1,29 @@
+[
+  {
+    "type": "ManualCheck",
+    "name": "M11 - Questions Output",
+    "prompt": "Output of the questions correct?",
+    "weight": 4.0,
+    "maxRange": 10,
+    "feedbackValues": [
+      {"score": 0.9, "feedback": "EXCELLENT_M11"},
+      {"score": 0.7, "feedback": "GOOD_M11"},
+      {"score": 0.5, "feedback": "AVERAGE_M11"},
+      {"score": 0.0, "feedback": "POOR_M11"}
+    ]
+  },
+  {
+    "type": "ManualCheck",
+    "name": "M12 - Error Reporting",
+    "prompt": "Quality of error reporting?",
+    "weight": 4.0,
+    "maxRange": 10,
+    "feedbackValues": [
+      {"score": 0.9, "feedback": "EXCELLENT_M12"},
+      {"score": 0.7, "feedback": "GOOD_M12"},
+      {"score": 0.5, "feedback": "AVERAGE_M12"},
+      {"score": 0.0, "feedback": "POOR_M12"}
+    ],
+    "arbitraryFeedback": true
+  }
+]

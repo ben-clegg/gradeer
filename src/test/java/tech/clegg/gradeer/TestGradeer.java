@@ -7,6 +7,8 @@ import tech.clegg.gradeer.checks.TestSuiteCheck;
 import tech.clegg.gradeer.configuration.Configuration;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import tech.clegg.gradeer.solution.Solution;
+import tech.clegg.gradeer.subject.JavaSource;
 
 import java.util.Collection;
 
@@ -37,13 +39,16 @@ class TestGradeer
         gradeer.startEnvironment();
 
         // Model solutions
-        gradeer.getModelSolutions().forEach(m -> m.getSources().forEach(src -> Assertions.assertTrue(src.isCompiled())));
+        gradeer.getModelSolutions()
+                .forEach(m -> m.getSources().forEach(src -> Assertions.assertTrue(src.isCompiled())));
         // Unit tests
         assertTrue(gradeer.getEnabledTestSuites().size() > 0);
         gradeer.getEnabledTestSuites()
                 .forEach(t -> Assertions.assertTrue(t.isCompiled()));
         // Student solutions
-        gradeer.getStudentSolutions().forEach(s -> s.getSources().forEach(src -> Assertions.assertTrue(src.isCompiled())));
+        assertTrue(gradeer.getStudentSolutions().stream().filter(Solution::isCompiled).count() >= 3);
+        gradeer.getStudentSolutions().stream().filter(Solution::isCompiled)
+                .forEach(m -> m.getSources().forEach(src -> Assertions.assertTrue(src.isCompiled())));
     }
 
     @Test

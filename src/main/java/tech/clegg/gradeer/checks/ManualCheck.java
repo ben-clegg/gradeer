@@ -53,10 +53,18 @@ public class ManualCheck extends Check
             e.printStackTrace();
         }
 
+
         // Start check
         System.out.println("\nManual check " + name + " for Solution " + solution.getIdentifier());
         System.out.println(prompt);
 
+        // Process
+        processSolution(solution);
+    }
+
+    @Override
+    protected double generateUnweightedScore(Solution solution)
+    {
         // Calculate unweighted grade
         double unweightedScore = 1.0; // Default to full score (in case no weight set)
         if(weight > 0)
@@ -71,12 +79,7 @@ public class ManualCheck extends Check
             System.out.println("Entered value [" + inputResult + "] " +
                     "(unweighted score of " + unweightedScore + " / 1.0)");
         }
-
-        // Determine feedback
-        String feedback = generateFeedback(unweightedScore);
-
-        // Store result
-        solution.addCheckResult(new CheckResult(this, unweightedScore, feedback));
+        return unweightedScore;
     }
 
     private String getStringInputResult()
@@ -205,7 +208,6 @@ public class ManualCheck extends Check
 
         return feedback.toString();
     }
-
 
 
     @Override

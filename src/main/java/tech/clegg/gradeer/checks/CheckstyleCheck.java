@@ -29,28 +29,28 @@ public class CheckstyleCheck extends Check
     @Override
     public void execute(Solution solution)
     {
+        // No Checkstyle results exist
         if(solution.getCheckstyleProcessResults() == null)
         {
-            System.err.println("No CheckStyle process results for Solution " + solution.getIdentifier());
+            System.err.println("No Checkstyle process results for Solution " + solution.getIdentifier());
             solution.addFlag(DefaultFlag.NO_CHECKSTYLE_RESULTS);
             double score = 0.0;
             solution.addCheckResult(new CheckResult(this, score, generateFeedback(score)));
             return;
         }
 
-        // Determine grade and feedback
-        solution.addCheckResult(generateResult(solution));
+        // Process as normal
+        processSolution(solution);
     }
 
-    private CheckResult generateResult(Solution solution)
+    @Override
+    protected double generateUnweightedScore(Solution solution)
     {
         Map<Path, Integer> violations = solution.getCheckstyleProcessResults().getViolations().get(this);
 
         // If no violations defined for this check and solution, assume it is correct
         if(violations == null || violations.isEmpty())
-        {
-            return new CheckResult(this, 1.0, generateFeedback(1.0));
-        }
+            return 1.0;
 
         // Get number of violations
         int totalTrackedViolations = 0;
@@ -59,17 +59,12 @@ public class CheckstyleCheck extends Check
 
         // Derive score from maximum & minimum violations
         if(totalTrackedViolations >= maximumViolations)
-        {
-            return new CheckResult(this, 0.0, generateFeedback(0.0));
-        }
+            return 0.0;
         if(totalTrackedViolations <= minimumViolations)
-        {
-            return new CheckResult(this, 1.0, generateFeedback(1.0));
-        }
+            return 1.0;
 
         totalTrackedViolations -= minimumViolations;
-        double unweightedScore = 1.0 - (double) totalTrackedViolations / (maximumViolations - minimumViolations);
-        return new CheckResult(this, unweightedScore, generateFeedback(unweightedScore));
+        return (1.0 - ((double) totalTrackedViolations / (maximumViolations - minimumViolations)));
     }
 
     @Override

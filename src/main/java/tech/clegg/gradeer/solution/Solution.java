@@ -121,6 +121,11 @@ public class Solution
         return true;
     }
 
+    public void addFlags(Collection<String> flagCollection)
+    {
+        flags.addAll(flagCollection);
+    }
+
     public void addFlag(DefaultFlag flag)
     {
         addFlag(flag.name());

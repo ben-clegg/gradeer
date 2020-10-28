@@ -29,6 +29,7 @@ public class PMDCheck extends Check
     @Override
     public void execute(Solution solution)
     {
+        // No PMD results exist
         if(solution.getPmdProcessResults() == null)
         {
             System.err.println("No PMD process results for Solution " + solution.getIdentifier());
@@ -38,35 +39,28 @@ public class PMDCheck extends Check
             return;
         }
 
-
-        // Determine grade and feedback
-        solution.addCheckResult(generateResult(solution));
+        // Process as normal
+        processSolution(solution);
     }
 
-    private CheckResult generateResult(Solution solution)
+    @Override
+    protected double generateUnweightedScore(Solution solution)
     {
         Collection<PMDViolation> violations = solution.getPmdProcessResults().getViolations(name);
 
         if(violations == null || violations.isEmpty())
-        {
-            return new CheckResult(this,1.0, generateFeedback(1.0));
-        }
+            return 1.0;
 
         int totalTrackedViolations = violations.size();
 
         // Derive score from maximum & minimum violations
         if(totalTrackedViolations >= maximumViolations)
-        {
-            return new CheckResult(this,0.0, generateFeedback(0.0));
-        }
+            return 0.0;
         if(totalTrackedViolations <= minimumViolations)
-        {
-            return new CheckResult(this, 1.0, generateFeedback(1.0));
-        }
+            return 1.0;
 
         totalTrackedViolations -= minimumViolations;
-        double unweightedScore = 1.0 - (double) totalTrackedViolations / (maximumViolations - minimumViolations);
-        return new CheckResult(this, unweightedScore, generateFeedback(unweightedScore));
+        return (1.0 - ((double) totalTrackedViolations / (maximumViolations - minimumViolations)));
     }
 
     @Override

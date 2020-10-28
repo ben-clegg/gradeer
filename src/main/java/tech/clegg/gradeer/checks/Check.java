@@ -122,6 +122,24 @@ public abstract class Check
         return concurrentCompatible;
     }
 
+    /**
+     * Conventional run of any given Check.
+     * The called methods can be overridden by individual Check classes.
+     * Individual Check classes may also run some pre-processing or alternate executions for edge cases.
+     * In such events, it is strongly recommended to generate a CheckResult; such as one with a score of 0 when a Check
+     * fails to run.
+     * @param solution the Solution to run this Check on
+     */
+    public void processSolution(Solution solution)
+    {
+        double unweightedScore = generateUnweightedScore(solution);
+        String feedback = generateFeedback(unweightedScore);
+        solution.addCheckResult(generateCheckResult(unweightedScore, feedback));
+        solution.addFlags(generateFlags(unweightedScore));
+    }
+
+    protected abstract double generateUnweightedScore(Solution solution);
+
     protected String generateFeedback(double unweightedScore)
     {
         if(feedbackForUnweightedScoreBounds.isEmpty())
@@ -150,14 +168,32 @@ public abstract class Check
 
     public void setSolutionAsFailed(Solution solution)
     {
-        solution.addCheckResult(new CheckResult(
-                this, 0.0, generateFeedback(0.0)
-        ));
+        solution.addCheckResult(
+                generateCheckResult(0.0, generateFeedback(0.0))
+        );
     }
+
+
+    protected CheckResult generateCheckResult(double unweightedScore, String feedback)
+    {
+        return new CheckResult(this, unweightedScore, feedback);
+    }
+
 
     protected CheckResult generateCheckResult(double unweightedScore)
     {
-        return new CheckResult(this, unweightedScore, generateFeedback(unweightedScore));
+        return new CheckResult(this, unweightedScore);
+    }
+
+    /**
+     * Determine the flags associated with a Solution from a given unweighted score
+     * @param unweightedScore the unweighted score to determine the flags from
+     * @return the identified flags
+     */
+    protected Collection<String> generateFlags(double unweightedScore)
+    {
+        // TODO implement
+        return new HashSet<>();
     }
 
     @Override
