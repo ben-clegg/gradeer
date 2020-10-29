@@ -6,6 +6,10 @@
     "feedbackValues": [
       {"score": 0.0, "feedback":  "TestLiftA Incorrect"},
       {"score": 1.0, "feedback":  "TestLiftA Correct"}
+    ],
+    "flags": [
+      {"score": 0.0, "flags": ["TestLiftAFail"]},
+      {"score": 1.0, "flags":  ["TestLiftAPass"]}
     ]
   },
   {
@@ -15,6 +19,10 @@
     "feedbackValues": [
       {"score": 0.0, "feedback":  "TestLiftB Incorrect"},
       {"score": 1.0, "feedback":  "TestLiftB Correct"}
+    ],
+    "flags": [
+      {"score": 0.0, "flags": ["TestLiftBFail"]},
+      {"score": 1.0, "flags": []}
     ]
   },
   {

@@ -7,6 +7,7 @@ import com.google.gson.JsonSyntaxException;
 import tech.clegg.gradeer.checks.checkresults.CheckResult;
 import tech.clegg.gradeer.checks.exceptions.InvalidCheckException;
 import tech.clegg.gradeer.checks.generation.FeedbackEntry;
+import tech.clegg.gradeer.checks.generation.FlagsEntry;
 import tech.clegg.gradeer.configuration.Configuration;
 import tech.clegg.gradeer.solution.Solution;
 
@@ -20,6 +21,7 @@ public abstract class Check
     protected String name;
     protected double weight = 1.0;
     protected Map<Double, String> feedbackForUnweightedScoreBounds = new TreeMap<>();
+    protected Map<Double, String[]> flagMap = new TreeMap<>();
 
     protected Check(String name, Configuration configuration)
     {
@@ -53,6 +55,25 @@ public abstract class Check
             for (FeedbackEntry f : feedbackValues)
             {
                 feedbackForUnweightedScoreBounds.put(f.getScore(), f.getFeedback());
+            }
+        }
+        catch (NoSuchElementException ignored)
+        {
+            // Allow, because no feedback is valid, but warn.
+            System.err.println("No feedback defined for " + identifier());
+        }
+        catch (JsonSyntaxException e)
+        {
+            e.printStackTrace();
+        }
+
+        // Load flags
+        try
+        {
+            FlagsEntry[] flagValues = gson.fromJson(getOptionalElement(jsonObject, "flags").get(), FlagsEntry[].class);
+            for (FlagsEntry f : flagValues)
+            {
+                flagMap.put(f.getScore(), f.getFlags());
             }
         }
         catch (NoSuchElementException ignored)
@@ -142,28 +163,38 @@ public abstract class Check
 
     protected String generateFeedback(double unweightedScore)
     {
-        if(feedbackForUnweightedScoreBounds.isEmpty())
-            return "";
-
         return getBoundedFeedbackForScore(unweightedScore);
     }
 
-    private String getBoundedFeedbackForScore(double score)
+    private <T> T getBoundedMapValueForScore(double unweightedScore, Map<Double, T> map, T defaultIfEmpty)
     {
-        Iterator<Double> keysInterator = feedbackForUnweightedScoreBounds.keySet().iterator();
+        if (map.isEmpty())
+            return defaultIfEmpty;
+
+        Iterator<Double> keysIterator = map.keySet().iterator();
 
         double lastKey = -1;
 
         // Assuming ascending order of TreeMap, get the key just below or equal to the actual score
-        while (keysInterator.hasNext()) {
-            double k = keysInterator.next();
-            if(score >= k)
+        while (keysIterator.hasNext()) {
+            double k = keysIterator.next();
+            if(unweightedScore >= k)
                 lastKey = k;
             else
                 break;
         }
 
-        return feedbackForUnweightedScoreBounds.get(lastKey);
+        return map.get(lastKey);
+    }
+
+    private String getBoundedFeedbackForScore(double unweightedScore)
+    {
+        return getBoundedMapValueForScore(unweightedScore, feedbackForUnweightedScoreBounds, "");
+    }
+
+    private String[] getBoundedFlagForScore(double unweightedScore)
+    {
+        return getBoundedMapValueForScore(unweightedScore, flagMap, new String[]{});
     }
 
     public void setSolutionAsFailed(Solution solution)
@@ -173,12 +204,10 @@ public abstract class Check
         );
     }
 
-
     protected CheckResult generateCheckResult(double unweightedScore, String feedback)
     {
         return new CheckResult(this, unweightedScore, feedback);
     }
-
 
     protected CheckResult generateCheckResult(double unweightedScore)
     {
@@ -192,8 +221,8 @@ public abstract class Check
      */
     protected Collection<String> generateFlags(double unweightedScore)
     {
-        // TODO implement
-        return new HashSet<>();
+        String[] flags = getBoundedFlagForScore(unweightedScore);
+        return new HashSet<>(Arrays.asList(flags));
     }
 
     @Override
