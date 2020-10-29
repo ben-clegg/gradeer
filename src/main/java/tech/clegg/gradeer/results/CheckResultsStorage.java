@@ -135,7 +135,7 @@ public class CheckResultsStorage
     private Collection<Check> getAllChecks(Collection<CheckProcessor> checkProcessors)
     {
         Collection<Check> checks = new HashSet<>();
-        checkProcessors.forEach(cp -> checks.addAll(cp.getChecks()));
+        checkProcessors.forEach(cp -> checks.addAll(cp.getAllChecks()));
         return checks;
     }
 }

@@ -19,39 +19,29 @@ import java.util.stream.Collectors;
 
 public class CheckProcessor
 {
-    final Collection<Check> checks;
+    final Collection<Check> allChecks;
+    private Map<Integer, Collection<Check>> checkGroups;
     final Configuration configuration;
     final Set<Solution> executedSolutions;
 
     public CheckProcessor(Collection<Check> checks, Configuration configuration)
     {
-        this.checks = sortChecks(checks);
+        groupChecksByPriority(checks);
+        this.allChecks = checks;
         this.configuration = configuration;
         this.executedSolutions = new HashSet<>();
     }
 
-    protected Collection<Check> sortChecks(Collection<Check> checksToSort)
+    private void groupChecksByPriority(Collection<Check> checkCollection)
     {
-        Map<String, List<Check>> checkTypeGroups = new HashMap<>();
-        for (Check c : checksToSort)
+        checkGroups = new TreeMap<>();
+        for (Check c : checkCollection)
         {
-            String key = c.getClass().getName();
-            if(checkTypeGroups.containsKey(key))
-                checkTypeGroups.get(key).add(c);
-            else
-                checkTypeGroups.put(key, new ArrayList<>(Collections.singletonList(c)));
+            int priority = c.getPriority();
+            if (checkGroups.get(priority).isEmpty())
+                checkGroups.put(priority, new HashSet<>());
+            checkGroups.get(priority).add(c);
         }
-
-        Collection<Check> sorted = new ArrayList<>();
-
-        // Sort each list alphabetically
-        for (List<Check> l : checkTypeGroups.values())
-        {
-            l.sort(Comparator.comparing(Check::getName));
-            sorted.addAll(l);
-        }
-
-        return sorted;
     }
 
     /**
@@ -66,7 +56,7 @@ public class CheckProcessor
             return false;
 
         // Doesn't fail if any unit test passes
-        for (Check c : checks)
+        for (Check c : getAllChecks())
         {
             // Skip if not a unit test
             if(!c.getClass().equals(TestSuiteCheck.class))
@@ -88,14 +78,14 @@ public class CheckProcessor
         return executedSolutions.contains(solution);
     }
 
-    public Collection<Check> getChecks()
+    public Collection<Check> getAllChecks()
     {
-        return checks;
+        return allChecks;
     }
 
     public void runChecks(Solution solution)
     {
-        if(checks.isEmpty())
+        if(checkGroups.isEmpty())
         {
             configuration.getLogFile().writeMessage("No checks in AutoCheckProcessor for solution " + solution.getIdentifier());
             return;
@@ -112,30 +102,18 @@ public class CheckProcessor
         if(checkTypeIsPresent(CheckstyleCheck.class))
             runCheckstyle(solution);
 
-
-        // Execute non-manual checks
-        if(configuration.isMultiThreadingEnabled())
+        // Run individual Check groups, from highest priority to lowest
+        List<Integer> priorityValues = new ArrayList<>(checkGroups.keySet());
+        priorityValues.sort(Collections.reverseOrder());
+        for (int p : priorityValues)
         {
-            // Split concurrent compatible and incompatible checks; run separately
-            // Concurrent
-            checks.parallelStream()
-                    .filter(c -> !c.getClass().equals(ManualCheck.class))
-                    .filter(Check::isConcurrentCompatible)
-                    .forEach(c -> c.run(solution));
-
-            // Single Thread - non-manual
-            checks.stream()
-                    .filter(c -> !c.getClass().equals(ManualCheck.class))
-                    .filter(c -> !c.isConcurrentCompatible())
-                    .forEach(c -> c.run(solution));
+            runCheckGroup(solution, checkGroups.get(p));
         }
-        else
-            checks.stream()
-                    .filter(c -> !c.getClass().equals(ManualCheck.class))
-                    .forEach(c -> c.run(solution));
 
 
-        // Run Manual checks - special case
+        // TODO split before and after running checks
+        // TODO Ideally wait until the exact group that needs
+        // Run Manual check preprocessing - special case
         if(checkTypeIsPresent(ManualCheck.class))
         {
             // Run each of the defined ClassExecutionTemplates
@@ -145,10 +123,7 @@ public class CheckProcessor
             // Run inspection command (e.g. vscode)
             runInspectionCommand(solution);
 
-            // Run manual checks
-            checks.stream()
-                    .filter(c -> c.getClass().equals(ManualCheck.class))
-                    .forEach(c -> c.run(solution));
+            // TODO SPLIT HERE
 
             // Stop running classes
             classExec.stopExecutions();
@@ -161,12 +136,36 @@ public class CheckProcessor
         configuration.getTimer().split("Completed checks for Solution " + solution.getIdentifier());
     }
 
+    private void runCheckGroup(Solution solution, Collection<Check> checks)
+    {
+        // Run all checks procedurally if multithreading is disabled
+        if(!configuration.isMultiThreadingEnabled())
+        {
+            for (Check c : checks)
+            {
+                c.run(solution);
+            }
+            return;
+        }
+
+        // Split concurrent and non-concurrent checks
+        Collection<Check> concurrent = checks.stream()
+                .filter(Check::isConcurrentCompatible)
+                .collect(Collectors.toList());
+        Collection<Check> nonConcurrent = checks.stream()
+                .filter(c -> !c.isConcurrentCompatible())
+                .collect(Collectors.toList());
+
+        concurrent.parallelStream().forEach(c -> c.run(solution));
+        nonConcurrent.forEach(c -> c.run(solution));
+    }
+
     // TODO move to preprocessor
     private void runCheckstyle(Solution solution)
     {
 
         CheckstyleExecutor checkstyleExecutor = new CheckstyleExecutor(configuration,
-                getChecks().stream()
+                getAllChecks().stream()
                         .filter(c -> c instanceof CheckstyleCheck)
                         .map(c -> (CheckstyleCheck) c)
                         .collect(Collectors.toList()));
@@ -186,6 +185,11 @@ public class CheckProcessor
     }
 
     private boolean checkTypeIsPresent(Class<? extends Check> checkType)
+    {
+        return checkTypeIsPresent(checkType, getAllChecks());
+    }
+
+    private boolean checkTypeIsPresent(Class<? extends Check> checkType, Collection<Check> checks)
     {
         return checks.stream().anyMatch(c -> c.getClass().equals(checkType));
     }
@@ -214,7 +218,7 @@ public class CheckProcessor
         // Perform restart
         else if(restart)
         {
-            Collection<Check> manualChecks = checks.stream()
+            Collection<Check> manualChecks = getAllChecks().stream()
                     .filter(c -> c.getClass().equals(ManualCheck.class))
                     .collect(Collectors.toSet());
             // Clear existing manual check results for solution

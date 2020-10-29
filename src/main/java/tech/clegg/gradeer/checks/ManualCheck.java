@@ -24,7 +24,7 @@ public class ManualCheck extends Check
     public ManualCheck(JsonObject jsonObject, Configuration configuration) throws InvalidCheckException
     {
         super(jsonObject, configuration);
-        concurrentCompatible = false;
+        this.concurrentCompatible = false;
 
         try
         {
@@ -66,7 +66,7 @@ public class ManualCheck extends Check
     protected double generateUnweightedScore(Solution solution)
     {
         // Calculate unweighted grade
-        double unweightedScore = 1.0; // Default to full score (in case no weight set)
+        double unweightedScore = 1.0; // Default to full score (in case no weight set ; manual feedback only mode)
         if(weight > 0)
         {
             System.out.print("Enter a value in the range 0 - " + maxRange);

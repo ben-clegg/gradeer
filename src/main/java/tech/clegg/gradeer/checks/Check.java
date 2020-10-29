@@ -20,6 +20,7 @@ public abstract class Check
     private final Configuration configuration;
     protected String name;
     protected double weight = 1.0;
+    private int priority = 10;
     protected Map<Double, String> feedbackForUnweightedScoreBounds = new TreeMap<>();
     protected Map<Double, String[]> flagMap = new TreeMap<>();
 
@@ -46,6 +47,13 @@ public abstract class Check
 
         // Load weight
         this.weight = getElementOrDefault(jsonObject, "weight", JsonElement::getAsDouble, weight);
+
+        // Load priority
+        this.priority = getElementOrDefault(jsonObject, "priority", JsonElement::getAsInt, priority);
+
+        // Load concurrency compatibility
+        this.concurrentCompatible = getElementOrDefault(jsonObject, "concurrentCompatible",
+                JsonElement::getAsBoolean, concurrentCompatible);
 
         // Load Feedback
         Gson gson = new Gson();
@@ -212,6 +220,11 @@ public abstract class Check
     protected CheckResult generateCheckResult(double unweightedScore)
     {
         return new CheckResult(this, unweightedScore);
+    }
+
+    public int getPriority()
+    {
+        return priority;
     }
 
     /**

@@ -131,7 +131,7 @@ public class ResultsGenerator implements Runnable
             FileWriter f = new FileWriter();
             for (CheckProcessor checkProcessor : checkProcessors)
             {
-                for (Check c : checkProcessor.getChecks())
+                for (Check c : checkProcessor.getAllChecks())
                 {
                     f.addLine(
                             c.getClass().getSimpleName() +
@@ -209,7 +209,7 @@ public class ResultsGenerator implements Runnable
 
         for (CheckProcessor checkProcessor : checkProcessors)
         {
-            for (Check c : checkProcessor.getChecks())
+            for (Check c : checkProcessor.getAllChecks())
             {
                 String feedback = solution.getCheckResult(c).getFeedback();
                 if(!feedback.isEmpty())
@@ -296,7 +296,7 @@ public class ResultsGenerator implements Runnable
     {
         List<Check> allChecks = new ArrayList<>();
         for (CheckProcessor checkProcessor : checkProcessors)
-            allChecks.addAll(checkProcessor.getChecks());
+            allChecks.addAll(checkProcessor.getAllChecks());
 
         return allChecks;
     }

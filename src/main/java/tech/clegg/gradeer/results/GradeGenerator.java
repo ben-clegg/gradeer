@@ -21,7 +21,7 @@ public class GradeGenerator
         this.checkProcessors = checkProcessors;
 
         this.totalWeight = checkProcessors.stream()
-                .mapToDouble(cp -> cp.getChecks().stream()
+                .mapToDouble(cp -> cp.getAllChecks().stream()
                         .mapToDouble(Check::getWeight).sum())
                 .sum();
     }
@@ -38,12 +38,12 @@ public class GradeGenerator
             if (!checkProcessor.wasExecuted(solution))
                 checkProcessor.runChecks(solution);
 
-            for (Check c : checkProcessor.getChecks())
+            for (Check c : checkProcessor.getAllChecks())
                 logger.info("Solution " + solution.getIdentifier() + ": " + c.getName() + " " + solution.calculateWeightedScore(c));
         }
 
         return 100 * checkProcessors.stream()
-                .mapToDouble(cp -> cp.getChecks().stream()
+                .mapToDouble(cp -> cp.getAllChecks().stream()
                         .mapToDouble(solution::calculateWeightedScore).sum())
                 .sum() / totalWeight;
     }
