@@ -1,25 +1,30 @@
 package tech.clegg.gradeer.timing;
 
-
-import org.apache.commons.lang3.time.DateFormatUtils;
 import org.apache.commons.lang3.time.StopWatch;
-
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.time.format.DateTimeFormatter;
+import java.text.SimpleDateFormat;
+import java.util.TimeZone;
 
 public class TimerService
 {
     FileWriter writer;
     StopWatch stopWatch;
+    SimpleDateFormat dateFormat;
 
     public TimerService(Path outputFileLocation)
     {
+        // Configure date formatter
+        dateFormat = new SimpleDateFormat("HH:mm:ss.SSS");
+        dateFormat.setTimeZone(TimeZone.getTimeZone("utc"));
+
+        // Start timer
         stopWatch = new StopWatch();
         stopWatch.start();
         stopWatch.split();
+
         writeEvent("Started grading session", stopWatch.getStartTime());
         try
         {
@@ -50,20 +55,21 @@ public class TimerService
 
     private void writeEvent(String event, long timeMillis)
     {
-        writeEvent(event, DateFormatUtils.format(timeMillis, "HH:mm:ss"));
+        writeEvent(event, dateFormat.format(timeMillis));
     }
 
     public void end()
     {
-        stopWatch.unsplit();
         stopWatch.stop();
-        writeEvent("Ended grading session (total time)", stopWatch.getTime() - stopWatch.getStartTime());
+
+        writeEvent("Ended grading session (total time)", stopWatch.getTime());
     }
 
     public void split(String splitEvent)
     {
-        writeEvent(splitEvent, stopWatch.getTime() - stopWatch.getSplitTime());
+        long previousSplit = stopWatch.getSplitTime();
         stopWatch.split();
+        writeEvent(splitEvent, stopWatch.getSplitTime() - previousSplit);
     }
 
 }
