@@ -141,6 +141,11 @@ public class Solution
         return flags;
     }
 
+    public boolean containsFlag(String flag)
+    {
+        return flags.contains(flag);
+    }
+
     public void addCheckResult(CheckResult result)
     {
         checkResultsMap.put(result.getCheck(), result);
