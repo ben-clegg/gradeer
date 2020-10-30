@@ -5,7 +5,7 @@ import tech.clegg.gradeer.solution.Solution;
 
 public abstract class PreProcessor
 {
-    protected Solution solution;
+    private Solution solution;
     private Configuration configuration;
 
     public PreProcessor(Solution solution, Configuration configuration)
@@ -25,6 +25,11 @@ public abstract class PreProcessor
      * Called by CheckProcessor after every check is run on the solution.
      */
     abstract public void stop();
+
+    protected Solution getSolution()
+    {
+        return solution;
+    }
 
     protected Configuration getConfiguration()
     {

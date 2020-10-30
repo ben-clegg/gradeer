@@ -5,6 +5,7 @@ import tech.clegg.gradeer.checks.checkresults.CheckResult;
 import tech.clegg.gradeer.configuration.Configuration;
 import tech.clegg.gradeer.execution.java.JavaClassBatchExecutor;
 import tech.clegg.gradeer.preprocessing.CheckstylePreProcessor;
+import tech.clegg.gradeer.preprocessing.PMDPreProcessor;
 import tech.clegg.gradeer.preprocessing.staticanalysis.pmd.PMDExecutor;
 import tech.clegg.gradeer.solution.Solution;
 import tech.clegg.gradeer.checks.*;
@@ -93,14 +94,7 @@ public class CheckProcessor
         // Run PreProcessors
         // TODO Automatically generate PreProcessors & skip any that do not need to be run for remaining checks to run
         new CheckstylePreProcessor(solution, configuration).start();
-
-
-        // Run PMD on student solutions
-        if(checkTypeIsPresent(PMDCheck.class))
-        {
-            PMDExecutor pmdExecutor = new PMDExecutor(configuration);
-            pmdExecutor.execute(solution);
-        }
+        new PMDPreProcessor(solution, configuration).start();
 
         // Run individual Check groups, from highest priority to lowest
         List<Integer> priorityValues = new ArrayList<>(checkGroups.keySet());

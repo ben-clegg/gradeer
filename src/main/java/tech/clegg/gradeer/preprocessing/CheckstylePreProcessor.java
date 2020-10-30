@@ -20,13 +20,13 @@ public class CheckstylePreProcessor extends PreProcessor
         CheckstyleExecutor checkstyleExecutor = new CheckstyleExecutor(getConfiguration());
         try
         {
-            CheckstyleProcessResults results = checkstyleExecutor.execute(solution);
-            solution.setCheckstyleProcessResults(results);
+            CheckstyleProcessResults results = checkstyleExecutor.execute(getSolution());
+            getSolution().setCheckstyleProcessResults(results);
         }
         catch (CheckstyleException checkstyleException)
         {
             // Log the file
-            getConfiguration().getLogFile().writeMessage("Checkstyle process error on solution " + solution.getIdentifier());
+            getConfiguration().getLogFile().writeMessage("Checkstyle process error on solution " + getSolution().getIdentifier());
             getConfiguration().getLogFile().writeException(checkstyleException);
         }
     }
@@ -34,6 +34,6 @@ public class CheckstylePreProcessor extends PreProcessor
     @Override
     public void stop()
     {
-
+        // Do nothing
     }
 }
