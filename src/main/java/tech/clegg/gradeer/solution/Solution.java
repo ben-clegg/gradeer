@@ -2,8 +2,8 @@ package tech.clegg.gradeer.solution;
 
 import tech.clegg.gradeer.checks.Check;
 import tech.clegg.gradeer.checks.checkresults.CheckResult;
-import tech.clegg.gradeer.execution.staticanalysis.checkstyle.CheckstyleProcessResults;
-import tech.clegg.gradeer.execution.staticanalysis.pmd.PMDProcessResults;
+import tech.clegg.gradeer.preprocessing.staticanalysis.checkstyle.CheckstyleProcessResults;
+import tech.clegg.gradeer.preprocessing.staticanalysis.pmd.PMDProcessResults;
 import tech.clegg.gradeer.subject.JavaSource;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

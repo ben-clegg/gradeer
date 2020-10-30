@@ -2,6 +2,7 @@ package tech.clegg.gradeer.checks;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.puppycrawl.tools.checkstyle.api.AuditEvent;
 import tech.clegg.gradeer.checks.checkresults.CheckResult;
 import tech.clegg.gradeer.checks.exceptions.InvalidCheckException;
 import tech.clegg.gradeer.configuration.Configuration;
@@ -9,6 +10,8 @@ import tech.clegg.gradeer.solution.DefaultFlag;
 import tech.clegg.gradeer.solution.Solution;
 
 import java.nio.file.Path;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Map;
 
 public class CheckstyleCheck extends Check
@@ -46,25 +49,24 @@ public class CheckstyleCheck extends Check
     @Override
     protected double generateUnweightedScore(Solution solution)
     {
-        Map<Path, Integer> violations = solution.getCheckstyleProcessResults().getViolations().get(this);
+        Collection<AuditEvent> violations = solution.getCheckstyleProcessResults()
+                .getAuditEventsForCheck(this);
 
         // If no violations defined for this check and solution, assume it is correct
         if(violations == null || violations.isEmpty())
             return 1.0;
 
         // Get number of violations
-        int totalTrackedViolations = 0;
-        for (Integer v : violations.values())
-            totalTrackedViolations += v;
+        int numViolations = violations.size();
 
         // Derive score from maximum & minimum violations
-        if(totalTrackedViolations >= maximumViolations)
+        if(numViolations >= maximumViolations)
             return 0.0;
-        if(totalTrackedViolations <= minimumViolations)
+        if(numViolations <= minimumViolations)
             return 1.0;
 
-        totalTrackedViolations -= minimumViolations;
-        return (1.0 - ((double) totalTrackedViolations / (maximumViolations - minimumViolations)));
+        numViolations -= minimumViolations;
+        return (1.0 - ((double) numViolations / (maximumViolations - minimumViolations)));
     }
 
     @Override

@@ -1,16 +1,13 @@
-package tech.clegg.gradeer.execution.staticanalysis.checkstyle;
+package tech.clegg.gradeer.preprocessing.staticanalysis.checkstyle;
 
 import com.puppycrawl.tools.checkstyle.*;
 import com.puppycrawl.tools.checkstyle.api.*;
-import tech.clegg.gradeer.checks.CheckstyleCheck;
-import tech.clegg.gradeer.checks.exceptions.NoCheckException;
 import tech.clegg.gradeer.solution.Solution;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.File;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -23,17 +20,15 @@ public class CheckstyleProcess
     private Path xml;
 
     private AuditListener auditListener;
-    private Collection<CheckstyleCheck> checkstyleChecks;
 
     private CheckstyleProcessResults results;
 
-    CheckstyleProcess(Solution sut, tech.clegg.gradeer.configuration.Configuration configuration, Collection<CheckstyleCheck> checkstyleChecks)
+    CheckstyleProcess(Solution sut, tech.clegg.gradeer.configuration.Configuration configuration)
     {
         this.solution = sut;
         this.complete = false;
         this.xml = configuration.getCheckstyleXml();
 
-        this.checkstyleChecks = checkstyleChecks;
         this.results = new CheckstyleProcessResults();
 
 
@@ -61,37 +56,13 @@ public class CheckstyleProcess
 
             @Override
             public void addError(AuditEvent auditEvent) {
-
-                try
-                {
-                    CheckstyleCheck c = getCheckForAuditEvent(auditEvent);
-                    logger.info("Matched check " + c);
-                    addViolation(c, Paths.get(auditEvent.getFileName()));
-                }
-                catch (NoCheckException noCheckEx)
-                {
-                    //logger.error(noCheckEx);
-                    results.getChecklessAuditEvents().add(auditEvent);
-                }
+                results.addAuditEvent(auditEvent);
             }
 
             @Override
             public void addException(AuditEvent auditEvent, Throwable throwable) {
             }
         };
-    }
-
-    private void addViolation(CheckstyleCheck check, Path source)
-    {
-        Map<CheckstyleCheck, Map<Path, Integer>> violations = results.getViolations();
-
-        // Initialise for check if non-existent.
-        if(violations.get(check) == null || violations.get(check).isEmpty())
-            violations.put(check, new HashMap<>());
-
-        violations.get(check).putIfAbsent(source, 0);
-        int existing = violations.get(check).get(source);
-        violations.get(check).put(source, existing + 1);
     }
 
     public void run() throws CheckstyleException
@@ -157,31 +128,5 @@ public class CheckstyleProcess
         return results;
     }
 
-    private CheckstyleCheck getCheckForAuditEvent(AuditEvent auditEvent) throws NoCheckException
-    {
-        for (CheckstyleCheck c : checkstyleChecks)
-        {
-            if(nameMatchesAuditEvent(c, auditEvent))
-                return c;
-        }
-        throw new NoCheckException("No check exists for AuditEvent " + auditEvent.getSourceName() + "/" + auditEvent.getModuleId());
-    }
-
-    private static boolean nameMatchesAuditEvent(CheckstyleCheck checkstyleCheck, AuditEvent auditEvent)
-    {
-        if(checkstyleCheck.getName() == null || checkstyleCheck.getName().isEmpty())
-            return false;
-        if(checkstyleCheck.getName().equals(auditEvent.getModuleId()))
-            return true;
-
-        // Checkstyle source names are often in the form
-        // "com.puppycrawl.tools.checkstyle.checks.whitespace.FileTabCharacterCheck"
-        String[] splitSourceName = auditEvent.getSourceName().split("\\.");
-        String sourceNameEnding = splitSourceName[splitSourceName.length - 1];
-        if(checkstyleCheck.getName().equals(sourceNameEnding) ||
-                checkstyleCheck.getName().equals(sourceNameEnding.replace("Check", "")))
-            return true;
-        return false;
-    }
 }
 

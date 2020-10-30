@@ -5,7 +5,7 @@ import com.google.gson.JsonObject;
 import tech.clegg.gradeer.checks.checkresults.CheckResult;
 import tech.clegg.gradeer.checks.exceptions.InvalidCheckException;
 import tech.clegg.gradeer.configuration.Configuration;
-import tech.clegg.gradeer.execution.staticanalysis.pmd.PMDViolation;
+import tech.clegg.gradeer.preprocessing.staticanalysis.pmd.PMDViolation;
 import tech.clegg.gradeer.solution.DefaultFlag;
 import tech.clegg.gradeer.solution.Solution;
 

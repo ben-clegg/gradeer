@@ -1,4 +1,4 @@
-package tech.clegg.gradeer.execution.staticanalysis.pmd;
+package tech.clegg.gradeer.preprocessing.staticanalysis.pmd;
 
         import tech.clegg.gradeer.configuration.Configuration;
         import tech.clegg.gradeer.subject.ClassPath;

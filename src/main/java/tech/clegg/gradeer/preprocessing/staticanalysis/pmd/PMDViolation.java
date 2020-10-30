@@ -1,4 +1,4 @@
-package tech.clegg.gradeer.execution.staticanalysis.pmd;
+package tech.clegg.gradeer.preprocessing.staticanalysis.pmd;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;

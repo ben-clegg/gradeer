@@ -1,4 +1,4 @@
-package tech.clegg.gradeer.execution.staticanalysis.pmd;
+package tech.clegg.gradeer.preprocessing.staticanalysis.pmd;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

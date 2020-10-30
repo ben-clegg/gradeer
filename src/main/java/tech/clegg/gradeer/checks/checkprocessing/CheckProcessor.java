@@ -1,12 +1,11 @@
 package tech.clegg.gradeer.checks.checkprocessing;
 
-import com.puppycrawl.tools.checkstyle.api.CheckstyleException;
 import tech.clegg.gradeer.auxiliaryprocesses.InspectionCommandProcess;
 import tech.clegg.gradeer.checks.checkresults.CheckResult;
 import tech.clegg.gradeer.configuration.Configuration;
 import tech.clegg.gradeer.execution.java.JavaClassBatchExecutor;
-import tech.clegg.gradeer.execution.staticanalysis.checkstyle.CheckstyleExecutor;
-import tech.clegg.gradeer.execution.staticanalysis.pmd.PMDExecutor;
+import tech.clegg.gradeer.preprocessing.CheckstylePreProcessor;
+import tech.clegg.gradeer.preprocessing.staticanalysis.pmd.PMDExecutor;
 import tech.clegg.gradeer.solution.Solution;
 import tech.clegg.gradeer.checks.*;
 
@@ -38,8 +37,7 @@ public class CheckProcessor
         for (Check c : checkCollection)
         {
             int priority = c.getPriority();
-            if (checkGroups.get(priority).isEmpty())
-                checkGroups.put(priority, new HashSet<>());
+            checkGroups.computeIfAbsent(priority, k -> new HashSet<>());
             checkGroups.get(priority).add(c);
         }
     }
@@ -85,11 +83,17 @@ public class CheckProcessor
 
     public void runChecks(Solution solution)
     {
-        if(checkGroups.isEmpty())
+        // Check if no checks to run
+        if(getAllChecks().isEmpty())
         {
-            configuration.getLogFile().writeMessage("No checks in AutoCheckProcessor for solution " + solution.getIdentifier());
+            configuration.getLogFile().writeMessage("No checks to process for solution " + solution.getIdentifier());
             return;
         }
+
+        // Run PreProcessors
+        // TODO Automatically generate PreProcessors & skip any that do not need to be run for remaining checks to run
+        new CheckstylePreProcessor(solution, configuration).start();
+
 
         // Run PMD on student solutions
         if(checkTypeIsPresent(PMDCheck.class))
@@ -97,10 +101,6 @@ public class CheckProcessor
             PMDExecutor pmdExecutor = new PMDExecutor(configuration);
             pmdExecutor.execute(solution);
         }
-
-        // Run Checkstyle on student solutions if present
-        if(checkTypeIsPresent(CheckstyleCheck.class))
-            runCheckstyle(solution);
 
         // Run individual Check groups, from highest priority to lowest
         List<Integer> priorityValues = new ArrayList<>(checkGroups.keySet());
@@ -158,30 +158,6 @@ public class CheckProcessor
 
         concurrent.parallelStream().forEach(c -> c.run(solution));
         nonConcurrent.forEach(c -> c.run(solution));
-    }
-
-    // TODO move to preprocessor
-    private void runCheckstyle(Solution solution)
-    {
-
-        CheckstyleExecutor checkstyleExecutor = new CheckstyleExecutor(configuration,
-                getAllChecks().stream()
-                        .filter(c -> c instanceof CheckstyleCheck)
-                        .map(c -> (CheckstyleCheck) c)
-                        .collect(Collectors.toList()));
-        try
-        {
-            checkstyleExecutor.execute(solution);
-        }
-        catch (CheckstyleException checkstyleException)
-        {
-            // Log the file
-            configuration.getLogFile().writeMessage("Checkstyle process error on solution " + solution.getIdentifier());
-            configuration.getLogFile().writeException(checkstyleException);
-            // Set solution as failing all checkstyle checks
-            for (CheckstyleCheck c : checkstyleExecutor.getCheckstyleChecks())
-                c.setSolutionAsFailed(solution);
-        }
     }
 
     private boolean checkTypeIsPresent(Class<? extends Check> checkType)
