@@ -86,8 +86,7 @@ public abstract class Check
         }
         catch (NoSuchElementException ignored)
         {
-            // Allow, because no feedback is valid, but warn.
-            System.err.println("No flags defined for " + identifier());
+            // Allow, because including no flags is valid
         }
         catch (JsonSyntaxException e)
         {
