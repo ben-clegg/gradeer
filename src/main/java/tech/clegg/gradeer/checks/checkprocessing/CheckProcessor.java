@@ -6,6 +6,8 @@ import tech.clegg.gradeer.configuration.Configuration;
 import tech.clegg.gradeer.execution.java.JavaClassBatchExecutor;
 import tech.clegg.gradeer.preprocessing.CheckstylePreProcessor;
 import tech.clegg.gradeer.preprocessing.PMDPreProcessor;
+import tech.clegg.gradeer.preprocessing.PreProcessor;
+import tech.clegg.gradeer.preprocessing.generation.PreProcessorGenerator;
 import tech.clegg.gradeer.preprocessing.staticanalysis.pmd.PMDExecutor;
 import tech.clegg.gradeer.solution.Solution;
 import tech.clegg.gradeer.checks.*;
@@ -91,10 +93,11 @@ public class CheckProcessor
             return;
         }
 
-        // Run PreProcessors
-        // TODO Automatically generate PreProcessors & skip any that do not need to be run for remaining checks to run
-        new CheckstylePreProcessor(solution, configuration).start();
-        new PMDPreProcessor(solution, configuration).start();
+        // Generate & run PreProcessors
+        Collection<PreProcessor> preProcessors =
+                new PreProcessorGenerator(getAllChecks(), configuration)
+                        .generate(solution);
+        preProcessors.forEach(PreProcessor::start);
 
         // Run individual Check groups, from highest priority to lowest
         List<Integer> priorityValues = new ArrayList<>(checkGroups.keySet());
@@ -104,27 +107,13 @@ public class CheckProcessor
             runCheckGroup(solution, checkGroups.get(p));
         }
 
+        // Stop PreProcessors
+        preProcessors.forEach(PreProcessor::stop);
+        // TODO Only execute PreProcessors while they are necessary
 
-        // TODO split before and after running checks
-        // TODO Ideally wait until the exact group that needs
-        // Run Manual check preprocessing - special case
+        // Restart ManualChecks if selected
         if(checkTypeIsPresent(ManualCheck.class))
-        {
-            // Run each of the defined ClassExecutionTemplates
-            JavaClassBatchExecutor classExec = generateClassExecutor(solution);
-            classExec.runClasses();
-
-            // Run inspection command (e.g. vscode)
-            runInspectionCommand(solution);
-
-            // TODO SPLIT HERE
-
-            // Stop running classes
-            classExec.stopExecutions();
-
-            // Restart ManualChecks if selected
             restartManualChecks(solution);
-        }
 
         executedSolutions.add(solution);
         configuration.getTimer().split("Completed checks for Solution " + solution.getIdentifier());
@@ -228,34 +217,6 @@ public class CheckProcessor
         System.out.println("Invalid input!");
         System.err.println("Please re-enter.");
         return promptResponse();
-    }
-
-    private JavaClassBatchExecutor generateClassExecutor(Solution solution)
-    {
-        return new JavaClassBatchExecutor(solution, configuration);
-    }
-
-    private void runInspectionCommand(Solution solution)
-    {
-        if(configuration.getInspectionCommand() == null)
-            return;
-        if(configuration.getInspectionCommand().isEmpty())
-            return;
-
-        if(!checkTypeIsPresent(ManualCheck.class))
-            return;
-
-        Collection<Path> toInspect = new ArrayList<>();
-
-        // TODO find a more elegant solution for this
-        // method inside corresponding classes?
-
-        if(Files.exists(configuration.getTestOutputDir()))
-            toInspect.add(Paths.get(configuration.getTestOutputDir() + File.separator + solution.getIdentifier()));
-        if(Files.exists(configuration.getMergedSolutionsDir()))
-            toInspect.add(Paths.get(configuration.getMergedSolutionsDir() + File.separator + solution.getIdentifier() + ".java"));
-
-        new InspectionCommandProcess(configuration, toInspect).run();
     }
 
 }
