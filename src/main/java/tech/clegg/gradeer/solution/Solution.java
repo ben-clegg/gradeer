@@ -11,10 +11,8 @@ import org.apache.logging.log4j.Logger;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 public class Solution
@@ -27,8 +25,8 @@ public class Solution
     private CheckstyleProcessResults checkstyleProcessResults;
     private PMDProcessResults pmdProcessResults;
 
-    private Collection<String> flags = new HashSet<>();
-    private Map<Check, CheckResult> checkResultsMap = new HashMap<>();
+    private Collection<String> flags = Collections.newSetFromMap(new ConcurrentHashMap<>());
+    private Map<Check, CheckResult> checkResultsMap = new ConcurrentHashMap<>();
 
     public Solution(Path locationDir)
     {
