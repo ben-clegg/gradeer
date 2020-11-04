@@ -5,11 +5,14 @@ import com.google.gson.JsonObject;
 import tech.clegg.gradeer.checks.checkresults.CheckResult;
 import tech.clegg.gradeer.checks.exceptions.InvalidCheckException;
 import tech.clegg.gradeer.configuration.Configuration;
+import tech.clegg.gradeer.preprocessing.PMDPreProcessor;
+import tech.clegg.gradeer.preprocessing.PreProcessor;
 import tech.clegg.gradeer.preprocessing.staticanalysis.pmd.PMDViolation;
 import tech.clegg.gradeer.solution.DefaultFlag;
 import tech.clegg.gradeer.solution.Solution;
 
 import java.util.Collection;
+import java.util.Collections;
 
 public class PMDCheck extends Check
 {
@@ -24,6 +27,12 @@ public class PMDCheck extends Check
                 JsonElement::getAsInt, minimumViolations);
         this.maximumViolations = getElementOrDefault(jsonObject, "maximumViolations",
                 JsonElement::getAsInt, maximumViolations);
+    }
+
+    @Override
+    public Collection<Class<? extends PreProcessor>> getPreProcessorTypes()
+    {
+        return Collections.singleton(PMDPreProcessor.class);
     }
 
     @Override

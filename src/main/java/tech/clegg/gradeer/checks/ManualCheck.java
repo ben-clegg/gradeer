@@ -5,11 +5,16 @@ import com.google.gson.JsonObject;
 import tech.clegg.gradeer.checks.checkresults.CheckResult;
 import tech.clegg.gradeer.checks.exceptions.InvalidCheckException;
 import tech.clegg.gradeer.configuration.Configuration;
+import tech.clegg.gradeer.preprocessing.JavaBatchExecutorPreProcessor;
+import tech.clegg.gradeer.preprocessing.PreProcessor;
+import tech.clegg.gradeer.preprocessing.SourceInspectorPreProcessor;
 import tech.clegg.gradeer.solution.Solution;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
 
@@ -40,6 +45,16 @@ public class ManualCheck extends Check
                 JsonElement::getAsBoolean, arbitraryFeedback);
     }
 
+    @Override
+    public Collection<Class<? extends PreProcessor>> getPreProcessorTypes()
+    {
+        Collection<Class<? extends PreProcessor>> preProcessorTypes = new HashSet<>();
+
+        preProcessorTypes.add(JavaBatchExecutorPreProcessor.class);
+        preProcessorTypes.add(SourceInspectorPreProcessor.class);
+
+        return preProcessorTypes;
+    }
 
     @Override
     public void execute(Solution solution)

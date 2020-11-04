@@ -9,6 +9,7 @@ import tech.clegg.gradeer.checks.exceptions.InvalidCheckException;
 import tech.clegg.gradeer.checks.generation.FeedbackEntry;
 import tech.clegg.gradeer.checks.generation.FlagsEntry;
 import tech.clegg.gradeer.configuration.Configuration;
+import tech.clegg.gradeer.preprocessing.PreProcessor;
 import tech.clegg.gradeer.solution.Solution;
 
 import java.util.*;
@@ -94,6 +95,8 @@ public abstract class Check
         }
 
     }
+
+    public abstract Collection<Class<? extends PreProcessor>> getPreProcessorTypes();
 
     protected static <T> T getElementOrDefault(JsonObject jsonObject,
                                                String memberName,

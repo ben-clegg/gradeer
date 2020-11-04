@@ -4,8 +4,12 @@ import com.google.gson.JsonObject;
 import tech.clegg.gradeer.checks.checkresults.CheckResult;
 import tech.clegg.gradeer.checks.exceptions.InvalidCheckException;
 import tech.clegg.gradeer.configuration.Configuration;
+import tech.clegg.gradeer.preprocessing.PreProcessor;
 import tech.clegg.gradeer.solution.Solution;
 
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.NoSuchElementException;
 
 /**
@@ -39,6 +43,11 @@ public class FlagPresentCheck extends Check
         }
     }
 
+    @Override
+    public Collection<Class<? extends PreProcessor>> getPreProcessorTypes()
+    {
+        return Collections.emptySet();
+    }
 
     @Override
     protected void execute(Solution solution)

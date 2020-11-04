@@ -6,9 +6,11 @@ import tech.clegg.gradeer.configuration.Configuration;
 import tech.clegg.gradeer.execution.junit.TestExecutor;
 import tech.clegg.gradeer.execution.junit.TestResult;
 import tech.clegg.gradeer.execution.junit.TestSuite;
+import tech.clegg.gradeer.preprocessing.PreProcessor;
 import tech.clegg.gradeer.solution.Solution;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Optional;
 
 public class TestSuiteCheck extends Check
@@ -67,6 +69,12 @@ public class TestSuiteCheck extends Check
     {
         TestResult testResult = testExecutor.execute(solution);
         return testResult.proportionPassing();
+    }
+
+    @Override
+    public Collection<Class<? extends PreProcessor>> getPreProcessorTypes()
+    {
+        return Collections.emptySet();
     }
 
     public TestSuite getTestSuite()

@@ -6,13 +6,13 @@ import com.puppycrawl.tools.checkstyle.api.AuditEvent;
 import tech.clegg.gradeer.checks.checkresults.CheckResult;
 import tech.clegg.gradeer.checks.exceptions.InvalidCheckException;
 import tech.clegg.gradeer.configuration.Configuration;
+import tech.clegg.gradeer.preprocessing.CheckstylePreProcessor;
+import tech.clegg.gradeer.preprocessing.PreProcessor;
 import tech.clegg.gradeer.solution.DefaultFlag;
 import tech.clegg.gradeer.solution.Solution;
 
-import java.nio.file.Path;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Map;
 
 public class CheckstyleCheck extends Check
 {
@@ -28,6 +28,11 @@ public class CheckstyleCheck extends Check
                 JsonElement::getAsInt, maximumViolations);
     }
 
+    @Override
+    public Collection<Class<? extends PreProcessor>> getPreProcessorTypes()
+    {
+        return Collections.singleton(CheckstylePreProcessor.class);
+    }
 
     @Override
     public void execute(Solution solution)
