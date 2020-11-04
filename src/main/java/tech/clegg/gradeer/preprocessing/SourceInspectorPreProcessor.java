@@ -27,6 +27,8 @@ public class SourceInspectorPreProcessor extends PreProcessor
             toInspect.add(Paths.get(configuration.getTestOutputDir() + File.separator + solution.getIdentifier()));
         if(Files.exists(configuration.getMergedSolutionsDir()))
             toInspect.add(Paths.get(configuration.getMergedSolutionsDir() + File.separator + solution.getIdentifier() + ".java"));
+        if(Files.exists(configuration.getSolutionCapturedOutputDir()))
+            toInspect.add(Paths.get(configuration.getSolutionCapturedOutputDir() + File.separator + solution.getIdentifier() + "-output"));
 
         this.inspectionCommandProcess = new InspectionCommandProcess(configuration, toInspect);
     }

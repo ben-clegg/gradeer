@@ -27,6 +27,11 @@ public class JavaExecutor
         }
     }
 
+    public JavaExecution getJavaExecution()
+    {
+        return javaExecution;
+    }
+
     public void stop()
     {
         javaExecution.interrupt();
@@ -56,5 +61,17 @@ class JavaExecution extends Thread
     {
         antRunner.halt();
         super.interrupt();
+        try
+        {
+            this.join();
+        } catch (InterruptedException e)
+        {
+            e.printStackTrace();
+        }
+    }
+
+    public SinglePrintingAntRunner getAntRunner()
+    {
+        return antRunner;
     }
 }

@@ -7,6 +7,10 @@ public class Lift {
 	private int capacity = 10;    // default
 	private int numRiders = 0;    // default
 
+	public static void main(String[] args) {
+		System.out.println("Main in testStudentB");
+	}
+
 	public Lift(int highestFloor) {
 		topFloor = highestFloor;
 	}

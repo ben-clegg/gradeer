@@ -9,6 +9,9 @@ import tech.clegg.gradeer.subject.ClassPath;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -21,9 +24,12 @@ public class SinglePrintingAntRunner extends AntRunner
     private BufferedReader stdOut;
     private BufferedReader stdErr;
 
+    private List<String> capturedOutput;
+
     public SinglePrintingAntRunner(Configuration configuration, ClassPath classPath)
     {
         super(configuration, classPath);
+        capturedOutput = new ArrayList<>();
     }
 
     @Override
@@ -45,11 +51,17 @@ public class SinglePrintingAntRunner extends AntRunner
 
             String stdOutLine;
             while (stdOut.ready() && (stdOutLine = stdOut.readLine()) != null)
+            {
                 System.out.println("[StdOut] " + stdOutLine);
+                capturedOutput.add("[StdOut] " + stdOutLine);
+            }
 
             String stdErrLine;
             while (stdErr.ready() && (stdErrLine = stdErr.readLine()) != null)
+            {
                 System.err.println("[StdErr] " + stdErrLine);
+                capturedOutput.add("[StdErr] " + stdErrLine);
+            }
 
         }
         catch (IOException ioEx)
@@ -58,6 +70,11 @@ public class SinglePrintingAntRunner extends AntRunner
         }
 
         return new AntProcessResult();
+    }
+
+    public List<String> getCapturedOutput()
+    {
+        return capturedOutput;
     }
 
     public void halt()

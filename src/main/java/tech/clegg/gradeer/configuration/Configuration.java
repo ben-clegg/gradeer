@@ -54,6 +54,7 @@ public class Configuration
     };
 
     private Path mergedSolutionsDir;
+    private Path solutionCapturedOutputDir;
 
     private Path outputDir;
     private Path checkResultsDir;
@@ -145,6 +146,10 @@ public class Configuration
         mergedSolutionsDir = Paths.get(outputDir + File.separator + "mergedSolutions");
         if(json.mergedSolutionsDirPath != null)
             mergedSolutionsDir = loadLocalOrAbsolutePath(json.mergedSolutionsDirPath);
+
+        solutionCapturedOutputDir = Paths.get(outputDir + File.separator + "solutionCapturedOutput");
+        if(json.solutionCapturedOutputDirPath != null)
+            solutionCapturedOutputDir = loadLocalOrAbsolutePath(json.solutionCapturedOutputDirPath);
 
         preManualJavaClassesToExecute = new ArrayList<>();
         if(json.preManualJavaClassesToExecute != null && json.preManualJavaClassesToExecute.length > 0)
@@ -316,6 +321,11 @@ public class Configuration
         return mergedSolutionsDir;
     }
 
+    public Path getSolutionCapturedOutputDir()
+    {
+        return solutionCapturedOutputDir;
+    }
+
     public Path getCheckResultsDir()
     {
         return checkResultsDir;
@@ -412,6 +422,7 @@ class ConfigurationJSON
     String checkResultsDirPath;
 
     String mergedSolutionsDirPath;
+    String solutionCapturedOutputDirPath;
 
     ClassExecutionTemplate[] preManualJavaClassesToExecute;
     String inspectionCommand;

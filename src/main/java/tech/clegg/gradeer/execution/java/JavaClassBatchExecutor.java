@@ -1,14 +1,17 @@
 package tech.clegg.gradeer.execution.java;
 
+import tech.clegg.gradeer.results.io.FileWriter;
 import tech.clegg.gradeer.subject.ClassPath;
 import tech.clegg.gradeer.configuration.Configuration;
 import tech.clegg.gradeer.execution.SinglePrintingAntRunner;
 import tech.clegg.gradeer.solution.Solution;
 
+import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 public class JavaClassBatchExecutor
 {
@@ -32,7 +35,7 @@ public class JavaClassBatchExecutor
 
         ClassPath classPath = new ClassPath();
         classPath.add(solution.getDirectory());
-        if(Files.exists(configuration.getRuntimeDependenciesDir()))
+        if(configuration.getRuntimeDependenciesDir() != null && Files.exists(configuration.getRuntimeDependenciesDir()))
             classPath.add(configuration.getRuntimeDependenciesDir());
 
 
@@ -57,7 +60,7 @@ public class JavaClassBatchExecutor
 
         if(javaExecutors.isEmpty())
         {
-            System.err.println("No classes marked for execution! Skipping...");
+            System.err.println("No classes marked for execution in pre-processing! Skipping...");
             return;
         }
 
@@ -75,7 +78,18 @@ public class JavaClassBatchExecutor
             return;
         }
 
-        javaExecutors.forEach(JavaExecutor::stop);
+        for (JavaExecutor je : javaExecutors)
+        {
+            je.stop();
+            storeCapturedOutput(je.getJavaExecution().getAntRunner().getCapturedOutput());
+        }
+    }
+
+    private void storeCapturedOutput(List<String> capturedOutput)
+    {
+        FileWriter w = new FileWriter(capturedOutput);
+        w.write(Paths.get(configuration.getSolutionCapturedOutputDir() +
+                File.separator + solution.getIdentifier() + "-output.txt"));
     }
 
 }

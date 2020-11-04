@@ -4,5 +4,11 @@
   "testsDirPath": "testSuites",
   "checkJSONs": ["manualChecks.json"],
   "perTestSuiteTimeout": 120,
-  "checkstyleXml": "checkstyle.xml"
+  "checkstyleXml": "checkstyle.xml",
+  "preManualJavaClassesToExecute": [{
+    "fullClassName" : "pack.Lift",
+    "args": [],
+    "additionalCPElems": [],
+    "waitAfterExecutionTime": 3
+  }]
 }
