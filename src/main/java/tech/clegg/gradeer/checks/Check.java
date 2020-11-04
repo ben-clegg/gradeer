@@ -126,6 +126,11 @@ public abstract class Check
         // Skip if CheckResult exists for the Solution for this Check
         if(!solution.hasCheckResult(this))
             execute(solution);
+        else
+        {
+            // Still need to add any relevant flags to the Solution
+            solution.addFlags(generateFlags(solution.getCheckResult(this).getUnweightedScore()));
+        }
     }
 
     public void setWeight(double weight)
