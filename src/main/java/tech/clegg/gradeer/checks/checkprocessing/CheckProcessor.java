@@ -1,21 +1,12 @@
 package tech.clegg.gradeer.checks.checkprocessing;
 
-import tech.clegg.gradeer.auxiliaryprocesses.InspectionCommandProcess;
 import tech.clegg.gradeer.checks.checkresults.CheckResult;
 import tech.clegg.gradeer.configuration.Configuration;
-import tech.clegg.gradeer.execution.java.JavaClassBatchExecutor;
-import tech.clegg.gradeer.preprocessing.CheckstylePreProcessor;
-import tech.clegg.gradeer.preprocessing.PMDPreProcessor;
 import tech.clegg.gradeer.preprocessing.PreProcessor;
 import tech.clegg.gradeer.preprocessing.generation.PreProcessorGenerator;
-import tech.clegg.gradeer.preprocessing.staticanalysis.pmd.PMDExecutor;
 import tech.clegg.gradeer.solution.Solution;
 import tech.clegg.gradeer.checks.*;
 
-import java.io.File;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.*;
 import java.util.stream.Collectors;
 

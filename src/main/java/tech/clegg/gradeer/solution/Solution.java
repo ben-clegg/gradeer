@@ -2,6 +2,8 @@ package tech.clegg.gradeer.solution;
 
 import tech.clegg.gradeer.checks.Check;
 import tech.clegg.gradeer.checks.checkresults.CheckResult;
+import tech.clegg.gradeer.preprocessing.PreProcessor;
+import tech.clegg.gradeer.preprocessing.PreProcessorResults;
 import tech.clegg.gradeer.preprocessing.staticanalysis.checkstyle.CheckstyleProcessResults;
 import tech.clegg.gradeer.preprocessing.staticanalysis.pmd.PMDProcessResults;
 import tech.clegg.gradeer.subject.JavaSource;
@@ -22,8 +24,7 @@ public class Solution
     Path directory;
     Collection<JavaSource> sources;
 
-    private CheckstyleProcessResults checkstyleProcessResults;
-    private PMDProcessResults pmdProcessResults;
+    private Map<Class<? extends PreProcessor>, PreProcessorResults> preProcessorResults;
 
     private Collection<String> flags = Collections.newSetFromMap(new ConcurrentHashMap<>());
     private Map<Check, CheckResult> checkResultsMap = new ConcurrentHashMap<>();
@@ -31,6 +32,7 @@ public class Solution
     public Solution(Path locationDir)
     {
         this.directory = locationDir;
+        this.preProcessorResults = new HashMap<>();
         try
         {
             sources = Files.walk(directory)
@@ -74,24 +76,35 @@ public class Solution
 
     }
 
-    public void setCheckstyleProcessResults(CheckstyleProcessResults checkstyleProcessResults)
+    public void addPreProcessorResults(Class<? extends PreProcessor> type, PreProcessorResults results)
     {
-        this.checkstyleProcessResults = checkstyleProcessResults;
+        preProcessorResults.put(type, results);
     }
 
-    public void setPmdProcessResults(PMDProcessResults pmdProcessResults)
+    public Collection<PreProcessorResults> getAllPreProcessorResults()
     {
-        this.pmdProcessResults = pmdProcessResults;
+        return preProcessorResults.values();
     }
 
-    public CheckstyleProcessResults getCheckstyleProcessResults()
+    public PreProcessorResults getPreProcessorResultsOfType(Class<? extends PreProcessor> type)
+            throws NoSuchElementException
     {
-        return checkstyleProcessResults;
+        PreProcessorResults r = preProcessorResults.getOrDefault(type, null);
+        if(r != null)
+            return r;
+        throw new NoSuchElementException("No PreProcessorResults for PreProcessor " + type.getSimpleName());
     }
 
-    public PMDProcessResults getPmdProcessResults()
+    public boolean hasPreProcessorResultsOfType(Class<? extends PreProcessor> type)
     {
-        return pmdProcessResults;
+        try
+        {
+            getPreProcessorResultsOfType(type);
+            return true;
+        } catch (NoSuchElementException e)
+        {
+           return false;
+        }
     }
 
     public Path getDirectory()

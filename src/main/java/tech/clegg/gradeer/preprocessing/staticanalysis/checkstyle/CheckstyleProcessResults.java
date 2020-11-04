@@ -5,13 +5,14 @@ import tech.clegg.gradeer.checks.CheckstyleCheck;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import tech.clegg.gradeer.checks.exceptions.NoCheckException;
+import tech.clegg.gradeer.preprocessing.PreProcessorResults;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class CheckstyleProcessResults
+public class CheckstyleProcessResults extends PreProcessorResults
 {
     private static Logger logger = LogManager.getLogger(CheckstyleProcessResults.class);
 
@@ -20,6 +21,7 @@ public class CheckstyleProcessResults
 
     public CheckstyleProcessResults()
     {
+        super();
         this.messages = new ArrayList<>();
         this.auditEvents = new ArrayList<>();
     }

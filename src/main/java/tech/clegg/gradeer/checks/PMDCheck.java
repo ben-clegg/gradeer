@@ -7,6 +7,7 @@ import tech.clegg.gradeer.checks.exceptions.InvalidCheckException;
 import tech.clegg.gradeer.configuration.Configuration;
 import tech.clegg.gradeer.preprocessing.PMDPreProcessor;
 import tech.clegg.gradeer.preprocessing.PreProcessor;
+import tech.clegg.gradeer.preprocessing.staticanalysis.pmd.PMDProcessResults;
 import tech.clegg.gradeer.preprocessing.staticanalysis.pmd.PMDViolation;
 import tech.clegg.gradeer.solution.DefaultFlag;
 import tech.clegg.gradeer.solution.Solution;
@@ -39,7 +40,7 @@ public class PMDCheck extends Check
     public void execute(Solution solution)
     {
         // No PMD results exist
-        if(solution.getPmdProcessResults() == null)
+        if(!solution.hasPreProcessorResultsOfType(PMDPreProcessor.class))
         {
             System.err.println("No PMD process results for Solution " + solution.getIdentifier());
             solution.addFlag(DefaultFlag.NO_PMD_RESULTS);
@@ -55,7 +56,8 @@ public class PMDCheck extends Check
     @Override
     protected double generateUnweightedScore(Solution solution)
     {
-        Collection<PMDViolation> violations = solution.getPmdProcessResults().getViolations(name);
+        PMDProcessResults pmdResults = (PMDProcessResults) solution.getPreProcessorResultsOfType(PMDPreProcessor.class);
+        Collection<PMDViolation> violations = pmdResults.getViolations(name);
 
         if(violations == null || violations.isEmpty())
             return 1.0;

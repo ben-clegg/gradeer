@@ -8,6 +8,8 @@ import tech.clegg.gradeer.checks.exceptions.InvalidCheckException;
 import tech.clegg.gradeer.configuration.Configuration;
 import tech.clegg.gradeer.preprocessing.CheckstylePreProcessor;
 import tech.clegg.gradeer.preprocessing.PreProcessor;
+import tech.clegg.gradeer.preprocessing.staticanalysis.checkstyle.CheckstyleProcess;
+import tech.clegg.gradeer.preprocessing.staticanalysis.checkstyle.CheckstyleProcessResults;
 import tech.clegg.gradeer.solution.DefaultFlag;
 import tech.clegg.gradeer.solution.Solution;
 
@@ -38,7 +40,7 @@ public class CheckstyleCheck extends Check
     public void execute(Solution solution)
     {
         // No Checkstyle results exist
-        if(solution.getCheckstyleProcessResults() == null)
+        if(!solution.hasPreProcessorResultsOfType(CheckstylePreProcessor.class))
         {
             System.err.println("No Checkstyle process results for Solution " + solution.getIdentifier());
             solution.addFlag(DefaultFlag.NO_CHECKSTYLE_RESULTS);
@@ -54,8 +56,9 @@ public class CheckstyleCheck extends Check
     @Override
     protected double generateUnweightedScore(Solution solution)
     {
-        Collection<AuditEvent> violations = solution.getCheckstyleProcessResults()
-                .getAuditEventsForCheck(this);
+        CheckstyleProcessResults csResults =
+                (CheckstyleProcessResults) solution.getPreProcessorResultsOfType(CheckstylePreProcessor.class);
+        Collection<AuditEvent> violations = csResults.getAuditEventsForCheck(this);
 
         // If no violations defined for this check and solution, assume it is correct
         if(violations == null || violations.isEmpty())

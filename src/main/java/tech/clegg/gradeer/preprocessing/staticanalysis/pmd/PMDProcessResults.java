@@ -2,6 +2,7 @@ package tech.clegg.gradeer.preprocessing.staticanalysis.pmd;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import tech.clegg.gradeer.preprocessing.PreProcessorResults;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -12,7 +13,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-public class PMDProcessResults
+public class PMDProcessResults extends PreProcessorResults
 {
     private static Logger logger = LogManager.getLogger(PMDProcessResults.class);
 
@@ -23,6 +24,7 @@ public class PMDProcessResults
 
     public PMDProcessResults(ProcessBuilder processBuilder)
     {
+        super();
         try
         {
             Process process = processBuilder.start();

@@ -21,7 +21,7 @@ public class CheckstylePreProcessor extends PreProcessor
         try
         {
             CheckstyleProcessResults results = checkstyleExecutor.execute(getSolution());
-            getSolution().setCheckstyleProcessResults(results);
+            getSolution().addPreProcessorResults(this.getClass(), results);
         }
         catch (CheckstyleException checkstyleException)
         {
