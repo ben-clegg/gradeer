@@ -49,7 +49,7 @@ public class JavaClassBatchExecutor
             }
 
             // Make a single ant runner - allows for the process to be terminated
-            SinglePrintingAntRunner antRunner = new SinglePrintingAntRunner(configuration, execCP);
+            SinglePrintingAntRunner antRunner = new SinglePrintingAntRunner(configuration, execCP, solution);
             javaExecutors.add(new JavaExecutor(antRunner, cet));
         }
     }
@@ -81,7 +81,6 @@ public class JavaClassBatchExecutor
         for (JavaExecutor je : javaExecutors)
         {
             je.stop();
-            storeCapturedOutput(je.getJavaExecution().getAntRunner().getCapturedOutput());
         }
     }
 

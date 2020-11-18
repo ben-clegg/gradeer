@@ -9,6 +9,14 @@ public class Lift {
 
 	public static void main(String[] args) {
 		System.out.println("Main in testStudentB");
+		try
+		{
+			// Wait to check if gradeer blocks
+			Thread.sleep(5000);
+		} catch (InterruptedException intEx)
+		{
+			intEx.printStackTrace();
+		}
 	}
 
 	public Lift(int highestFloor) {

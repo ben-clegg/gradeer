@@ -150,4 +150,9 @@ public class AntRunner
 
         return res;
     }
+
+    Configuration getConfiguration()
+    {
+        return config;
+    }
 }

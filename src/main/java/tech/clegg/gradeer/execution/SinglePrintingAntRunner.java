@@ -4,11 +4,14 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import tech.clegg.gradeer.configuration.Configuration;
 import tech.clegg.gradeer.configuration.Environment;
+import tech.clegg.gradeer.solution.Solution;
 import tech.clegg.gradeer.subject.ClassPath;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -18,18 +21,16 @@ import java.util.concurrent.TimeUnit;
 public class SinglePrintingAntRunner extends AntRunner
 {
     private static Logger logger = LogManager.getLogger(SinglePrintingAntRunner.class);
+    private final Solution solution;
 
     private Process process;
 
-    private BufferedReader stdOut;
-    private BufferedReader stdErr;
+    private OutputMonitoringThread outputMonitoringThread;
 
-    private List<String> capturedOutput;
-
-    public SinglePrintingAntRunner(Configuration configuration, ClassPath classPath)
+    public SinglePrintingAntRunner(Configuration configuration, ClassPath classPath, Solution solution)
     {
         super(configuration, classPath);
-        capturedOutput = new ArrayList<>();
+        this.solution = solution;
     }
 
     @Override
@@ -45,36 +46,22 @@ public class SinglePrintingAntRunner extends AntRunner
         try
         {
             process = pb.start();
+            outputMonitoringThread = new OutputMonitoringThread(
+                    process.getInputStream(),
+                    process.getErrorStream(),
+                    Paths.get(getConfiguration().getSolutionCapturedOutputDir() +
+                            File.separator + solution.getIdentifier() + "-output.txt")
+            );
 
-            stdOut = new BufferedReader(new InputStreamReader(process.getInputStream()));
-            stdErr = new BufferedReader(new InputStreamReader(process.getErrorStream()));
-
-            String stdOutLine;
-            while (stdOut.ready() && (stdOutLine = stdOut.readLine()) != null)
-            {
-                System.out.println("[StdOut] " + stdOutLine);
-                capturedOutput.add("[StdOut] " + stdOutLine);
-            }
-
-            String stdErrLine;
-            while (stdErr.ready() && (stdErrLine = stdErr.readLine()) != null)
-            {
-                System.err.println("[StdErr] " + stdErrLine);
-                capturedOutput.add("[StdErr] " + stdErrLine);
-            }
-
+            outputMonitoringThread.start();
+            outputMonitoringThread.join();
         }
-        catch (IOException ioEx)
+        catch (IOException | InterruptedException ex)
         {
-            ioEx.printStackTrace();
+            ex.printStackTrace();
         }
 
         return new AntProcessResult();
-    }
-
-    public List<String> getCapturedOutput()
-    {
-        return capturedOutput;
     }
 
     public void halt()
@@ -90,15 +77,9 @@ public class SinglePrintingAntRunner extends AntRunner
             process.waitFor(80, TimeUnit.MILLISECONDS);
             process.destroy();
             process.waitFor(80, TimeUnit.MILLISECONDS);
-
-            stdOut.close();
-            stdErr.close();
         } catch (InterruptedException e)
         {
             logger.info("Process terminated early.");
-        } catch (IOException e)
-        {
-            e.printStackTrace();
         }
     }
 }
