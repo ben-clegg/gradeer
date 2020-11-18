@@ -15,6 +15,7 @@ import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.stream.Collectors;
@@ -35,13 +36,26 @@ public class CheckResultsStorage
      */
     public void storeCheckResults(Solution solution)
     {
-        Collection<CheckResult> checkResults = solution.getAllCheckResults();
 
-        // Create CheckResultEntry array (from feedback, unweighted score and Check's identifier)
-        CheckResultEntry[] entries = checkResults.stream()
+        // Load current execution's CheckResults & their associated Checks
+        Collection<CheckResult> newCheckResults = solution.getAllCheckResults();
+        Collection<Check> newCheckResultsChecks = newCheckResults.stream()
+                .map(CheckResult::getCheck)
+                .collect(Collectors.toList());
+
+        // Load existing stored CheckResultEntries that do NOT share Checks with the new CheckResults
+        Collection<CheckResultEntry> checkResultEntries = Arrays.stream(loadExistingCheckResultEntries(solution))
+                .filter(e -> e.findMatchingCheck(newCheckResultsChecks) == null)
+                .collect(Collectors.toList());
+
+        // Convert new CheckResults to CheckResultEntries & add to checkResultEntries
+        checkResultEntries.addAll(newCheckResults.stream()
                 .map(CheckResultEntry::new)
                 .collect(Collectors.toList())
-                .toArray(new CheckResultEntry[]{});
+        );
+
+        // Convert to array
+        CheckResultEntry[] entries = checkResultEntries.toArray(new CheckResultEntry[]{});
 
         // Store CheckResultEntry array as JSON
         try
@@ -76,6 +90,22 @@ public class CheckResultsStorage
      */
     public void recoverCheckResults(Solution solution, Collection<CheckProcessor> checkProcessors)
     {
+        CheckResultEntry[] entries = loadExistingCheckResultEntries(solution);
+        // Match each check to each available CheckResultEntry; construct CheckResults
+        Collection<CheckResult> checkResults = matchedCheckResults(getAllChecks(checkProcessors), entries);
+
+        // Populate Solution with matched CheckResults; don't overwrite existing entries
+        if(!checkResults.isEmpty())
+        {
+            solution.addAllCheckResults(checkResults, false);
+            System.out.println("Sucessfully recovered " + checkResults.size() +
+                    " Check results for Solution " + solution.getIdentifier());
+        }
+
+    }
+
+    private CheckResultEntry[] loadExistingCheckResultEntries(Solution solution)
+    {
         // Read JSON file
         Path jsonPath = Paths.get(configuration.getSolutionCheckResultsStoragePath() + File.separator +
                 solution.getIdentifier() + ".json");
@@ -84,7 +114,7 @@ public class CheckResultsStorage
         {
             System.out.println("No check results JSON file present for Solution " + solution.getIdentifier() +
                     "; skipping recovery...");
-            return;
+            return new CheckResultEntry[]{};
         }
 
         // File exists; attempt load
@@ -92,21 +122,14 @@ public class CheckResultsStorage
         {
             Gson gson = new Gson();
             Reader jsonReader = new FileReader(jsonPath.toFile());
-            CheckResultEntry[] entries = gson.fromJson(jsonReader, CheckResultEntry[].class);
 
-            // Match each check to each available CheckResultEntry; construct CheckResults
-            Collection<CheckResult> checkResults = matchedCheckResults(getAllChecks(checkProcessors), entries);
-
-            // Populate Solution with matched CheckResults; don't overwrite existing entries
-            solution.addAllCheckResults(checkResults, false);
-            System.out.println("Sucessfully recovered " + checkResults.size() +
-                    " Check results for Solution " + solution.getIdentifier());
-
-        } catch (FileNotFoundException e)
+            return gson.fromJson(jsonReader, CheckResultEntry[].class);
+        }
+        catch (FileNotFoundException e)
         {
             e.printStackTrace();
+            return new CheckResultEntry[]{};
         }
-
     }
 
     private Collection<CheckResult> matchedCheckResults(Collection<Check> checksToMatch,
