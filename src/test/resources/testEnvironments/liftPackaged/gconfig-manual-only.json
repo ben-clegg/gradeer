@@ -10,5 +10,6 @@
     "args": [],
     "additionalCPElems": [],
     "waitAfterExecutionTime": 3
-  }]
+  }],
+  "inspectionCommand": "atom"
 }
