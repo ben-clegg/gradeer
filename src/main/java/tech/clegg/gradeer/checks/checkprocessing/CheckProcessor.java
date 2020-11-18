@@ -8,6 +8,8 @@ import tech.clegg.gradeer.solution.Solution;
 import tech.clegg.gradeer.checks.*;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.stream.Collectors;
 
 public class CheckProcessor
@@ -84,6 +86,9 @@ public class CheckProcessor
             return;
         }
 
+        // Store checks that did not have restored CheckResults; i.e. are executed now
+        Collection<Check> currentlyExecutedChecks = new ArrayList<>();
+
         // Generate & run PreProcessors
         Collection<PreProcessor> preProcessors =
                 new PreProcessorGenerator(getAllChecks(), configuration)
@@ -95,23 +100,36 @@ public class CheckProcessor
         priorityValues.sort(Collections.reverseOrder());
         for (int p : priorityValues)
         {
-            runCheckGroup(solution, checkGroups.get(p));
+            currentlyExecutedChecks.addAll(
+                    runCheckGroup(solution, checkGroups.get(p))
+            );
         }
 
         // Stop PreProcessors
         preProcessors.forEach(PreProcessor::stop);
         // TODO Only execute PreProcessors while they are necessary
 
-        // Restart ManualChecks if selected
-        if(checkTypeIsPresent(ManualCheck.class))
+        // Restart ManualChecks if selected & just executed
+        if(checkTypeIsPresent(ManualCheck.class, currentlyExecutedChecks))
             restartManualChecks(solution);
 
         executedSolutions.add(solution);
         configuration.getTimer().split("Completed checks for Solution " + solution.getIdentifier());
     }
 
-    private void runCheckGroup(Solution solution, Collection<Check> checks)
+    /**
+     *
+     * @param solution
+     * @param checks
+     * @return the Checks that were not previously executed (i.e. just executed by running this method)
+     */
+    private Collection<Check> runCheckGroup(Solution solution, Collection<Check> checks)
     {
+        // Determine which checks have not already been executed
+        Collection<Check> executedChecks = checks.stream()
+                .filter(c -> !solution.hasCheckResult(c))
+                .collect(Collectors.toList());
+
         // Run all checks procedurally if multithreading is disabled
         if(!configuration.isMultiThreadingEnabled())
         {
@@ -119,7 +137,7 @@ public class CheckProcessor
             {
                 c.run(solution);
             }
-            return;
+            return executedChecks;
         }
 
         // Split concurrent and non-concurrent checks
@@ -132,6 +150,7 @@ public class CheckProcessor
 
         concurrent.parallelStream().forEach(c -> c.run(solution));
         nonConcurrent.forEach(c -> c.run(solution));
+        return executedChecks;
     }
 
     private boolean checkTypeIsPresent(Class<? extends Check> checkType)
@@ -142,6 +161,11 @@ public class CheckProcessor
     private boolean checkTypeIsPresent(Class<? extends Check> checkType, Collection<Check> checks)
     {
         return checks.stream().anyMatch(c -> c.getClass().equals(checkType));
+    }
+
+    private boolean allCheckResultsAlreadyPresent(Solution solution)
+    {
+        return getAllChecks().stream().allMatch(solution::hasCheckResult);
     }
 
     private void restartManualChecks(Solution solution)
