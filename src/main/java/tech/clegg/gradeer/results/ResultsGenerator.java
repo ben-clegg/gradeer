@@ -57,7 +57,6 @@ public class ResultsGenerator implements Runnable
         }
 
         writeSolutionsFailingAllUnitTests();
-        writeIndividualCheckResults();
         writeCombinedCheckResults();
         writeGrades();
         writeFeedback();
@@ -117,39 +116,6 @@ public class ResultsGenerator implements Runnable
             f.addLine(s.getIdentifier());
         f.write(Paths.get(configuration.getOutputDir() + File.separator + "SolutionsFailingAllUnitTests"));
     }
-
-    private void writeIndividualCheckResults()
-    {
-        if(configuration.getCheckResultsDir() == null)
-            return;
-
-        configuration.getCheckResultsDir().toFile().mkdirs();
-
-        for (Solution s : studentSolutions)
-        {
-            // Individual file
-            FileWriter f = new FileWriter();
-            for (CheckProcessor checkProcessor : checkProcessors)
-            {
-                for (Check c : checkProcessor.getAllChecks())
-                {
-                    f.addLine(
-                            c.getClass().getSimpleName() +
-                            " - " +
-                            c.getName() +
-                            ": " +
-                            s.calculateWeightedScore(c) +
-                            " / " +
-                            c.getWeight()
-                    );
-                }
-            }
-
-            f.write(Paths.get(configuration.getCheckResultsDir() + File.separator + s.getIdentifier()));
-        }
-    }
-
-
 
     /**
      * Creates a matrix of unweighted scores for each check on each solution, stored as a CSV

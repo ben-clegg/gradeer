@@ -57,7 +57,6 @@ public class Configuration
     private Path solutionCapturedOutputDir;
 
     private Path outputDir;
-    private Path checkResultsDir;
 
     private String inspectionCommand;
 
@@ -138,10 +137,6 @@ public class Configuration
         testOutputDir = Paths.get(outputDir + File.separator + "testOutput");
         if(json.testOutputDirPath != null)
             testOutputDir = loadLocalOrAbsolutePath(json.testOutputDirPath);
-
-        checkResultsDir = Paths.get(outputDir + File.separator + "checkResults");
-        if(json.checkResultsDirPath != null)
-            checkResultsDir = loadLocalOrAbsolutePath(json.checkResultsDirPath);
 
         mergedSolutionsDir = Paths.get(outputDir + File.separator + "mergedSolutions");
         if(json.mergedSolutionsDirPath != null)
@@ -326,11 +321,6 @@ public class Configuration
         return solutionCapturedOutputDir;
     }
 
-    public Path getCheckResultsDir()
-    {
-        return checkResultsDir;
-    }
-
     public boolean isSkipChecksFailingOnAnyModel()
     {
         return skipChecksFailingOnAnyModel;
@@ -418,8 +408,6 @@ class ConfigurationJSON
 
     String checkstyleXml;
     String[] pmdRulesets;
-
-    String checkResultsDirPath;
 
     String mergedSolutionsDirPath;
     String solutionCapturedOutputDirPath;
