@@ -4,7 +4,7 @@ import tech.clegg.gradeer.checks.Check;
 import tech.clegg.gradeer.checks.checkprocessing.CheckProcessor;
 import tech.clegg.gradeer.configuration.Configuration;
 import tech.clegg.gradeer.results.io.CSVWriter;
-import tech.clegg.gradeer.results.io.FileWriter;
+import tech.clegg.gradeer.results.io.DelayedFileWriter;
 import tech.clegg.gradeer.solution.Solution;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -111,7 +111,7 @@ public class ResultsGenerator implements Runnable
         if(failAllUnitTests.isEmpty())
             return;
 
-        FileWriter f = new FileWriter();
+        DelayedFileWriter f = new DelayedFileWriter();
         for(Solution s : failAllUnitTests)
             f.addLine(s.getIdentifier());
         f.write(Paths.get(configuration.getOutputDir() + File.separator + "SolutionsFailingAllUnitTests"));
@@ -191,7 +191,7 @@ public class ResultsGenerator implements Runnable
     {
         for (Solution s : studentSolutions)
         {
-            FileWriter file = new FileWriter();
+            DelayedFileWriter file = new DelayedFileWriter();
             file.addLine(generateFeedback(s));
             file.write(Paths.get(configuration.getOutputDir() + File.separator + "feedback" + File.separator + s.getIdentifier() + "_feedback.txt"));
         }

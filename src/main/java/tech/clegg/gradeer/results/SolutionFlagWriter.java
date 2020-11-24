@@ -1,8 +1,7 @@
 package tech.clegg.gradeer.results;
 
 import tech.clegg.gradeer.configuration.Configuration;
-import tech.clegg.gradeer.results.io.FileWriter;
-import tech.clegg.gradeer.solution.DefaultFlag;
+import tech.clegg.gradeer.results.io.DelayedFileWriter;
 import tech.clegg.gradeer.solution.Solution;
 
 import java.io.File;
@@ -24,7 +23,7 @@ public class SolutionFlagWriter
 
     public void write(Collection<Solution> solutions)
     {
-        FileWriter f = new FileWriter();
+        DelayedFileWriter f = new DelayedFileWriter();
 
         // Flagless solutions
         f.addLine("Unflagged");

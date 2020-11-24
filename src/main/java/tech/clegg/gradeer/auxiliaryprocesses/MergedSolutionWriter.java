@@ -1,7 +1,7 @@
 package tech.clegg.gradeer.auxiliaryprocesses;
 
 import tech.clegg.gradeer.configuration.Configuration;
-import tech.clegg.gradeer.results.io.FileWriter;
+import tech.clegg.gradeer.results.io.DelayedFileWriter;
 import tech.clegg.gradeer.subject.JavaSource;
 import tech.clegg.gradeer.solution.Solution;
 import org.apache.logging.log4j.LogManager;
@@ -41,7 +41,7 @@ public class MergedSolutionWriter implements Runnable
 
     private void writeMerged(Solution solution)
     {
-        FileWriter w = new FileWriter();
+        DelayedFileWriter w = new DelayedFileWriter();
 
 
         for (JavaSource source : solution.getSources())

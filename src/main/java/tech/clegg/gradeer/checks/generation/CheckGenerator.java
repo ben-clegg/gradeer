@@ -4,7 +4,7 @@ import com.google.gson.*;
 import com.google.gson.stream.JsonReader;
 import tech.clegg.gradeer.checks.Check;
 import tech.clegg.gradeer.configuration.Configuration;
-import tech.clegg.gradeer.results.io.FileWriter;
+import tech.clegg.gradeer.results.io.DelayedFileWriter;
 import tech.clegg.gradeer.solution.Solution;
 
 import java.io.File;
@@ -97,15 +97,15 @@ public class CheckGenerator
 
     protected void reportRemovedChecks(Collection<Check> toRemove, String generatorType)
     {
-        FileWriter fileWriter = new FileWriter();
+        DelayedFileWriter delayedFileWriter = new DelayedFileWriter();
         for (Check c : toRemove)
-            fileWriter.addLine(c.toString());
+            delayedFileWriter.addLine(c.toString());
 
         final Path removedChecksDir = Paths.get(configuration.getOutputDir() + File.separator + "removedChecks");
 
         if(Files.notExists(removedChecksDir))
             removedChecksDir.toFile().mkdirs();
-        fileWriter.write(Paths.get(removedChecksDir + File.separator + generatorType));
+        delayedFileWriter.write(Paths.get(removedChecksDir + File.separator + generatorType));
 
     }
     public Collection<Check> getChecks()

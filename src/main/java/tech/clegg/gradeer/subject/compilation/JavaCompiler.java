@@ -5,7 +5,7 @@ import tech.clegg.gradeer.subject.ClassPath;
 import tech.clegg.gradeer.configuration.Configuration;
 import tech.clegg.gradeer.execution.AntProcessResult;
 import tech.clegg.gradeer.execution.AntRunner;
-import tech.clegg.gradeer.results.io.FileWriter;
+import tech.clegg.gradeer.results.io.DelayedFileWriter;
 import tech.clegg.gradeer.solution.Solution;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -64,12 +64,12 @@ public class JavaCompiler
         // Report if uncompilable
         if (!result.compiled())
         {
-            FileWriter fileWriter = new FileWriter();
-            fileWriter.addLine(result.getErrorMessage());
+            DelayedFileWriter delayedFileWriter = new DelayedFileWriter();
+            delayedFileWriter.addLine(result.getErrorMessage());
 
             final Path uncompilableSolutionsDir = Paths.get(configuration.getOutputDir() + File.separator + "uncompilableSolutions");
             uncompilableSolutionsDir.toFile().mkdirs();
-            fileWriter.write(Paths.get(uncompilableSolutionsDir + File.separator + solutionToCompile.getIdentifier()));
+            delayedFileWriter.write(Paths.get(uncompilableSolutionsDir + File.separator + solutionToCompile.getIdentifier()));
 
             // Set flag for Solution
             solutionToCompile.addFlag(DefaultFlag.UNCOMPILABLE);

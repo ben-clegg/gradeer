@@ -2,7 +2,7 @@ package tech.clegg.gradeer.results.io;
 
 import java.nio.file.Path;
 
-public class LogFile extends FileWriter
+public class LogFile extends DelayedFileWriter
 {
     private Path location;
 

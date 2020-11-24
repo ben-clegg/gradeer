@@ -3,7 +3,7 @@ package tech.clegg.gradeer.execution.junit;
 import tech.clegg.gradeer.configuration.Configuration;
 import tech.clegg.gradeer.execution.AntProcessResult;
 import tech.clegg.gradeer.execution.AntRunner;
-import tech.clegg.gradeer.results.io.FileWriter;
+import tech.clegg.gradeer.results.io.DelayedFileWriter;
 import tech.clegg.gradeer.subject.ClassPath;
 import tech.clegg.gradeer.solution.Solution;
 import org.apache.logging.log4j.LogManager;
@@ -42,7 +42,7 @@ public class TestExecutor
             configuration.getTestOutputDir().toFile().mkdirs();
             Path output = Paths.get(configuration.getTestOutputDir() + File.separator + solution.getIdentifier());
 
-            FileWriter f = new FileWriter(true);
+            DelayedFileWriter f = new DelayedFileWriter(true);
             f.addLine("\n" + testSuite.getBaseName() + ":");
             f.addLine(antProcessResult.getJUnitMessage());
             f.write(output);

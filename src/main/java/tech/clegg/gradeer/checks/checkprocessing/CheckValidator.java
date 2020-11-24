@@ -3,7 +3,7 @@
 import tech.clegg.gradeer.checks.Check;
 import tech.clegg.gradeer.checks.ManualCheck;
 import tech.clegg.gradeer.configuration.Configuration;
-import tech.clegg.gradeer.results.io.FileWriter;
+import tech.clegg.gradeer.results.io.DelayedFileWriter;
 import tech.clegg.gradeer.solution.Solution;
 
 import java.io.File;
@@ -80,14 +80,14 @@ import java.util.stream.Collectors;
 
     private void writeCheckIssuesReport(Collection<String> checkIssues)
     {
-        FileWriter fileWriter = new FileWriter();
+        DelayedFileWriter delayedFileWriter = new DelayedFileWriter();
         for (String s : checkIssues)
-            fileWriter.addLine(s);
+            delayedFileWriter.addLine(s);
 
         final Path reportLoc = Paths.get(configuration.getOutputDir() + File.separator + "reportedCheckIssues.log");
 
         if(Files.notExists(reportLoc))
             reportLoc.getParent().toFile().mkdirs();
-        fileWriter.write(reportLoc);
+        delayedFileWriter.write(reportLoc);
     }
 }

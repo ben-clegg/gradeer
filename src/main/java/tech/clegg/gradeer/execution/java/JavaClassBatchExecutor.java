@@ -1,6 +1,6 @@
 package tech.clegg.gradeer.execution.java;
 
-import tech.clegg.gradeer.results.io.FileWriter;
+import tech.clegg.gradeer.results.io.DelayedFileWriter;
 import tech.clegg.gradeer.subject.ClassPath;
 import tech.clegg.gradeer.configuration.Configuration;
 import tech.clegg.gradeer.execution.SinglePrintingAntRunner;
@@ -86,7 +86,7 @@ public class JavaClassBatchExecutor
 
     private void storeCapturedOutput(List<String> capturedOutput)
     {
-        FileWriter w = new FileWriter(capturedOutput);
+        DelayedFileWriter w = new DelayedFileWriter(capturedOutput);
         w.write(Paths.get(configuration.getSolutionCapturedOutputDir() +
                 File.separator + solution.getIdentifier() + "-output.txt"));
     }

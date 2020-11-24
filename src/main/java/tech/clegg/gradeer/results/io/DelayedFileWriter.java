@@ -7,23 +7,23 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-public class FileWriter
+public class DelayedFileWriter
 {
     private final List<String> lines;
     private boolean appendMode = false;
 
-    public FileWriter(boolean append)
+    public DelayedFileWriter(boolean append)
     {
         this.lines = new ArrayList<>();
         this.appendMode = append;
     }
 
-    public FileWriter()
+    public DelayedFileWriter()
     {
         this(false);
     }
 
-    public FileWriter(List<String> lines)
+    public DelayedFileWriter(List<String> lines)
     {
         this.lines = lines;
     }
@@ -37,7 +37,7 @@ public class FileWriter
             // Make dir if it doesn't exist
             if(!Files.exists(location.getParent()))
             {
-                Files.createDirectory(location.getParent());
+                Files.createDirectories(location.getParent());
             }
 
             writer = new java.io.FileWriter(location.toString(), appendMode);
