@@ -118,7 +118,11 @@ public class Gradeer
 
         // Link compiled TestSuites to TestSuiteChecks
         for (TestSuiteCheck c : testSuiteChecks)
+        {
             c.loadTestSuite(testSuites);
+            if(!c.getTestSuite().isCompiled())
+                logger.error("[WARNING] Test Suite " + c.getName() + " is not compiled!");
+        }
 
 
         // Create default checks for unlinked TestSuites if enabled
@@ -203,7 +207,11 @@ public class Gradeer
     private void loadModelSolutions()
     {
         modelSolutions = loadSolutions(configuration.getModelSolutionsDir());
-
+        for (Solution m : modelSolutions)
+        {
+            if(!m.isCompiled())
+               logger.error("[SEVERE] Model solution " + m.getIdentifier() + " was not compiled.");
+        }
     }
 
     public Configuration getConfiguration()

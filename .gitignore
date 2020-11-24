@@ -2,5 +2,6 @@ target
 jars
 src/test/resources/testEnvironment/**/*.class
 src/test/resources/testEnvironments/**/*.tar.gz
+src/test/resources/testEnvironments/fitnessAssignment
 
 src/test/resources/testEnvironment/*/output/**/*
