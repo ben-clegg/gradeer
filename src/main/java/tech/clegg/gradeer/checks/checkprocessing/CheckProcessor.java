@@ -1,5 +1,6 @@
 package tech.clegg.gradeer.checks.checkprocessing;
 
+import dnl.utils.text.table.TextTable;
 import tech.clegg.gradeer.checks.checkresults.CheckResult;
 import tech.clegg.gradeer.configuration.Configuration;
 import tech.clegg.gradeer.preprocessing.PreProcessor;
@@ -8,8 +9,6 @@ import tech.clegg.gradeer.solution.Solution;
 import tech.clegg.gradeer.checks.*;
 
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.stream.Collectors;
 
 public class CheckProcessor
@@ -111,10 +110,39 @@ public class CheckProcessor
 
         // Restart ManualChecks if selected & just executed
         if(checkTypeIsPresent(ManualCheck.class, currentlyExecutedChecks))
+        {
+            // Show results of manual checks
+            TextTable tt = generateCheckResultsTable(
+                    solution.getAllCheckResults()
+                            .stream()
+                            .filter(r -> r.getCheck().getClass().equals(ManualCheck.class))
+                            .collect(Collectors.toList())
+            );
+            tt.printTable();
+
             restartManualChecks(solution);
+        }
 
         executedSolutions.add(solution);
         configuration.getTimer().split("Completed checks for Solution " + solution.getIdentifier());
+    }
+
+    private TextTable generateCheckResultsTable(Collection<CheckResult> checkResults)
+    {
+        String[] columnNames = {"Check", "Unweighted Score", "Feedback"};
+
+        // Load results
+        String[][] entries = new String[checkResults.size()][3];
+        int i = 0;
+        for (CheckResult r : checkResults)
+        {
+            entries[i][0] = r.getCheck().getName();
+            entries[i][1] = String.valueOf(r.getUnweightedScore());
+            entries[i][2] = r.getFeedback().replace("\n", "; ");
+            i++;
+        }
+
+        return new TextTable(columnNames, entries);
     }
 
     /**
