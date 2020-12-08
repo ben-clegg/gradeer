@@ -67,8 +67,8 @@ public class Configuration
 
     private Collection<String> requiredClasses = new HashSet<>();
 
-    private Collection<String> includeSolutions;
-    private Collection<String> excludeSolutions;
+    private Collection<String> includeSolutions = new HashSet<>();
+    private Collection<String> excludeSolutions = new HashSet<>();
     private boolean removeInvalidChecks;
 
 
@@ -159,8 +159,8 @@ public class Configuration
 
         loadRequiredClasses(json);
 
-        includeSolutions = loadJsonStringArray(json.includeSolutions);
-        excludeSolutions = loadJsonStringArray(json.excludeSolutions);
+        includeSolutions.addAll(loadJsonStringArray(json.includeSolutions));
+        excludeSolutions.addAll(loadJsonStringArray(json.excludeSolutions));
 
         removeInvalidChecks = json.removeInvalidChecks;
     }

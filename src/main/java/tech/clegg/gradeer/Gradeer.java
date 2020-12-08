@@ -8,6 +8,8 @@ import tech.clegg.gradeer.checks.checkprocessing.CheckValidator;
 import tech.clegg.gradeer.checks.generation.CheckGenerator;
 import tech.clegg.gradeer.configuration.Configuration;
 import tech.clegg.gradeer.configuration.Environment;
+import tech.clegg.gradeer.configuration.cli.CLIOptions;
+import tech.clegg.gradeer.configuration.cli.CLIReader;
 import tech.clegg.gradeer.execution.junit.TestSuite;
 import tech.clegg.gradeer.execution.junit.TestSuiteLoader;
 import tech.clegg.gradeer.results.ResultsGenerator;
@@ -37,21 +39,40 @@ public class Gradeer
 
     public static void main(String[] args)
     {
-        Path configJSON = Paths.get(args[0]);
-        if (Files.notExists(configJSON))
+        CLIReader cliReader = new CLIReader(args);
+
+        try
         {
-            logger.error("Config JSON file " + configJSON.toString() + " does not exist!");
+            // Setup config
+            Path configJSON = Paths.get(cliReader.getInputValue(CLIOptions.CONFIGURATION_LOCATION));
+            if (Files.notExists(configJSON))
+            {
+                logger.error("Config JSON file " + configJSON.toString() + " does not exist!");
+                System.exit(ErrorCode.NO_CONFIG_FILE.getCode());
+            }
+            Configuration config = new Configuration(configJSON);
+
+            // Add included / excluded solutions
+            config.getIncludeSolutions().addAll(cliReader.getArrayInputOrEmpty(CLIOptions.INCLUDE_SOLUTIONS));
+            config.getExcludeSolutions().addAll(cliReader.getArrayInputOrEmpty(CLIOptions.EXCLUDE_SOLUTIONS));
+
+            // Start Gradeer
+            Gradeer gradeer = new Gradeer(config);
+
+            ResultsGenerator resultsGenerator = gradeer.startEnvironment();
+            resultsGenerator.run();
+
+            System.out.println("Completed grading for config " + configJSON.getFileName());
+            config.getTimer().end();
+
+        } catch (IllegalArgumentException e)
+        {
+            // No config file
+            e.printStackTrace();
+            logger.error("No configuration file defined, exiting... ");
             System.exit(ErrorCode.NO_CONFIG_FILE.getCode());
         }
 
-        Configuration config = new Configuration(configJSON);
-        Gradeer gradeer = new Gradeer(config);
-
-        ResultsGenerator resultsGenerator = gradeer.startEnvironment();
-        resultsGenerator.run();
-
-        System.out.println("Completed grading for config " + configJSON.getFileName());
-        config.getTimer().end();
     }
 
     public Gradeer(Configuration config)
