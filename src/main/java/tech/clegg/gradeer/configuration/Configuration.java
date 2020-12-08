@@ -396,7 +396,7 @@ class ConfigurationJSON
     String studentSolutionsDirPath;
     String modelSolutionsDirPath;
     String testsDirPath;
-    boolean autoGenerateTestSuiteChecks = true;
+    boolean autoGenerateTestSuiteChecks = false;
     String runtimeDependenciesDirPath;
     String testDependenciesDirPath;
     String sourceDependenciesDirPath;
