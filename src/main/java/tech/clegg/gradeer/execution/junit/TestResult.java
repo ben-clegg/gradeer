@@ -1,13 +1,9 @@
 package tech.clegg.gradeer.execution.junit;
 
 import tech.clegg.gradeer.execution.AntProcessResult;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 public class TestResult
 {
-    private static Logger logger = LogManager.getLogger(TestResult.class);
-
     private final int passingTests;
     private final int totalTests;
     private final int failuresAndErrors;

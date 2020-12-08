@@ -13,12 +13,9 @@ import tech.clegg.gradeer.configuration.cli.CLIReader;
 import tech.clegg.gradeer.execution.junit.TestSuite;
 import tech.clegg.gradeer.execution.junit.TestSuiteLoader;
 import tech.clegg.gradeer.results.ResultsGenerator;
-import tech.clegg.gradeer.solution.DefaultFlag;
 import tech.clegg.gradeer.subject.compilation.JavaCompiler;
 import tech.clegg.gradeer.error.ErrorCode;
 import tech.clegg.gradeer.solution.Solution;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -29,8 +26,6 @@ import java.util.stream.Collectors;
 
 public class Gradeer
 {
-    private static Logger logger = LogManager.getLogger(Gradeer.class);
-
     private Configuration configuration;
 
     private Collection<Solution> modelSolutions;
@@ -39,6 +34,7 @@ public class Gradeer
 
     public static void main(String[] args)
     {
+        // Read CLI
         CLIReader cliReader = new CLIReader(args);
 
         try
@@ -47,7 +43,7 @@ public class Gradeer
             Path configJSON = Paths.get(cliReader.getInputValue(CLIOptions.CONFIGURATION_LOCATION));
             if (Files.notExists(configJSON))
             {
-                logger.error("Config JSON file " + configJSON.toString() + " does not exist!");
+                System.err.println("Config JSON file " + configJSON.toString() + " does not exist!");
                 System.exit(ErrorCode.NO_CONFIG_FILE.getCode());
             }
             Configuration config = new Configuration(configJSON);
@@ -69,7 +65,7 @@ public class Gradeer
         {
             // No config file
             e.printStackTrace();
-            logger.error("No configuration file defined, exiting... ");
+            System.err.println("No configuration file defined, exiting... ");
             System.exit(ErrorCode.NO_CONFIG_FILE.getCode());
         }
 
@@ -127,12 +123,12 @@ public class Gradeer
         System.out.println("Compiling " + testSuites.size() + " unit tests...");
         JavaCompiler compiler = JavaCompiler.createCompiler(getConfiguration());
         if(getModelSolutions().size() < 1)
-            logger.error("No compiled model solutions available.");
+            System.err.println("No compiled model solutions available.");
         Solution modelSolution = new ArrayList<>(getModelSolutions()).get(0);
         if (getConfiguration().getTestDependenciesDir() != null &&
                 Files.exists(getConfiguration().getTestDependenciesDir()))
         {
-            logger.info("Compiling test dependencies at " + getConfiguration().getTestDependenciesDir());
+            System.out.println("Compiling test dependencies at " + getConfiguration().getTestDependenciesDir());
             compiler.compileDir(getConfiguration().getTestDependenciesDir(), modelSolution);
         }
         compiler.compileTests(modelSolution);
@@ -142,7 +138,7 @@ public class Gradeer
         {
             c.loadTestSuite(testSuites);
             if(!c.getTestSuite().isCompiled())
-                logger.error("[WARNING] Test Suite " + c.getName() + " is not compiled!");
+                System.err.println("[WARNING] Test Suite " + c.getName() + " is not compiled!");
         }
 
 
@@ -181,7 +177,7 @@ public class Gradeer
         catch (IOException ioEx)
         {
             ioEx.printStackTrace();
-            logger.error("Solution directories in " + solutionsRootDir + " could not be loaded.");
+            System.err.println("Solution directories in " + solutionsRootDir + " could not be loaded.");
         }
 
         // Sort alphabetically
@@ -231,7 +227,7 @@ public class Gradeer
         for (Solution m : modelSolutions)
         {
             if(!m.isCompiled())
-               logger.error("[SEVERE] Model solution " + m.getIdentifier() + " was not compiled.");
+                System.err.println("[SEVERE] Model solution " + m.getIdentifier() + " was not compiled.");
         }
     }
 

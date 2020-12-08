@@ -3,8 +3,6 @@ package tech.clegg.gradeer.configuration.cli;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import org.apache.commons.cli.*;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -14,8 +12,6 @@ public class CLIReader
 {
     private CommandLine cli;
     private Options options;
-
-    private Logger logger = LogManager.getLogger(CLIReader.class);
 
     private void initOptions()
     {
@@ -98,7 +94,7 @@ public class CLIReader
         } catch (JsonSyntaxException e)
         {
             e.printStackTrace();
-            logger.error("Could not parse array \"" + arr + "\" ; perhaps it is malformed or contains spaces?");
+            System.err.println("Could not parse array \"" + arr + "\" ; perhaps it is malformed or contains spaces?");
             return Collections.emptySet();
         }
     }

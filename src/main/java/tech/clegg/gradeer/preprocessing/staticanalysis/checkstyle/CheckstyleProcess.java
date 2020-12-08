@@ -3,8 +3,6 @@ package tech.clegg.gradeer.preprocessing.staticanalysis.checkstyle;
 import com.puppycrawl.tools.checkstyle.*;
 import com.puppycrawl.tools.checkstyle.api.*;
 import tech.clegg.gradeer.solution.Solution;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import java.io.File;
 import java.nio.file.Path;
@@ -13,8 +11,6 @@ import java.util.stream.Collectors;
 
 public class CheckstyleProcess
 {
-    private static Logger logger = LogManager.getLogger(CheckstyleProcess.class);
-
     private Solution solution;
     private boolean complete;
     private Path xml;
@@ -51,7 +47,7 @@ public class CheckstyleProcess
 
             @Override
             public void fileFinished(AuditEvent auditEvent) {
-                logger.info("Finished checking file " + auditEvent.getFileName() + " (Solution " + solution.getIdentifier() + ")");
+                System.out.println("Finished checking file " + auditEvent.getFileName() + " (Solution " + solution.getIdentifier() + ")");
             }
 
             @Override

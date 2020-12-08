@@ -6,8 +6,6 @@ import tech.clegg.gradeer.execution.AntRunner;
 import tech.clegg.gradeer.results.io.DelayedFileWriter;
 import tech.clegg.gradeer.subject.ClassPath;
 import tech.clegg.gradeer.solution.Solution;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import java.io.File;
 import java.nio.file.Path;
@@ -15,7 +13,6 @@ import java.nio.file.Paths;
 
 public class TestExecutor
 {
-    private static Logger logger = LogManager.getLogger(TestExecutor.class);
 
     private TestSuite testSuite;
     private Configuration configuration;
@@ -50,7 +47,6 @@ public class TestExecutor
         System.out.println("Tests run: " + antProcessResult.getTestsRun() +
                 " Failures: " + antProcessResult.getTestsFailures() +
                 " Errors: " + antProcessResult.getTestsErrors());
-        //logger.info(antProcessResult);
         return new TestResult(antProcessResult);
     }
 }

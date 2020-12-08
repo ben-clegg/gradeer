@@ -7,8 +7,6 @@ import tech.clegg.gradeer.execution.AntProcessResult;
 import tech.clegg.gradeer.execution.AntRunner;
 import tech.clegg.gradeer.results.io.DelayedFileWriter;
 import tech.clegg.gradeer.solution.Solution;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import java.io.File;
 import java.nio.file.Path;
@@ -17,8 +15,6 @@ import java.util.*;
 
 public class JavaCompiler
 {
-    private static Logger logger = LogManager.getLogger(JavaCompiler.class);
-
     public ClassPath classPath;
     private Configuration configuration;
 

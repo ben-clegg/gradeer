@@ -26,7 +26,7 @@ public class TestSuiteLoader
         catch (IOException ioEx)
         {
             ioEx.printStackTrace();
-            logger.error("Could not load unit tests in " + testsDir);
+            System.err.println("Could not load unit tests in " + testsDir);
         }
 
     }

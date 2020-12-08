@@ -1,22 +1,18 @@
 package tech.clegg.gradeer.preprocessing.staticanalysis.pmd;
 
-        import tech.clegg.gradeer.configuration.Configuration;
-        import tech.clegg.gradeer.subject.ClassPath;
-        import tech.clegg.gradeer.solution.Solution;
-        import org.apache.logging.log4j.LogManager;
-        import org.apache.logging.log4j.Logger;
+import tech.clegg.gradeer.configuration.Configuration;
+import tech.clegg.gradeer.subject.ClassPath;
+import tech.clegg.gradeer.solution.Solution;
 
-        import java.io.File;
-        import java.io.IOException;
-        import java.nio.file.Files;
-        import java.nio.file.Path;
-        import java.nio.file.Paths;
-        import java.util.*;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.*;
 
 public class PMDProcess implements Runnable
 {
-    private static final Logger logger = LogManager.getLogger(PMDProcess.class);
-
     private static final String ENV_VAR = "GRADEER_PMD_LOCATION";
     private static final Path PMD_LOCATION = loadPmdLocationEnvVar();
 

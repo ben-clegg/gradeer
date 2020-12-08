@@ -1,8 +1,6 @@
 package tech.clegg.gradeer.configuration;
 
 import com.google.gson.Gson;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import tech.clegg.gradeer.timing.TimerService;
 import tech.clegg.gradeer.execution.java.ClassExecutionTemplate;
 import tech.clegg.gradeer.results.io.LogFile;
@@ -15,7 +13,6 @@ import java.util.*;
 
 public class Configuration
 {
-    private static Logger logger = LogManager.getLogger(Configuration.class);
 
     private LogFile logFile;
     private TimerService timer;
@@ -88,8 +85,8 @@ public class Configuration
         }
         catch (IOException ioEx)
         {
-            logger.error(ioEx);
-            logger.error("Could not load configuration!");
+            ioEx.printStackTrace();
+            System.err.println("Could not load configuration!");
             System.exit(1);
         }
     }
@@ -188,14 +185,15 @@ public class Configuration
     {
         builtLibComponents = new HashSet<>();
 
-        logger.info("Loading built lib components for " + libDir);
         if(!pathExists(libDir))
         {
+            System.err.println("No built lib components defined or accessible; skipping...");
             return;
         }
+        System.out.println("Loading built lib components for " + libDir);
         try
         {
-            Files.walk(libDir).forEach(logger::info);
+            Files.walk(libDir).forEach(System.out::println);
             Files.walk(libDir).filter(p ->
                     com.google.common.io.Files.getFileExtension(p.toString()).equals("jar"))
                     .forEach(builtLibComponents::add);
@@ -207,7 +205,7 @@ public class Configuration
         {
             ioEx.printStackTrace();
         }
-        builtLibComponents.forEach(p -> logger.info("Loaded built lib component " + p));
+        builtLibComponents.forEach(p -> System.out.println("Loaded built lib component " + p));
     }
 
     /**

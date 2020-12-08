@@ -19,9 +19,6 @@ package tech.clegg.gradeer.execution;
  * along with Code Defenders. If not, see <http://www.gnu.org/licenses/>.
  */
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
@@ -34,9 +31,6 @@ import java.util.regex.Pattern;
  */
 public class AntProcessResult
 {
-
-    private static final Logger logger = LogManager.getLogger(AntProcessResult.class);
-
     private String inputStreamText = "";
     private String errorStreamText = "";
     private String exceptionText = "";
@@ -92,7 +86,7 @@ public class AntProcessResult
             testOutput = testOutputBuilder.toString();
             inputStreamText = isLog.toString();
         } catch (IOException e) {
-            logger.error("Error while reading input stream", e);
+            e.printStackTrace();
         }
     }
 

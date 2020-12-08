@@ -4,11 +4,7 @@ import tech.clegg.gradeer.checks.Check;
 import tech.clegg.gradeer.checks.checkresults.CheckResult;
 import tech.clegg.gradeer.preprocessing.PreProcessor;
 import tech.clegg.gradeer.preprocessing.PreProcessorResults;
-import tech.clegg.gradeer.preprocessing.staticanalysis.checkstyle.CheckstyleProcessResults;
-import tech.clegg.gradeer.preprocessing.staticanalysis.pmd.PMDProcessResults;
 import tech.clegg.gradeer.subject.JavaSource;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -19,8 +15,6 @@ import java.util.stream.Collectors;
 
 public class Solution
 {
-    private static Logger logger = LogManager.getLogger(Solution.class);
-
     Path directory;
     Collection<JavaSource> sources;
 

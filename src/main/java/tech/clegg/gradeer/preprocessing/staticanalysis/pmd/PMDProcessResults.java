@@ -1,7 +1,5 @@
 package tech.clegg.gradeer.preprocessing.staticanalysis.pmd;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import tech.clegg.gradeer.preprocessing.PreProcessorResults;
 
 import java.io.BufferedReader;
@@ -15,8 +13,6 @@ import java.util.stream.Collectors;
 
 public class PMDProcessResults extends PreProcessorResults
 {
-    private static Logger logger = LogManager.getLogger(PMDProcessResults.class);
-
     private List<String> errorLines;
     private List<PMDViolation> pmdViolations;
 

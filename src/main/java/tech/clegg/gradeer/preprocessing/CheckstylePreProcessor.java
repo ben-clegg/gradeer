@@ -1,7 +1,6 @@
 package tech.clegg.gradeer.preprocessing;
 
 import com.puppycrawl.tools.checkstyle.api.CheckstyleException;
-import tech.clegg.gradeer.checks.CheckstyleCheck;
 import tech.clegg.gradeer.configuration.Configuration;
 import tech.clegg.gradeer.preprocessing.staticanalysis.checkstyle.CheckstyleExecutor;
 import tech.clegg.gradeer.preprocessing.staticanalysis.checkstyle.CheckstyleProcessResults;

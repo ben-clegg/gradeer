@@ -1,8 +1,6 @@
 package tech.clegg.gradeer.preprocessing.generation;
 
-import org.jetbrains.annotations.Nullable;
 import tech.clegg.gradeer.checks.Check;
-import tech.clegg.gradeer.checks.ManualCheck;
 import tech.clegg.gradeer.configuration.Configuration;
 import tech.clegg.gradeer.preprocessing.*;
 import tech.clegg.gradeer.solution.Solution;

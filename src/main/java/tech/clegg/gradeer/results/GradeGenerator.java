@@ -3,16 +3,11 @@ package tech.clegg.gradeer.results;
 import tech.clegg.gradeer.checks.Check;
 import tech.clegg.gradeer.checks.checkprocessing.CheckProcessor;
 import tech.clegg.gradeer.solution.Solution;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import java.util.List;
 
 public class GradeGenerator
 {
-    private static Logger logger = LogManager.getLogger(GradeGenerator.class);
-
-
     private double totalWeight;
     private List<CheckProcessor> checkProcessors;
 
@@ -39,7 +34,7 @@ public class GradeGenerator
                 checkProcessor.runChecks(solution);
 
             for (Check c : checkProcessor.getAllChecks())
-                logger.info("Solution " + solution.getIdentifier() + ": " + c.getName() + " " + solution.calculateWeightedScore(c));
+                System.out.println("Solution " + solution.getIdentifier() + ": " + c.getName() + " " + solution.calculateWeightedScore(c));
         }
 
         return 100 * checkProcessors.stream()

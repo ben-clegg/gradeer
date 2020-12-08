@@ -6,8 +6,6 @@ import tech.clegg.gradeer.configuration.Configuration;
 import tech.clegg.gradeer.results.io.CSVWriter;
 import tech.clegg.gradeer.results.io.DelayedFileWriter;
 import tech.clegg.gradeer.solution.Solution;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import java.io.File;
 import java.nio.file.Paths;
@@ -16,8 +14,6 @@ import java.util.stream.Collectors;
 
 public class ResultsGenerator implements Runnable
 {
-    private static final Logger logger = LogManager.getLogger(ResultsGenerator.class);
-
     private final Collection<Solution> studentSolutions;
     private List<CheckProcessor> checkProcessors;
     private Configuration configuration;
@@ -159,7 +155,7 @@ public class ResultsGenerator implements Runnable
 
             String[] line = {s.getIdentifier(), String.valueOf(grade), generateFeedback(s)};
             gradeWriter.addEntry(Arrays.asList(line));
-            logger.info("Grade Generated: " + Arrays.toString(line));
+            System.out.println("Grade Generated: " + Arrays.toString(line));
         }
         gradeWriter.write(Paths.get(configuration.getOutputDir() + File.separator + "AssignmentMarks.csv"));
     }

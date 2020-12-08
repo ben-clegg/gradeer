@@ -148,7 +148,7 @@ public class CheckResultsStorage
             }
             else
             {
-                logger.warn("No matching check for CheckResultEntry " + entry.toString());
+                System.err.println("No matching check for CheckResultEntry " + entry.toString());
             }
         }
 

@@ -2,15 +2,12 @@ package tech.clegg.gradeer.checks;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import tech.clegg.gradeer.checks.checkresults.CheckResult;
 import tech.clegg.gradeer.checks.exceptions.InvalidCheckException;
 import tech.clegg.gradeer.configuration.Configuration;
 import tech.clegg.gradeer.preprocessing.JavaBatchExecutorPreProcessor;
 import tech.clegg.gradeer.preprocessing.PreProcessor;
 import tech.clegg.gradeer.preprocessing.SourceInspectorPreProcessor;
 import tech.clegg.gradeer.solution.Solution;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.util.Collection;
@@ -20,8 +17,6 @@ import java.util.Scanner;
 
 public class ManualCheck extends Check
 {
-    private static Logger logger = LogManager.getLogger(ManualCheck.class);
-
     private String prompt;
     private int maxRange = 1;
     private boolean arbitraryFeedback = false;

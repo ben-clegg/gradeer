@@ -41,7 +41,7 @@ public class SinglePrintingAntRunner extends AntRunner
         pb.directory(Environment.getGradeerHomeDir().toFile());
         pb.redirectErrorStream(true);
 
-        logger.info("Running ant command: " + command + " from " + pb.directory());
+        System.out.println("Running ant command: " + command + " from " + pb.directory());
 
         try
         {
