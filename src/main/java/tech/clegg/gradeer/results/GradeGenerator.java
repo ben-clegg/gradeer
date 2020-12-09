@@ -32,9 +32,6 @@ public class GradeGenerator
         {
             if (!checkProcessor.wasExecuted(solution))
                 checkProcessor.runChecks(solution);
-
-            for (Check c : checkProcessor.getAllChecks())
-                System.out.println("Solution " + solution.getIdentifier() + ": " + c.getName() + " " + solution.calculateWeightedScore(c));
         }
 
         return 100 * checkProcessors.stream()

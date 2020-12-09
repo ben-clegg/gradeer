@@ -155,7 +155,7 @@ public class ResultsGenerator implements Runnable
 
             String[] line = {s.getIdentifier(), String.valueOf(grade), generateFeedback(s)};
             gradeWriter.addEntry(Arrays.asList(line));
-            System.out.println("Grade Generated for " + s + ": " + grade);
+            System.out.println("Grade Generated for " + s.getIdentifier() + ": " + grade);
         }
         gradeWriter.write(Paths.get(configuration.getOutputDir() + File.separator + "AssignmentMarks.csv"));
     }
