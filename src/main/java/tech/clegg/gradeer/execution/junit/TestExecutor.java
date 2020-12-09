@@ -44,7 +44,10 @@ public class TestExecutor
             f.addLine(antProcessResult.getJUnitMessage());
             f.write(output);
         }
-        System.out.println("Tests run: " + antProcessResult.getTestsRun() +
+        configuration.getLogFile().writeMessage(
+                "TestExecution [Solution " + solution.getIdentifier() +
+                " TestSuite: " + testSuite.getBaseName() + "] " +
+                " Tests run: " + antProcessResult.getTestsRun() +
                 " Failures: " + antProcessResult.getTestsFailures() +
                 " Errors: " + antProcessResult.getTestsErrors());
         return new TestResult(antProcessResult);

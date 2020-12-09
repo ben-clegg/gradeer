@@ -43,7 +43,7 @@ public class AntRunner
         command.add("-Dsrc.dir=" + solution.getDirectory());
         command.add("-Dclass.dir=" + solution.getDirectory());
 
-        logger.info(command);
+        logger.debug(command);
         return runAntProcess(command);
     }
 
@@ -53,7 +53,7 @@ public class AntRunner
         command.add("-Dsrc.dir=" + testDirectory);
         command.add("-Dclass.dir=" + testDirectory);
 
-        logger.info(command);
+        logger.debug(command);
         return runAntProcess(command);
     }
 
@@ -125,7 +125,7 @@ public class AntRunner
         pb.directory(Environment.getGradeerHomeDir().toFile());
         pb.redirectErrorStream(true);
 
-        System.out.println("Running ant command: " + command + " from " + pb.directory());
+        logger.info("Running ant command: " + command + " from " + pb.directory());
 
         AntProcessResult res = new AntProcessResult();
         try
