@@ -15,12 +15,11 @@ public class LogFile extends DelayedFileWriter
     {
         super(true);
         this.location = location;
-        writeMessage("Created logger " + System.currentTimeMillis());
     }
 
     public void writeMessage(String message)
     {
-        System.out.println("[Log] " + message);
+        //System.out.println("[Log] " + message);
         addLine(message);
         write(location);
     }

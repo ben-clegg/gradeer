@@ -6,15 +6,18 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class DelayedFileWriter
 {
-    private final List<String> lines;
+    private final Queue<String> lines;
     private boolean appendMode = false;
 
     public DelayedFileWriter(boolean append)
     {
-        this.lines = new ArrayList<>();
+        this.lines = new ConcurrentLinkedQueue<>();
         this.appendMode = append;
     }
 
@@ -23,9 +26,11 @@ public class DelayedFileWriter
         this(false);
     }
 
-    public DelayedFileWriter(List<String> lines)
+    public DelayedFileWriter(List<String> existingLines)
     {
-        this.lines = lines;
+        this.lines = new ConcurrentLinkedQueue<>();
+        this.lines.addAll(existingLines);
+        this.appendMode = true;
     }
 
     public void write(Path location)
