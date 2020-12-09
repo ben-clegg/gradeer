@@ -1,8 +1,6 @@
 package tech.clegg.gradeer.timing;
 
 import org.apache.commons.lang3.time.StopWatch;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import java.io.FileWriter;
 import java.io.IOException;
@@ -16,8 +14,6 @@ public class TimerService
     private FileWriter writer;
     private StopWatch stopWatch;
     private SimpleDateFormat dateFormat;
-
-    private Logger logger = LogManager.getLogger(TimerService.class);
 
     public TimerService(Path outputFileLocation)
     {
@@ -49,7 +45,7 @@ public class TimerService
         try
         {
             String eventText = time + "," + " " + event;
-            logger.info(eventText);
+            System.out.println(eventText);
             writer.write(eventText + "\n");
             writer.flush();
         } catch (IOException ioException)

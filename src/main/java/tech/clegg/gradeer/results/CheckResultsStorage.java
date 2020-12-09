@@ -2,8 +2,6 @@ package tech.clegg.gradeer.results;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import tech.clegg.gradeer.checks.checkresults.CheckResult;
 import tech.clegg.gradeer.checks.Check;
 import tech.clegg.gradeer.checks.checkprocessing.CheckProcessor;
@@ -22,7 +20,6 @@ import java.util.stream.Collectors;
 
 public class CheckResultsStorage
 {
-    private static Logger logger = LogManager.getLogger(CheckResultsStorage.class);
     private Configuration configuration;
 
     public CheckResultsStorage(Configuration configuration)
