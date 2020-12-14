@@ -57,7 +57,7 @@ public class Configuration
 
     private String inspectionCommand;
 
-    private boolean skipChecksFailingOnAnyModel = false;
+    private boolean verifyChecksWithModelSolutions = true; // Skips running checks on model solutions if false
     private boolean forceRecompilation = false;
     private boolean multiThreadingEnabled = true;
     private boolean checkResultRecoveryEnabled = true;
@@ -66,7 +66,7 @@ public class Configuration
 
     private Collection<String> includeSolutions = new HashSet<>();
     private Collection<String> excludeSolutions = new HashSet<>();
-    private boolean removeInvalidChecks;
+    private boolean removeInvalidChecks; // Invalid checks (i.e. fail model solution) are only reported if false
 
 
     public Configuration(Path jsonFile)
@@ -149,7 +149,7 @@ public class Configuration
 
         inspectionCommand = json.inspectionCommand;
 
-        skipChecksFailingOnAnyModel = json.skipChecksFailingOnAnyModel;
+        verifyChecksWithModelSolutions = json.verifyChecksWithModelSolutions;
         forceRecompilation = json.forceRecompilation;
         multiThreadingEnabled = json.multiThreadingEnabled;
         checkResultRecoveryEnabled = json.checkResultRecoveryEnabled;
@@ -319,11 +319,6 @@ public class Configuration
         return solutionCapturedOutputDir;
     }
 
-    public boolean isSkipChecksFailingOnAnyModel()
-    {
-        return skipChecksFailingOnAnyModel;
-    }
-
     public List<ClassExecutionTemplate> getPreManualJavaClassesToExecute()
     {
         return preManualJavaClassesToExecute;
@@ -346,6 +341,11 @@ public class Configuration
         if(Files.notExists(path))
             return false;
         return true;
+    }
+
+    public boolean isVerifyChecksWithModelSolutions()
+    {
+        return verifyChecksWithModelSolutions;
     }
 
     public boolean isForceRecompilation()
@@ -413,7 +413,7 @@ class ConfigurationJSON
     ClassExecutionTemplate[] preManualJavaClassesToExecute;
     String inspectionCommand;
 
-    boolean skipChecksFailingOnAnyModel = false;
+    boolean verifyChecksWithModelSolutions = true;
     boolean forceRecompilation = false;
     boolean multiThreadingEnabled = true;
     boolean checkResultRecoveryEnabled = true;

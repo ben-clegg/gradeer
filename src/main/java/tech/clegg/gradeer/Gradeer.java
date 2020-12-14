@@ -100,8 +100,11 @@ public class Gradeer
         loadTests(checks);
 
         // Report & remove Checks that fail on a model solution
-        CheckValidator checkValidator = new CheckValidator(modelSolutions, configuration);
-        checks = checkValidator.filterValidChecks(checks);
+        if(configuration.isVerifyChecksWithModelSolutions())
+        {
+            CheckValidator checkValidator = new CheckValidator(modelSolutions, configuration);
+            checks = checkValidator.filterValidChecks(checks);
+        }
 
         // Add CheckProcessor for Checks to ResultsGenerator
         CheckProcessor checkProcessor = new CheckProcessor(checks, configuration);
