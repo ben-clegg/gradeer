@@ -81,7 +81,7 @@ public class Configuration
             // Setup log file
             logFile = new LogFile(Paths.get(outputDir + File.separator + "logOutput.log"));
             // Timer
-            timer = new TimerService(Paths.get(outputDir + File.separator + "timer.csv"));
+            timer = new TimerService(Paths.get(outputDir + File.separator + "timer.csv"), jsonFile);
         }
         catch (IOException ioEx)
         {

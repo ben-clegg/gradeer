@@ -15,7 +15,7 @@ public class TimerService
     private StopWatch stopWatch;
     private SimpleDateFormat dateFormat;
 
-    public TimerService(Path outputFileLocation)
+    public TimerService(Path outputFileLocation, Path configFile)
     {
         // Configure date formatter
         dateFormat = new SimpleDateFormat("HH:mm:ss.SSS");
@@ -26,7 +26,6 @@ public class TimerService
         stopWatch.start();
         stopWatch.split();
 
-        writeEvent("Started grading session", stopWatch.getStartTime());
         try
         {
             Files.createDirectories(outputFileLocation.getParent());
@@ -35,6 +34,7 @@ public class TimerService
         {
             ioException.printStackTrace();
         }
+        writeEvent("Start time of grading session " + configFile.getFileName(), stopWatch.getStartTime());
     }
 
     private void writeEvent(String event, String time)
