@@ -46,4 +46,38 @@ public class TestGradeGenerator
             fail("Solution not found");
         }
     }
+
+    @Test
+    public void testIncorrectSolutionAGrades()
+    {
+        try
+        {
+            Solution solution = solutions.stream()
+                    .filter(s -> s.getIdentifier().equals("incorrectA"))
+                    .findFirst().get();
+
+            double grade = gradeGenerator.generateGrade(solution);
+            assertEquals(50.0, grade, 0.00001);
+
+        } catch (NoSuchElementException e) {
+            fail("Solution not found");
+        }
+    }
+
+    @Test
+    public void testIncorrectSolutionBGrades()
+    {
+        try
+        {
+            Solution solution = solutions.stream()
+                    .filter(s -> s.getIdentifier().equals("incorrectB"))
+                    .findFirst().get();
+
+            double grade = gradeGenerator.generateGrade(solution);
+            assertEquals(35.0, grade, 0.00001);
+
+        } catch (NoSuchElementException e) {
+            fail("Solution not found");
+        }
+    }
 }
