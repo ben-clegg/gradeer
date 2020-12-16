@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import org.apache.commons.cli.*;
 
+import java.io.PrintWriter;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -17,10 +18,16 @@ public class CLIReader
     {
         options = new Options();
 
+        options.addOption(Option.builder("h")
+                .longOpt(CLIOptions.HELP)
+                .desc("Display this help message.")
+                .build());
+
         options.addOption(Option.builder("c")
                 .longOpt(CLIOptions.CONFIGURATION_LOCATION)
                 .hasArg()
-                .desc("Absolute path to the configuration JSON file.")
+                .desc("Path to the configuration JSON file.")
+                .required()
                 .build());
 
         options.addOption(Option.builder("i")
@@ -36,7 +43,6 @@ public class CLIReader
                 .desc("Solutions to skip when processing, as a JSON array; " +
                         "e.g. [\"solution1\",\"solution2\"] (avoid spaces)")
                 .build());
-
     }
 
     public CLIReader(String[] args)
@@ -57,6 +63,10 @@ public class CLIReader
         }
     }
 
+    public boolean hasOption(String optStr)
+    {
+        return cli.hasOption(optStr);
+    }
 
     public String getInputValue(String optStr) throws IllegalArgumentException
     {
@@ -97,5 +107,15 @@ public class CLIReader
             System.err.println("Could not parse array \"" + arr + "\" ; perhaps it is malformed or contains spaces?");
             return Collections.emptySet();
         }
+    }
+
+    public void printHelp()
+    {
+        HelpFormatter formatter = new HelpFormatter();
+
+        final PrintWriter writer = new PrintWriter(System.out);
+        formatter.printUsage(writer,80,"Gradeer", options);
+        formatter.printOptions(writer, 80, options, 2, 8);
+        writer.flush();
     }
 }

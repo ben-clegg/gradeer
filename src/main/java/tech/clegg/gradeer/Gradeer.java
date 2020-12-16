@@ -36,6 +36,11 @@ public class Gradeer
     {
         // Read CLI
         CLIReader cliReader = new CLIReader(args);
+        if(cliReader.hasOption(CLIOptions.HELP))
+        {
+            cliReader.printHelp();
+            System.exit(ErrorCode.HELP_DISPLAYED.getCode());
+        }
 
         try
         {
