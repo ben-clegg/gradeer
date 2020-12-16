@@ -44,8 +44,8 @@ public class OutputMonitoringThread extends Thread
                     printLine(errLine);
                 }
             }
-        } catch (IOException ioEx) {
-            ioEx.printStackTrace();
+        } catch (IOException ignored) {
+            // Don't show stack trace; usually the program has simply been closed
         } finally
         {
             try
