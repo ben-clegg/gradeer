@@ -1,7 +1,9 @@
 target
 jars
-src/test/resources/testEnvironment/**/*.class
+src/test/resources/testEnvironments/**/*.class
 src/test/resources/testEnvironments/**/*.tar.gz
 src/test/resources/testEnvironments/fitnessAssignment
-
-src/test/resources/testEnvironment/*/output/**/*
+**/.idea/workspace.xml
+**/.idea/tasks.xml
+**/.idea/shelf
+src/test/resources/testEnvironments/*/output/**/*
