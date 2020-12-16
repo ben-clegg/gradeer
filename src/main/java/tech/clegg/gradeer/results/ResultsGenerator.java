@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
 public class ResultsGenerator implements Runnable
 {
     private final Collection<Solution> studentSolutions;
-    private List<CheckProcessor> checkProcessors;
+    protected List<CheckProcessor> checkProcessors;
     private Configuration configuration;
 
     public ResultsGenerator(Collection<Solution> studentSolutions, List<CheckProcessor> checkProcessors, Configuration configuration)
@@ -71,7 +71,7 @@ public class ResultsGenerator implements Runnable
      * Finally writes the Collection of CheckResults for the Solution to a file to allow for future restoring.
      * @param solution the Solution to process Checks for.
      */
-    private void processSolution(Solution solution)
+    protected void processSolution(Solution solution)
     {
         CheckResultsStorage checkResultsStorage = new CheckResultsStorage(configuration);
 

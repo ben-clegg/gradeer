@@ -8,7 +8,6 @@ import tech.clegg.gradeer.configuration.Configuration;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import tech.clegg.gradeer.solution.Solution;
-import tech.clegg.gradeer.subject.JavaSource;
 
 import java.util.Collection;
 
@@ -16,7 +15,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class TestGradeer
 {
-    Configuration config = new Configuration(TestGlobals.JSON_CONFIG);
+    Configuration config = new Configuration(TestGlobals.JSON_CONFIG_LIFT);
     Gradeer gradeer = new Gradeer(config);
 
     @Test

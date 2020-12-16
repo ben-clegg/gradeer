@@ -15,8 +15,8 @@ class TestConfiguration
     {
         try
         {
-            System.out.println(TestGlobals.JSON_CONFIG);
-            ConfigurationJSON json = ConfigurationJSON.loadJSON(TestGlobals.JSON_CONFIG);
+            System.out.println(TestGlobals.JSON_CONFIG_LIFT);
+            ConfigurationJSON json = ConfigurationJSON.loadJSON(TestGlobals.JSON_CONFIG_LIFT);
             System.out.println(json.rootDirPath);
             System.out.println(json.studentSolutionsDirPath);
             System.out.println(json.modelSolutionsDirPath);

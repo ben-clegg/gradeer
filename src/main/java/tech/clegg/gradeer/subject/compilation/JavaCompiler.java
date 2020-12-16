@@ -83,7 +83,7 @@ public class JavaCompiler
         cp.add(configuration.getTestDependenciesDir());
 
         AntRunner antRunner = new AntRunner(configuration, cp);
-        antRunner.compile(configuration.getTestsDir());
+        AntProcessResult result = antRunner.compile(configuration.getTestsDir());
     }
 
     public void compileDir(Path dir, Solution modelSolution)

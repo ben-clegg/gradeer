@@ -11,7 +11,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class TestTestExecutor
 {
-    Configuration config = new Configuration(TestGlobals.JSON_CONFIG);
+    Configuration config = new Configuration(TestGlobals.JSON_CONFIG_LIFT);
     Gradeer gradeer = new Gradeer(config);
 
     @Test
