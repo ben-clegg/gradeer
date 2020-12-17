@@ -49,14 +49,19 @@ mvn test
 
 Gradeer is executed by:
 ```shell script
-java -jar <path to gradeer jar with dependencies> <location of configuration JSON file>
+java -jar <path to gradeer jar with dependencies> -c <location of configuration JSON file>
+```
+
+The `--help` command displays other available execution options.
+```shell script
+java -jar <path to gradeer jar with dependencies> --help
 ```
 
 This repository provides an example environment, called "liftPackaged." While standalone Gradeer binaries are available, we recommend building the tool from source (as above) so a copy of this enviroment is available.
 This example environment can be executed from the root of the repository by:
 
 ```shell script
-java -jar target/gradeer-0.98b-jar-with-dependencies.jar src/test/resources/testEnvironments/liftPackaged/gconfig-liftpackaged.json
+java -jar target/gradeer-0.98b-jar-with-dependencies.jar -c src/test/resources/testEnvironments/liftPackaged/gconfig-liftpackaged.json
 ```
 
 Gradeer performs the following in the execution environment:

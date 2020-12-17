@@ -26,8 +26,7 @@ public class CLIReader
         options.addOption(Option.builder("c")
                 .longOpt(CLIOptions.CONFIGURATION_LOCATION)
                 .hasArg()
-                .desc("Path to the configuration JSON file.")
-                .required()
+                .desc("(Required) Path to the configuration JSON file.")
                 .build());
 
         options.addOption(Option.builder("i")
