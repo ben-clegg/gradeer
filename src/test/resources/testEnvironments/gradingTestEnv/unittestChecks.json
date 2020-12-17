@@ -1,8 +1,13 @@
 [
   {
     "type": "TestSuiteCheck",
+    "name": "TestAAndB",
+    "weight": 2
+  },
+  {
+    "type": "TestSuiteCheck",
     "name": "TestMethodA",
-    "weight": 3.5,
+    "weight": 1.5,
     "feedbackValues": [
       {"score": 0.0, "feedback":  "TestMethodA Incorrect"},
       {"score": 1.0, "feedback":  "TestMethodA Correct"}
@@ -15,7 +20,7 @@
   {
     "type": "TestSuiteCheck",
     "name": "TestMethodB",
-    "weight": 5.0,
+    "weight": 4,
     "feedbackValues": [
       {"score": 0.0, "feedback":  "TestMethodB Incorrect"},
       {"score": 1.0, "feedback":  "TestMethodB Correct"}
@@ -28,7 +33,7 @@
   {
     "type": "TestSuiteCheck",
     "name": "TestMethodC",
-    "weight": 1.5,
+    "weight": 2.5,
     "feedbackValues": [
       {"score": 0.0, "feedback":  "TestMethodC Incorrect"},
       {"score": 1.0, "feedback":  "TestMethodC Correct"}

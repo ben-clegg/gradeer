@@ -54,7 +54,7 @@ public class TestGradeGenerator
         {
             Solution solution = solutions.stream()
                     .filter(s -> s.getIdentifier().equals("incorrectA"))
-                    .findFirst().get();
+                    .findFirst().get(); // methodA and methodC will produce faults
 
             double grade = gradeGenerator.generateGrade(solution);
             assertEquals(50.0, grade, 0.00001);
@@ -71,10 +71,27 @@ public class TestGradeGenerator
         {
             Solution solution = solutions.stream()
                     .filter(s -> s.getIdentifier().equals("incorrectB"))
-                    .findFirst().get();
+                    .findFirst().get(); // methodA and methodC will produce faults
 
             double grade = gradeGenerator.generateGrade(solution);
-            assertEquals(35.0, grade, 0.00001);
+            assertEquals(25.0, grade, 0.00001);
+
+        } catch (NoSuchElementException e) {
+            fail("Solution not found");
+        }
+    }
+
+    @Test
+    public void testIncorrectSolutionCGrades()
+    {
+        try
+        {
+            Solution solution = solutions.stream()
+                    .filter(s -> s.getIdentifier().equals("incorrectC"))
+                    .findFirst().get(); // Only methodC will produce faults
+
+            double grade = gradeGenerator.generateGrade(solution);
+            assertEquals(75.0, grade, 0.00001);
 
         } catch (NoSuchElementException e) {
             fail("Solution not found");
