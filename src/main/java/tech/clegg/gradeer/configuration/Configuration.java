@@ -213,7 +213,7 @@ public class Configuration
      * @param uri the path to load
      * @return the specified path, in either the absolute context, or the local context if this doesn't exist
      */
-    private Path loadLocalOrAbsolutePath(String uri)
+    public Path loadLocalOrAbsolutePath(String uri)
     {
         if(uri == null)
             return null;

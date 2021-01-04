@@ -57,7 +57,7 @@ class TestGradeer
 
         Collection<Check> checks = gradeer.getChecks();
 
-        assertEquals(2, checks.stream().filter(c -> c.getClass().equals(TestSuiteCheck.class)).count());
+        assertEquals(3, checks.stream().filter(c -> c.getClass().equals(TestSuiteCheck.class)).count());
         assertEquals(4, checks.stream().filter(c -> c.getClass().equals(CheckstyleCheck.class)).count());
         assertEquals(4, checks.stream().filter(c -> c.getClass().equals(PMDCheck.class)).count());
     }

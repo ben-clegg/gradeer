@@ -2,6 +2,7 @@ package tech.clegg.gradeer;
 
 import tech.clegg.gradeer.auxiliaryprocesses.MergedSolutionWriter;
 import tech.clegg.gradeer.checks.Check;
+import tech.clegg.gradeer.checks.ManualCheck;
 import tech.clegg.gradeer.checks.TestSuiteCheck;
 import tech.clegg.gradeer.checks.checkprocessing.CheckProcessor;
 import tech.clegg.gradeer.checks.checkprocessing.CheckValidator;
@@ -13,10 +14,12 @@ import tech.clegg.gradeer.configuration.cli.CLIReader;
 import tech.clegg.gradeer.execution.junit.TestSuite;
 import tech.clegg.gradeer.execution.junit.TestSuiteLoader;
 import tech.clegg.gradeer.results.ResultsGenerator;
+import tech.clegg.gradeer.results.io.DelayedFileWriter;
 import tech.clegg.gradeer.subject.compilation.JavaCompiler;
 import tech.clegg.gradeer.error.ErrorCode;
 import tech.clegg.gradeer.solution.Solution;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -28,9 +31,10 @@ public class Gradeer
 {
     private Configuration configuration;
 
-    private Collection<Solution> modelSolutions;
-    private Collection<Solution> studentSolutions;
-    private Collection<Check> checks;
+    private Collection<Solution> modelSolutions = new ArrayList<>();
+    private Collection<Solution> studentSolutions = new ArrayList<>();
+    private Collection<Solution> mutantSolutions = new ArrayList<>();
+    private Collection<Check> checks = new ArrayList<>();
 
     public static void main(String[] args)
     {
@@ -59,6 +63,7 @@ public class Gradeer
 
             // Start Gradeer
             Gradeer gradeer = new Gradeer(config);
+            gradeer.loadMutantSolutions(cliReader);
 
             ResultsGenerator resultsGenerator = gradeer.startEnvironment();
             resultsGenerator.run();
@@ -78,10 +83,6 @@ public class Gradeer
 
     public Gradeer(Configuration config)
     {
-        modelSolutions = new ArrayList<>();
-        studentSolutions = new ArrayList<>();
-        checks = new ArrayList<>();
-
         configuration = config;
         Environment.init();
         init();
@@ -109,6 +110,68 @@ public class Gradeer
         {
             CheckValidator checkValidator = new CheckValidator(modelSolutions, configuration);
             checks = checkValidator.filterValidChecks(checks);
+        }
+
+        // If mutants are present, run checks on them and report any mutants that are not detected by any checks
+        if(!mutantSolutions.isEmpty())
+        {
+            System.out.println("Performing mutation analysis...");
+
+            // Run automated checks on mutants
+            Collection<Check> autoChecks = checks.stream().filter(c -> c.getClass() != ManualCheck.class)
+                    .collect(Collectors.toList());
+            CheckProcessor autoCheckProcessor = new CheckProcessor(
+                    autoChecks,
+                    configuration
+            );
+            for (Solution m : mutantSolutions)
+                autoCheckProcessor.runChecks(m);
+
+            // Summarise mutation performance for each check
+            DelayedFileWriter f = new DelayedFileWriter();
+            f.addLine("Check, % mutants detected by check, average base score of check for mutants");
+            for (Check c : autoChecks)
+            {
+                // Display percent of mutants that check detects (i.e base score < 1.0)
+                double detectedCount = mutantSolutions.stream().map(m -> m.getCheckResult(c).getUnweightedScore())
+                        .filter(d -> d < 1.0)
+                        .count();
+                double percentDetected = (detectedCount / mutantSolutions.size()) * 100;
+                System.out.println("% mutants detected by Check " + c.getName() + ": " + percentDetected);
+
+                // Also display average base score of check
+                double totalBaseScore = mutantSolutions.stream().map(m -> m.getCheckResult(c).getUnweightedScore())
+                        .reduce(0.0, Double::sum);
+                double avgBaseScore = totalBaseScore / mutantSolutions.size();
+                System.out.println("Average base score of Check " + c.getName() + " on mutants; " + avgBaseScore);
+
+                // Store recorded statistics
+                f.addLine(c.getName() + ", " + percentDetected + ", " + avgBaseScore);
+            }
+            f.write(Paths.get(configuration.getOutputDir() + File.separator + "mutantCheckPerformance.csv"));
+
+
+
+            // Store & display mutants that are not detected by any checks
+            Collection<Solution> undetectedMutants = mutantSolutions.stream()
+                    .filter(m -> m.getAllCheckResults().stream().noneMatch(cr -> cr.getUnweightedScore() < 1.0))
+                    .collect(Collectors.toList());
+            if(!undetectedMutants.isEmpty())
+            {
+                System.out.println("Mutants not detected by any checks: ");
+                System.out.println(Arrays.toString(undetectedMutants.stream().map(Solution::getIdentifier).toArray()));
+
+                // Store
+                DelayedFileWriter file = new DelayedFileWriter();
+                for (Solution m : undetectedMutants)
+                    file.addLine(m.getIdentifier());
+                file.write(Paths.get(configuration.getOutputDir() + File.separator + "undetectedMutants.txt"));
+
+                // Exit if any mutants are not detected
+                System.err.println("Some mutants were not detected by any checks. " +
+                        "Please review the output, and consider making the checks more robust.");
+                System.exit(ErrorCode.MUTANTS_UNDETECTED.getCode());
+            }
         }
 
         // Add CheckProcessor for Checks to ResultsGenerator
@@ -237,6 +300,15 @@ public class Gradeer
             if(!m.isCompiled())
                 System.err.println("[SEVERE] Model solution " + m.getIdentifier() + " was not compiled.");
         }
+    }
+
+    private void loadMutantSolutions(CLIReader cliReader)
+    {
+        if(!cliReader.hasOption(CLIOptions.MUTANT_SOLUTIONS))
+            return;
+
+        Path dir = configuration.loadLocalOrAbsolutePath(cliReader.getInputValue(CLIOptions.MUTANT_SOLUTIONS));
+        mutantSolutions = loadSolutions(dir);
     }
 
     public Configuration getConfiguration()

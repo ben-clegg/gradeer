@@ -27,6 +27,15 @@
   },
   {
     "type": "TestSuiteCheck",
+    "name": "TestLiftC",
+    "weight": 8.0,
+    "feedbackValues": [
+      {"score": 0.0, "feedback":  "TestLiftC Incorrect"},
+      {"score": 1.0, "feedback":  "TestLiftC Correct"}
+    ]
+  },
+  {
+    "type": "TestSuiteCheck",
     "name": "TestDummyB",
     "weight": 8.0,
     "feedbackValues": [

@@ -29,6 +29,12 @@ public class CLIReader
                 .desc("(Required) Path to the configuration JSON file.")
                 .build());
 
+        options.addOption(Option.builder("m")
+                .longOpt(CLIOptions.MUTANT_SOLUTIONS)
+                .hasArg()
+                .desc("Path to directory containing mutant solutions to evaluate check performance.")
+                .build());
+
         options.addOption(Option.builder("i")
                 .longOpt(CLIOptions.INCLUDE_SOLUTIONS)
                 .hasArg()
