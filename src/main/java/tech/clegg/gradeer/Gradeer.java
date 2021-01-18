@@ -7,6 +7,7 @@ import tech.clegg.gradeer.checks.TestSuiteCheck;
 import tech.clegg.gradeer.checks.checkprocessing.CheckProcessor;
 import tech.clegg.gradeer.checks.checkprocessing.CheckValidator;
 import tech.clegg.gradeer.checks.generation.CheckGenerator;
+import tech.clegg.gradeer.checks.generation.FlagsEntry;
 import tech.clegg.gradeer.configuration.Configuration;
 import tech.clegg.gradeer.configuration.Environment;
 import tech.clegg.gradeer.configuration.cli.CLIOptions;
@@ -15,6 +16,7 @@ import tech.clegg.gradeer.execution.junit.TestSuite;
 import tech.clegg.gradeer.execution.junit.TestSuiteLoader;
 import tech.clegg.gradeer.results.ResultsGenerator;
 import tech.clegg.gradeer.results.io.DelayedFileWriter;
+import tech.clegg.gradeer.solution.DefaultFlag;
 import tech.clegg.gradeer.subject.JavaSource;
 import tech.clegg.gradeer.subject.compilation.JavaCompiler;
 import tech.clegg.gradeer.error.ErrorCode;
@@ -333,20 +335,15 @@ public class Gradeer
         Collection<JavaSource> modelSources = model.getSources();
         for (Solution m : mutantSolutions)
         {
-            Collection<JavaSource> toCopy = new ArrayList<>();
+            // Copy solutions; files already present are automatically skipped
             for (JavaSource src : modelSources)
-            {
-                if(!src.sharesRelativeIdentifier(m.getSources()))
-                {
-                    // src doesn't have corresponding JavaSource in mutant; should copy
-                    toCopy.add(src);
-                }
-            }
-            // Copy solutions
-            for (JavaSource src : toCopy)
             {
                 src.copyToDifferentSolution(model, m);
             }
+
+            // Recheck missing sources flags
+            m.getFlags().remove(DefaultFlag.MISSING_CLASS.name());
+            m.checkForMissingSources(configuration.getRequiredClasses());
         }
 
     }

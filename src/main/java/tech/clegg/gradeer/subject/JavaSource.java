@@ -4,6 +4,7 @@ import tech.clegg.gradeer.solution.Solution;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -102,7 +103,9 @@ public class JavaSource
         {
             Files.createDirectories(newJavaFile.getParent());
             Files.copy(javaFile, newJavaFile);
-        } catch (IOException e)
+        }
+        catch (FileAlreadyExistsException ignore) {}
+        catch (IOException e)
         {
             e.printStackTrace();
         }
@@ -110,7 +113,9 @@ public class JavaSource
         {
             Files.createDirectories(newClassFile.getParent());
             Files.copy(classFile, newClassFile);
-        } catch (IOException e)
+        }
+        catch (FileAlreadyExistsException ignore) {}
+        catch (IOException e)
         {
             e.printStackTrace();
         }
