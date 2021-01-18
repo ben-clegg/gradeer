@@ -11,5 +11,5 @@
     "additionalCPElems": [],
     "waitAfterExecutionTime": 3
   }],
-  "inspectionCommand": "atom"
+  "inspectionCommand": "codium"
 }
