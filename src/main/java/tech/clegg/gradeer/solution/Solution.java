@@ -111,6 +111,11 @@ public class Solution
         return sources;
     }
 
+    public void addSource(JavaSource javaSourceToAdd)
+    {
+        sources.add(javaSourceToAdd);
+    }
+
     public String getIdentifier()
     {
         return directory.getFileName().toString();

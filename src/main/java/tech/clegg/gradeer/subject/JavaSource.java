@@ -1,9 +1,13 @@
 package tech.clegg.gradeer.subject;
 
+import tech.clegg.gradeer.solution.Solution;
+
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Collection;
 import java.util.Objects;
 
 public class JavaSource
@@ -21,6 +25,14 @@ public class JavaSource
                 .split("/" + getBaseName())[0]
                 .replaceFirst("/", "")
                 .replace("/", ".");
+    }
+
+    public JavaSource(JavaSource toCopy, Path newJavaFile, Path newClassFile)
+    {
+        this.fullPackage = toCopy.getPackage();
+        this.baseName = toCopy.getBaseName();
+        this.javaFile = newJavaFile;
+        this.classFile = newClassFile;
     }
 
     public boolean isCompiled()
@@ -60,6 +72,81 @@ public class JavaSource
         return getPackage() + "." + getBaseName();
     }
 
+    public boolean sharesRelativeIdentifier(JavaSource other)
+    {
+        if(this.equals(other))
+            return true;
+        if(this.getBaseName().equals(other.getBaseName()) && this.getPackage().equals(other.getPackage()))
+            return true;
+        return false;
+    }
+
+    public boolean sharesRelativeIdentifier(Collection<JavaSource> others)
+    {
+        return others.stream().anyMatch(this::sharesRelativeIdentifier);
+    }
+
+    public void copyToDifferentSolution(Solution originalOwner, Solution newOwner)
+    {
+        // TODO implement
+        String relativeJavaFile = javaFile.toString().replace(originalOwner.getDirectory().toString(), "");
+        String relativeClassFile = classFile.toString().replace(originalOwner.getDirectory().toString(), "");
+        Path newJavaFile = Paths.get(newOwner.getDirectory().toString() + relativeJavaFile);
+        Path newClassFile = Paths.get(newOwner.getDirectory().toString() + relativeClassFile);
+
+        // Set up new entry
+        JavaSource newJavaSource = new JavaSource(this, newJavaFile, newClassFile);
+
+        // Copy .class and .java files to new directory
+        try
+        {
+            Files.createDirectories(newJavaFile.getParent());
+            Files.copy(javaFile, newJavaFile);
+        } catch (IOException e)
+        {
+            e.printStackTrace();
+        }
+        try
+        {
+            Files.createDirectories(newClassFile.getParent());
+            Files.copy(classFile, newClassFile);
+        } catch (IOException e)
+        {
+            e.printStackTrace();
+        }
+
+        // Also copy .class files with the same basename plus $xxx (e.g. enums and member classes)
+        try
+        {
+            Files.list(getClassFile().getParent())
+                    .filter(f -> com.google.common.io.Files.getFileExtension(f.toString()).equals("class"))
+                    .forEach(
+                    f ->
+                    {
+                        String fileBaseName = f.getFileName().toString().replace(".class", "");
+                        if(fileBaseName.startsWith(this.getBaseName() + "$"))
+                        {
+                            // Should copy; will skip if already existing in target
+                            Path newFile = Paths.get(newClassFile.getParent().toString() +
+                                    "/" + fileBaseName + ".class");
+                            try
+                            {
+                                Files.copy(f, newFile);
+                            } catch (IOException e)
+                            {
+                                e.printStackTrace();
+                            }
+                        }
+                    }
+            );
+        } catch (IOException e)
+        {
+            e.printStackTrace();
+        }
+
+        // Add new entry to new owner Solution
+        newOwner.addSource(newJavaSource);
+    }
 
     @Override
     public boolean equals(Object o)

@@ -15,6 +15,7 @@ import tech.clegg.gradeer.execution.junit.TestSuite;
 import tech.clegg.gradeer.execution.junit.TestSuiteLoader;
 import tech.clegg.gradeer.results.ResultsGenerator;
 import tech.clegg.gradeer.results.io.DelayedFileWriter;
+import tech.clegg.gradeer.subject.JavaSource;
 import tech.clegg.gradeer.subject.compilation.JavaCompiler;
 import tech.clegg.gradeer.error.ErrorCode;
 import tech.clegg.gradeer.solution.Solution;
@@ -320,6 +321,34 @@ public class Gradeer
 
         Path dir = configuration.loadLocalOrAbsolutePath(cliReader.getInputValue(CLIOptions.MUTANT_SOLUTIONS));
         mutantSolutions = loadSolutions(dir);
+
+        // Add copies of model solution JavaSources if those with matching names do not exist for each mutant
+        // These must be copied in filesystem; execution assumes solution contains all non-sourceDependencies classes
+        // Necessary since mutants are for single classes, but multiple dependencies may be required
+        // TODO allow this to be disabled via Configuration
+
+        if (modelSolutions.isEmpty())
+            return;
+        Solution model = modelSolutions.stream().findFirst().get();
+        Collection<JavaSource> modelSources = model.getSources();
+        for (Solution m : mutantSolutions)
+        {
+            Collection<JavaSource> toCopy = new ArrayList<>();
+            for (JavaSource src : modelSources)
+            {
+                if(!src.sharesRelativeIdentifier(m.getSources()))
+                {
+                    // src doesn't have corresponding JavaSource in mutant; should copy
+                    toCopy.add(src);
+                }
+            }
+            // Copy solutions
+            for (JavaSource src : toCopy)
+            {
+                src.copyToDifferentSolution(model, m);
+            }
+        }
+
     }
 
     public Configuration getConfiguration()
