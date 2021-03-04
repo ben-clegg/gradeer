@@ -94,6 +94,8 @@ public class ManualCheck extends Check
 
     private String getStringInputResult()
     {
+        System.out.println("Enter feedback:");
+
         // Get input
         Scanner scanner = new Scanner(System.in);
 
@@ -104,7 +106,7 @@ public class ManualCheck extends Check
             return getStringInputResult();
         }
 
-        String input = scanner.next().trim();
+        String input = scanner.nextLine().trim();
 
         if(input.isEmpty())
         {
@@ -115,8 +117,9 @@ public class ManualCheck extends Check
         System.out.println(input);
         System.out.println();
 
+        scanner.reset();
+
         // Check that result approved
-        System.out.println("Accept? (y / n)");
         if(!getAffirmation())
             return getStringInputResult();
 
@@ -125,6 +128,8 @@ public class ManualCheck extends Check
 
     private boolean getAffirmation()
     {
+        System.out.println("Accept? (y / n)");
+
         Scanner scanner = new Scanner(System.in);
 
         if(!scanner.hasNext())
@@ -134,11 +139,14 @@ public class ManualCheck extends Check
 
         String input = scanner.next().trim();
 
+        scanner.reset();
+
         if(input.equalsIgnoreCase("y") || input.equalsIgnoreCase("yes"))
             return true;
         else if(input.equalsIgnoreCase("n") || input.equalsIgnoreCase("no"))
             return false;
 
+        System.err.println("Invalid confirmation.");
         return getAffirmation();
     }
 
@@ -206,7 +214,6 @@ public class ManualCheck extends Check
         // Determine arbitrary feedback to add (if enabled)
         if(arbitraryFeedback)
         {
-            System.out.println("Enter feedback:");
             String arbitraryFeedback = getStringInputResult();
             if(!arbitraryFeedback.isEmpty())
             {
