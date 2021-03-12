@@ -50,8 +50,24 @@ public class CheckstyleCheck extends Check
         {
             System.err.println("No Checkstyle process results for Solution " + solution.getIdentifier());
             solution.addFlag(DefaultFlag.NO_CHECKSTYLE_RESULTS);
-            double score = 0.0;
-            solution.addCheckResult(new CheckResult(this, score, generateFeedback(score)));
+            solution.addCheckResult(new CheckResult(this, 0.0, generateFeedback(0.0)));
+            return;
+        }
+
+        // Checkstyle crashed
+        CheckstyleProcessResults processResults =
+                (CheckstyleProcessResults) solution.getPreProcessorResultsOfType(CheckstylePreProcessor.class);
+        if(processResults.hasSevereExecutionErrorOccured())
+        {
+            System.err.println("Checkstyle crashed for Solution " + solution.getIdentifier() +
+                    "; setting check " + name + "as failed.");
+            solution.addFlag(DefaultFlag.NO_CHECKSTYLE_RESULTS);
+            solution.addFlag(DefaultFlag.CHECKSTYLE_CRASHED);
+            solution.addCheckResult(
+                    new CheckResult(this, 0.0,
+                            "Your solution has a problem (such as not being compilable) " +
+                                    "which prevents style checking from being executed.")
+            );
             return;
         }
 

@@ -14,6 +14,8 @@ public class CheckstyleProcessResults extends PreProcessorResults
     private List<String> messages;
     private Collection<AuditEvent> auditEvents;
 
+    private boolean severeError = false;
+
     public CheckstyleProcessResults()
     {
         super();
@@ -79,6 +81,17 @@ public class CheckstyleProcessResults extends PreProcessorResults
             return true;
         return false;
     }
+
+    public boolean hasSevereExecutionErrorOccured()
+    {
+        return severeError;
+    }
+
+    public void setSevereError()
+    {
+        severeError = true;
+    }
+
 
 
 }

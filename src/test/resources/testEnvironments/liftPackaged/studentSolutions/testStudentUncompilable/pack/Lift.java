@@ -13,6 +13,8 @@ public class Lift {
   // default
   private int numRiders = 0;
 
+  private int BADNAME = 0;
+
   public Lift(int highestFloor) {
     topFloor = highestFloor;
   }
@@ -61,12 +63,7 @@ public class Lift {
   }
 
   public void call(int floor) {
-    if (floor >= 0 && floor <= topFloor) {
-      while (floor != currentFloor) {
-        if (floor > currentFloor)
-          goUp();
-        else
-          goDown();
+    if (floor >= 0 && floor <= topFloor) {while (floor != currentFloor) {if (floor > currentFloor) { goUp();} else {goDown();}
       }
     }
   }

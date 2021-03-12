@@ -6,7 +6,8 @@
     "feedbackValues": [
       {"score": 0.0, "feedback":  "Some of your lines of code are too wide (over 100 characters)."},
       {"score": 1.0, "feedback":  "Your lines of code are the correct width."}
-    ]
+    ], 
+    "checkGroup": "Alternate Style checkGroup for test"
   },
   {
     "type": "CheckstyleCheck",

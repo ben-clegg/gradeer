@@ -100,11 +100,14 @@ public class CheckstyleProcess
             {
                 System.out.println("Running checkstyle for " + solution.getIdentifier());
                 rootModule.process(javaFiles);
+
                 while (!complete)
                 {
-                    try {
+                    try
+                    {
                         rootModule.wait();
-                    } catch (InterruptedException e) {
+                    }
+                    catch (InterruptedException e) {
                         e.printStackTrace();
                     }
                 }
@@ -114,6 +117,12 @@ public class CheckstyleProcess
         catch (CheckstyleException chEx)
         {
             chEx.printStackTrace();
+
+            System.err.println("CheckStyle encountered a severe error for this solution, " +
+                    "likely because it did not compile.");
+            System.err.println("Setting all relevant check results' scores to 0 and leaving " +
+                    "feedback that it could not be evaluated.");
+            results.setSevereError();
         }
 
         //results.logViolations();
