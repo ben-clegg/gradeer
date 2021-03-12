@@ -29,6 +29,12 @@ public class TestSuiteCheck extends Check
         setTestSuite(testSuite);
     }
 
+    @Override
+    protected String defaultCheckGroupForType()
+    {
+        return "Functionality";
+    }
+
     public void loadTestSuite(Collection<TestSuite> availableTestSuites)
     {
         // Find a TestSuite with a matching name

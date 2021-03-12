@@ -162,6 +162,7 @@ public class ResultsGenerator implements Runnable
 
     /**
      * Generate the complete feedback text for a Solution.
+     * This uses the checkGroup of each Check to group outputs together. This can also generate summative grades for each part
      * @param solution the Solution to generate the feedback text for.
      * @return the Solution's feedback text block.
      */
@@ -169,18 +170,42 @@ public class ResultsGenerator implements Runnable
     {
         StringBuilder sb = new StringBuilder();
 
+        Collection<Check> checks = new HashSet<>();
         for (CheckProcessor checkProcessor : checkProcessors)
+            checks.addAll(checkProcessor.getAllChecks());
+
+        Set<String> checkGroups = uniqueCheckGroups(checks);
+
+        for (String cg : checkGroups)
         {
-            for (Check c : checkProcessor.getAllChecks())
+            Collection<Check> checksInGroup = checks.stream().filter(c -> c.getCheckGroup().equals(cg))
+                    .collect(Collectors.toList());
+
+            if(cg.isEmpty())
+                sb.append("Other Criteria: ");
+            else
+                sb.append(cg).append(": ");
+
+            sb.append(GradeGenerator.generateGrade(solution, checksInGroup));
+            sb.append("\n");
+
+            for (Check c : checksInGroup)
             {
                 String feedback = solution.getCheckResult(c).getFeedback();
                 if(!feedback.isEmpty())
-                    sb.append(feedback + "\n");
+                    sb.append(feedback).append("\n");
             }
+
+            sb.append("\n");
         }
 
         return sb.toString();
 
+    }
+
+    private Set<String> uniqueCheckGroups(Collection<Check> checks)
+    {
+        return checks.stream().map(Check::getCheckGroup).collect(Collectors.toSet());
     }
 
     private void writeFeedback()

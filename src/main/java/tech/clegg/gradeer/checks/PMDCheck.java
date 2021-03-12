@@ -31,6 +31,12 @@ public class PMDCheck extends Check
     }
 
     @Override
+    protected String defaultCheckGroupForType()
+    {
+        return "Code Style / Quality";
+    }
+
+    @Override
     public Collection<Class<? extends PreProcessor>> getPreProcessorTypes()
     {
         return Collections.singleton(PMDPreProcessor.class);

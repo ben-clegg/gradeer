@@ -4,6 +4,7 @@ import tech.clegg.gradeer.checks.Check;
 import tech.clegg.gradeer.checks.checkprocessing.CheckProcessor;
 import tech.clegg.gradeer.solution.Solution;
 
+import java.util.Collection;
 import java.util.List;
 
 public class GradeGenerator
@@ -38,5 +39,13 @@ public class GradeGenerator
                 .mapToDouble(cp -> cp.getAllChecks().stream()
                         .mapToDouble(solution::calculateWeightedScore).sum())
                 .sum() / totalWeight;
+    }
+
+    public static double generateGrade(Solution solution, Collection<Check> checks)
+    {
+        double sumWeights = checks.stream().mapToDouble(Check::getWeight).sum();
+
+        return 100 * checks.stream().mapToDouble(solution::calculateWeightedScore).sum()
+                / sumWeights;
     }
 }

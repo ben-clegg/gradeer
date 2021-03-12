@@ -22,6 +22,8 @@ public abstract class Check
     protected String name;
     protected double weight = 1.0;
     private int priority = 10;
+    private String checkGroup = "";
+
     protected Map<Double, String> feedbackForUnweightedScoreBounds = new TreeMap<>();
     protected Map<Double, String[]> flagMap = new TreeMap<>();
 
@@ -45,6 +47,12 @@ public abstract class Check
         {
             throw new InvalidCheckException("No name defined for Check " + jsonObject.getAsString() + " , skipping.");
         }
+
+        // Default checkGroup
+        checkGroup = defaultCheckGroupForType();
+        // Load custom check group if present
+        Optional<JsonElement> checkGroupOpt = getOptionalElement(jsonObject, "checkGroup");
+        checkGroupOpt.ifPresent(jsonElement -> this.checkGroup = jsonElement.getAsString());
 
         // Load weight
         this.weight = getElementOrDefault(jsonObject, "weight", JsonElement::getAsDouble, weight);
@@ -94,6 +102,16 @@ public abstract class Check
             e.printStackTrace();
         }
 
+    }
+
+    /**
+     * Each check class can have a default checkGroup
+     * Override in the subclass to change the default
+     * @return the default checkGroup
+     */
+    protected String defaultCheckGroupForType()
+    {
+        return "";
     }
 
     public abstract Collection<Class<? extends PreProcessor>> getPreProcessorTypes();
@@ -243,6 +261,11 @@ public abstract class Check
     {
         String[] flags = getBoundedFlagForScore(unweightedScore);
         return new HashSet<>(Arrays.asList(flags));
+    }
+
+    public String getCheckGroup()
+    {
+        return checkGroup;
     }
 
     @Override
