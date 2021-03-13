@@ -2,6 +2,8 @@ package tech.clegg.gradeer.checks;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import dnl.utils.text.table.TextTable;
+import tech.clegg.gradeer.checks.checkresults.CheckResult;
 import tech.clegg.gradeer.checks.exceptions.InvalidCheckException;
 import tech.clegg.gradeer.configuration.Configuration;
 import tech.clegg.gradeer.preprocessing.JavaBatchExecutorPreProcessor;
@@ -67,9 +69,28 @@ public class ManualCheck extends Check
         // Start check
         System.out.println("\nManual check " + name + " for Solution " + solution.getIdentifier());
         System.out.println(prompt);
+        generateCheckResultsTable().printTable();
 
         // Process
         processSolution(solution);
+    }
+
+    private TextTable generateCheckResultsTable()
+    {
+        String[] columnNames = {"Boundary", "(Normalized boundary)", "Mapped feedback"};
+
+        // Load results
+        String[][] entries = new String[feedbackForUnweightedScoreBounds.size()][3];
+        int i = 0;
+        for (double unweightedBound : feedbackForUnweightedScoreBounds.keySet())
+        {
+            entries[i][0] = ">=" + (maxRange * unweightedBound);
+            entries[i][1] = ">=" + unweightedBound;
+            entries[i][2] = feedbackForUnweightedScoreBounds.get(unweightedBound);
+            i++;
+        }
+
+        return new TextTable(columnNames, entries);
     }
 
     @Override
