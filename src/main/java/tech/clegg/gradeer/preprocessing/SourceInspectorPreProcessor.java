@@ -24,11 +24,11 @@ public class SourceInspectorPreProcessor extends PreProcessor
         // TODO find a more elegant solution for this
         // method inside corresponding classes?
         if(Files.exists(configuration.getTestOutputDir()))
-            toInspect.add(Paths.get(configuration.getTestOutputDir() + File.separator + solution.getIdentifier()));
+            toInspect.add(Paths.get(configuration.getTestOutputDir() + File.separator + solution.getIdentifier()).toAbsolutePath());
         if(Files.exists(configuration.getMergedSolutionsDir()))
-            toInspect.add(Paths.get(configuration.getMergedSolutionsDir() + File.separator + solution.getIdentifier() + ".java"));
+            toInspect.add(Paths.get(configuration.getMergedSolutionsDir() + File.separator + solution.getIdentifier() + ".java").toAbsolutePath());
         if(Files.exists(configuration.getSolutionCapturedOutputDir()))
-            toInspect.add(Paths.get(configuration.getSolutionCapturedOutputDir() + File.separator + solution.getIdentifier() + "-output"));
+            toInspect.add(Paths.get(configuration.getSolutionCapturedOutputDir() + File.separator + solution.getIdentifier() + "-output").toAbsolutePath());
 
         this.inspectionCommandProcess = new InspectionCommandProcess(configuration, toInspect);
     }
