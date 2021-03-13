@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Executes specific targets in the provided ant build.xml.
@@ -79,16 +80,19 @@ public class AntRunner
         command.add("-Djava.class.name=" + classExecutionTemplate.getFullClassName());
 
         // Args
-        StringBuilder args = new StringBuilder();
-        args.append("-Djava.class.exec.arg=");
-        Iterator<String> argIter = Arrays.asList(classExecutionTemplate.getArgs()).iterator();
-        while (argIter.hasNext())
+        if (classExecutionTemplate.getArgs().length > 0)
         {
-            args.append(argIter.next());
-            if(argIter.hasNext())
-                args.append(" ");
+            StringBuilder args = new StringBuilder();
+            args.append("-Djava.class.exec.arg=");
+            Iterator<String> argIter = Arrays.asList(classExecutionTemplate.getArgs()).iterator();
+            while (argIter.hasNext())
+            {
+                args.append(argIter.next());
+                if(argIter.hasNext())
+                    args.append(" ");
+            }
+            command.add(args.toString());
         }
-        command.add(args.toString());
 
         return runAntProcess(command);
     }
@@ -118,12 +122,25 @@ public class AntRunner
 
     }
 
-    public AntProcessResult runAntProcess(List<String> command)
+    protected ProcessBuilder generateProcessBuilder(List<String> command)
     {
+        // Remove empty ant flags for windows compatibility
+        command = command.stream()
+                .filter(s -> !s.startsWith("-D") || !s.endsWith("="))
+                .collect(Collectors.toList());
+
+        // Make process
         ProcessBuilder pb = new ProcessBuilder();
         pb.command(command);
         pb.directory(Environment.getGradeerHomeDir().toFile());
         pb.redirectErrorStream(true);
+
+        return pb;
+    }
+
+    public AntProcessResult runAntProcess(List<String> command)
+    {
+        ProcessBuilder pb = generateProcessBuilder(command);
 
         logger.info("Running ant command: " + command + " from " + pb.directory());
 

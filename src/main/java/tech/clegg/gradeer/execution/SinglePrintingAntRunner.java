@@ -36,10 +36,7 @@ public class SinglePrintingAntRunner extends AntRunner
     @Override
     public AntProcessResult runAntProcess(List<String> command)
     {
-        ProcessBuilder pb = new ProcessBuilder();
-        pb.command(command);
-        pb.directory(Environment.getGradeerHomeDir().toFile());
-        pb.redirectErrorStream(true);
+        ProcessBuilder pb = generateProcessBuilder(command);
 
         System.out.println("Running ant command: " + command + " from " + pb.directory());
 
