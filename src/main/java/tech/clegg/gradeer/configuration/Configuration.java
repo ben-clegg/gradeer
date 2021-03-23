@@ -1,8 +1,7 @@
 package tech.clegg.gradeer.configuration;
 
 import com.google.gson.Gson;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import tech.clegg.gradeer.timing.TimerService;
 import tech.clegg.gradeer.execution.java.ClassExecutionTemplate;
 import tech.clegg.gradeer.results.io.LogFile;
 
@@ -14,18 +13,22 @@ import java.util.*;
 
 public class Configuration
 {
-    private static Logger logger = LogManager.getLogger(Configuration.class);
+
+    private LogFile logFile;
+    private TimerService timer;
 
     private Path rootDir;
     private Path studentSolutionsDir;
     private Path modelSolutionsDir;
     private Path testsDir;
+    private boolean autoGenerateTestSuiteChecks = true;
+
+    private Collection<Path> checkJSONs;
 
     private Path runtimeDependenciesDir;
     private Path testDependenciesDir;
     private Path sourceDependenciesDir;
 
-    private Path unittestChecksJSON;
     private Path testOutputDir;
 
     private Path libDir;
@@ -34,16 +37,8 @@ public class Configuration
     private int perTestSuiteTimeout = 10000;
 
     private Path checkstyleXml;
-    private Path checkstyleChecksJSON;
-    private int tabWidth;
+    private List<ClassExecutionTemplate> preManualJavaClassesToExecute;
 
-    private boolean removeCheckstyleFailuresOnModel;
-
-    private boolean testSuitesEnabled = true;
-    private boolean pmdEnabled = true;
-    private boolean checkstyleEnabled = true;
-
-    private Path pmdLocation;
     private String[] pmdRulesets = {
             "category/java/bestpractices.xml",
             "category/java/codestyle.xml",
@@ -54,24 +49,24 @@ public class Configuration
             "category/java/performance.xml",
             "category/java/security.xml"
     };
-    private Path pmdChecksJSON;
-    private boolean removePmdFailuresOnModel;
 
     private Path mergedSolutionsDir;
+    private Path solutionCapturedOutputDir;
 
     private Path outputDir;
-    private Path checkResultsDir;
-
-    private Path manualChecksJSON;
-    private List<ClassExecutionTemplate> preManualJavaClassesToExecute;
 
     private String inspectionCommand;
 
-    private boolean skipChecksFailingOnAnyModel = false;
+    private boolean verifyChecksWithModelSolutions = true; // Skips running checks on model solutions if false
     private boolean forceRecompilation = false;
     private boolean multiThreadingEnabled = true;
+    private boolean checkResultRecoveryEnabled = true;
 
-    private LogFile logFile;
+    private Collection<String> requiredClasses = new HashSet<>();
+
+    private Collection<String> includeSolutions = new HashSet<>();
+    private Collection<String> excludeSolutions = new HashSet<>();
+    private boolean removeInvalidChecks; // Invalid checks (i.e. fail model solution) are only reported if false
 
 
     public Configuration(Path jsonFile)
@@ -85,11 +80,13 @@ public class Configuration
 
             // Setup log file
             logFile = new LogFile(Paths.get(outputDir + File.separator + "logOutput.log"));
+            // Timer
+            timer = new TimerService(Paths.get(outputDir + File.separator + "timer.csv"), jsonFile);
         }
         catch (IOException ioEx)
         {
-            logger.error(ioEx);
-            logger.error("Could not load configuration!");
+            ioEx.printStackTrace();
+            System.err.println("Could not load configuration!");
             System.exit(1);
         }
     }
@@ -107,6 +104,7 @@ public class Configuration
         modelSolutionsDir = loadLocalOrAbsolutePath(json.modelSolutionsDirPath);
 
         testsDir = loadLocalOrAbsolutePath(json.testsDirPath);
+        autoGenerateTestSuiteChecks = json.autoGenerateTestSuiteChecks;
 
         runtimeDependenciesDir = loadLocalOrAbsolutePath(json.runtimeDependenciesDirPath);
         testDependenciesDir = loadLocalOrAbsolutePath(json.testDependenciesDirPath);
@@ -114,7 +112,11 @@ public class Configuration
 
         libDir = loadLocalOrAbsolutePath(json.libDir);
 
-        unittestChecksJSON = loadLocalOrAbsolutePath(json.unittestChecksJSON);
+        checkJSONs = new HashSet<>();
+        for (String cj : json.checkJSONs)
+        {
+            checkJSONs.add(loadLocalOrAbsolutePath(cj));
+        }
 
         loadBuiltLibComponents();
 
@@ -124,17 +126,6 @@ public class Configuration
             pmdRulesets = json.pmdRulesets;
 
         checkstyleXml = loadLocalOrAbsolutePath(json.checkstyleXml);
-        checkstyleChecksJSON = loadLocalOrAbsolutePath(json.checkstyleChecksJSON);
-        tabWidth = json.tabWidth;
-        removeCheckstyleFailuresOnModel = json.removeCheckstyleFailuresOnModel;
-
-        testSuitesEnabled = json.enableTestSuites;
-        checkstyleEnabled = json.enableCheckStyle;
-        pmdEnabled = json.enablePMD;
-        removePmdFailuresOnModel = json.removePMDFailuresOnModel;
-
-        pmdChecksJSON = loadLocalOrAbsolutePath(json.pmdChecksJSON);
-        pmdLocation = loadLocalOrAbsolutePath(json.pmdLocation);
 
         outputDir = Paths.get(rootDir + File.separator + "output");
         if(json.outputDirPath != null)
@@ -144,38 +135,65 @@ public class Configuration
         if(json.testOutputDirPath != null)
             testOutputDir = loadLocalOrAbsolutePath(json.testOutputDirPath);
 
-        checkResultsDir = Paths.get(outputDir + File.separator + "checkResults");
-        if(json.checkResultsDirPath != null)
-            checkResultsDir = loadLocalOrAbsolutePath(json.checkResultsDirPath);
-
         mergedSolutionsDir = Paths.get(outputDir + File.separator + "mergedSolutions");
         if(json.mergedSolutionsDirPath != null)
             mergedSolutionsDir = loadLocalOrAbsolutePath(json.mergedSolutionsDirPath);
 
-        manualChecksJSON = loadLocalOrAbsolutePath(json.manualChecksJSON);
+        solutionCapturedOutputDir = Paths.get(outputDir + File.separator + "solutionCapturedOutput");
+        if(json.solutionCapturedOutputDirPath != null)
+            solutionCapturedOutputDir = loadLocalOrAbsolutePath(json.solutionCapturedOutputDirPath);
+
         preManualJavaClassesToExecute = new ArrayList<>();
         if(json.preManualJavaClassesToExecute != null && json.preManualJavaClassesToExecute.length > 0)
             preManualJavaClassesToExecute.addAll(Arrays.asList(json.preManualJavaClassesToExecute));
 
         inspectionCommand = json.inspectionCommand;
 
-        skipChecksFailingOnAnyModel = json.skipChecksFailingOnAnyModel;
+        verifyChecksWithModelSolutions = json.verifyChecksWithModelSolutions;
         forceRecompilation = json.forceRecompilation;
         multiThreadingEnabled = json.multiThreadingEnabled;
+        checkResultRecoveryEnabled = json.checkResultRecoveryEnabled;
+
+        loadRequiredClasses(json);
+
+        includeSolutions.addAll(loadJsonStringArray(json.includeSolutions));
+        excludeSolutions.addAll(loadJsonStringArray(json.excludeSolutions));
+
+        removeInvalidChecks = json.removeInvalidChecks;
+    }
+
+    private Collection<String> loadJsonStringArray(String[] jsonStringArray)
+    {
+        if(jsonStringArray == null || jsonStringArray.length < 1)
+            return Collections.emptyList();
+
+        return Arrays.asList(jsonStringArray);
+
+    }
+
+    private void loadRequiredClasses(ConfigurationJSON json)
+    {
+        String[] classStrings = json.requiredClasses;
+
+        if(classStrings == null)
+            return;
+
+        requiredClasses.addAll(Arrays.asList(classStrings));
     }
 
     private void loadBuiltLibComponents()
     {
         builtLibComponents = new HashSet<>();
 
-        logger.info("Loading built lib components for " + libDir);
         if(!pathExists(libDir))
         {
+            System.err.println("No built lib components defined or accessible; skipping...");
             return;
         }
+        System.out.println("Loading built lib components for " + libDir);
         try
         {
-            Files.walk(libDir).forEach(logger::info);
+            Files.walk(libDir).forEach(System.out::println);
             Files.walk(libDir).filter(p ->
                     com.google.common.io.Files.getFileExtension(p.toString()).equals("jar"))
                     .forEach(builtLibComponents::add);
@@ -187,7 +205,7 @@ public class Configuration
         {
             ioEx.printStackTrace();
         }
-        builtLibComponents.forEach(p -> logger.info("Loaded built lib component " + p));
+        builtLibComponents.forEach(p -> System.out.println("Loaded built lib component " + p));
     }
 
     /**
@@ -195,7 +213,7 @@ public class Configuration
      * @param uri the path to load
      * @return the specified path, in either the absolute context, or the local context if this doesn't exist
      */
-    private Path loadLocalOrAbsolutePath(String uri)
+    public Path loadLocalOrAbsolutePath(String uri)
     {
         if(uri == null)
             return null;
@@ -209,6 +227,16 @@ public class Configuration
     public Path getRootDir()
     {
         return rootDir;
+    }
+
+    public TimerService getTimer()
+    {
+        return timer;
+    }
+
+    public Collection<Path> getCheckJSONs()
+    {
+        return checkJSONs;
     }
 
     public Path getStudentSolutionsDir()
@@ -226,6 +254,11 @@ public class Configuration
         return testsDir;
     }
 
+    public boolean isAutoGenerateTestSuiteChecks()
+    {
+        return autoGenerateTestSuiteChecks;
+    }
+
     public Path getTestDependenciesDir()
     {
         return testDependenciesDir;
@@ -234,11 +267,6 @@ public class Configuration
     public Path getSourceDependenciesDir()
     {
         return sourceDependenciesDir;
-    }
-
-    public Path getUnittestChecksJSON()
-    {
-        return unittestChecksJSON;
     }
 
     public Path getRuntimeDependenciesDir()
@@ -271,59 +299,9 @@ public class Configuration
         return checkstyleXml;
     }
 
-    public Path getCheckstyleChecksJSON()
-    {
-        return checkstyleChecksJSON;
-    }
-
-    public int getTabWidth()
-    {
-        return tabWidth;
-    }
-
-    public Path getPmdChecksJSON()
-    {
-        return pmdChecksJSON;
-    }
-
-    public boolean isRemoveCheckstyleFailuresOnModel()
-    {
-        return removeCheckstyleFailuresOnModel;
-    }
-
-    public boolean isRemovePmdFailuresOnModel()
-    {
-        return removePmdFailuresOnModel;
-    }
-
-    public void setRemoveCheckstyleFailuresOnModel(boolean removeCheckstyleFailuresOnModel)
-    {
-        this.removeCheckstyleFailuresOnModel = removeCheckstyleFailuresOnModel;
-    }
-
-    public boolean isTestSuitesEnabled()
-    {
-        return testSuitesEnabled;
-    }
-
     public Path getTestOutputDir()
     {
         return testOutputDir;
-    }
-
-    public boolean isPmdEnabled()
-    {
-        return pmdEnabled;
-    }
-
-    public boolean isCheckstyleEnabled()
-    {
-        return checkstyleEnabled;
-    }
-
-    public Path getPmdLocation()
-    {
-        return pmdLocation;
     }
 
     public Path getOutputDir()
@@ -336,24 +314,14 @@ public class Configuration
         return mergedSolutionsDir;
     }
 
-    public Path getCheckResultsDir()
+    public Path getSolutionCapturedOutputDir()
     {
-        return checkResultsDir;
-    }
-
-    public Path getManualChecksJSON()
-    {
-        return manualChecksJSON;
+        return solutionCapturedOutputDir;
     }
 
     public List<ClassExecutionTemplate> getPreManualJavaClassesToExecute()
     {
         return preManualJavaClassesToExecute;
-    }
-
-    public boolean isSkipChecksFailingOnAnyModel()
-    {
-        return skipChecksFailingOnAnyModel;
     }
 
     public String getInspectionCommand()
@@ -375,6 +343,11 @@ public class Configuration
         return true;
     }
 
+    public boolean isVerifyChecksWithModelSolutions()
+    {
+        return verifyChecksWithModelSolutions;
+    }
+
     public boolean isForceRecompilation()
     {
         return forceRecompilation;
@@ -382,6 +355,36 @@ public class Configuration
 
     public boolean isMultiThreadingEnabled() {
         return multiThreadingEnabled;
+    }
+
+    public Path getSolutionCheckResultsStoragePath()
+    {
+        return Paths.get(getOutputDir() + File.separator + "perSolutionCheckResults");
+    }
+
+    public boolean isCheckResultRecoveryEnabled()
+    {
+        return checkResultRecoveryEnabled;
+    }
+
+    public Collection<String> getRequiredClasses()
+    {
+        return requiredClasses;
+    }
+
+    public Collection<String> getIncludeSolutions()
+    {
+        return includeSolutions;
+    }
+
+    public Collection<String> getExcludeSolutions()
+    {
+        return excludeSolutions;
+    }
+
+    public boolean isRemoveInvalidChecks()
+    {
+        return removeInvalidChecks;
     }
 }
 
@@ -391,41 +394,35 @@ class ConfigurationJSON
     String studentSolutionsDirPath;
     String modelSolutionsDirPath;
     String testsDirPath;
+    boolean autoGenerateTestSuiteChecks = false;
     String runtimeDependenciesDirPath;
     String testDependenciesDirPath;
     String sourceDependenciesDirPath;
     String libDir;
     int perTestSuiteTimeout = -1;
-    String unittestChecksJSON;
     String outputDirPath;
     String testOutputDirPath;
+    String[] checkJSONs;
 
     String checkstyleXml;
-    String checkstyleChecksJSON;
-    int tabWidth = 2;
-    boolean removeCheckstyleFailuresOnModel = false;
     String[] pmdRulesets;
 
-    boolean enableTestSuites = true;
-    boolean enableCheckStyle = true;
-    boolean enablePMD = true;
-
-    String pmdLocation;
-    String pmdChecksJSON;
-    boolean removePMDFailuresOnModel = false;
-
-    String checkResultsDirPath;
-
     String mergedSolutionsDirPath;
+    String solutionCapturedOutputDirPath;
 
-    String manualChecksJSON;
     ClassExecutionTemplate[] preManualJavaClassesToExecute;
-
     String inspectionCommand;
 
-    boolean skipChecksFailingOnAnyModel = false;
+    boolean verifyChecksWithModelSolutions = true;
     boolean forceRecompilation = false;
     boolean multiThreadingEnabled = true;
+    boolean checkResultRecoveryEnabled = true;
+
+    String[] requiredClasses;
+
+    String[] includeSolutions;
+    String[] excludeSolutions;
+    boolean removeInvalidChecks = true;
 
     public static ConfigurationJSON loadJSON(Path jsonFile) throws FileNotFoundException
     {

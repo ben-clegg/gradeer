@@ -3,7 +3,7 @@ package tech.clegg.gradeer.results.io;
 import java.util.Iterator;
 import java.util.List;
 
-public class CSVWriter extends FileWriter
+public class CSVWriter extends DelayedFileWriter
 {
     private static final String SEP = ",";
 

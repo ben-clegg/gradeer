@@ -1,0 +1,24 @@
+[
+  {
+    "type": "FlagPresentCheck",
+    "name": "FlagPresent_TestLiftAPass",
+    "flag": "TestLiftAPass",
+    "priority": 5,
+    "weight": 1.0,
+    "feedbackValues": [
+      {"score": 0.0, "feedback": "Flag TestLiftAPass is not present."},
+      {"score": 1.0, "feedback": "Flag TestLiftAPass is present."}
+    ]
+  },
+  {
+    "type": "FlagAbsentCheck",
+    "name": "FlagAbsent_UNCOMPILABLE",
+    "flag": "UNCOMPILABLE",
+    "priority": 5,
+    "weight": 1.0,
+    "feedbackValues": [
+      {"score": 1.0, "feedback": "Flag UNCOMPILABLE is not present."},
+      {"score": 0.0, "feedback": "Flag UNCOMPILABLE is present."}
+    ]
+  }
+]

@@ -1,6 +1,5 @@
 package tech.clegg.gradeer.execution.java;
 
-import tech.clegg.gradeer.execution.AntProcessResult;
 import tech.clegg.gradeer.execution.SinglePrintingAntRunner;
 
 import java.util.concurrent.TimeUnit;
@@ -26,6 +25,11 @@ public class JavaExecutor
         {
             e.printStackTrace();
         }
+    }
+
+    public JavaExecution getJavaExecution()
+    {
+        return javaExecution;
     }
 
     public void stop()
@@ -57,5 +61,17 @@ class JavaExecution extends Thread
     {
         antRunner.halt();
         super.interrupt();
+        try
+        {
+            this.join();
+        } catch (InterruptedException e)
+        {
+            e.printStackTrace();
+        }
+    }
+
+    public SinglePrintingAntRunner getAntRunner()
+    {
+        return antRunner;
     }
 }

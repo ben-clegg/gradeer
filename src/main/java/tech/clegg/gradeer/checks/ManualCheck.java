@@ -1,47 +1,60 @@
 package tech.clegg.gradeer.checks;
 
-import tech.clegg.gradeer.checks.generation.json.FeedbackEntry;
-import tech.clegg.gradeer.checks.generation.json.ManualCheckJSONEntry;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import dnl.utils.text.table.TextTable;
+import tech.clegg.gradeer.checks.checkresults.CheckResult;
+import tech.clegg.gradeer.checks.exceptions.InvalidCheckException;
+import tech.clegg.gradeer.configuration.Configuration;
+import tech.clegg.gradeer.preprocessing.JavaBatchExecutorPreProcessor;
+import tech.clegg.gradeer.preprocessing.PreProcessor;
+import tech.clegg.gradeer.preprocessing.SourceInspectorPreProcessor;
 import tech.clegg.gradeer.solution.Solution;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
-import java.util.Iterator;
-import java.util.Map;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.NoSuchElementException;
 import java.util.Scanner;
-import java.util.TreeMap;
 
 public class ManualCheck extends Check
 {
-    private static Logger logger = LogManager.getLogger(ManualCheck.class);
-
     private String prompt;
-    private int maxRange;
-    private boolean arbitraryFeedback;
+    private int maxRange = 1;
+    private boolean arbitraryFeedback = false;
 
-    private Map<Double, String> feedbackForUnweightedScoreBounds;
-    private Map<Solution, String> arbitraryFeedbackPerSolution;
-
-    public ManualCheck(ManualCheckJSONEntry jsonEntry)
+    public ManualCheck(JsonObject jsonObject, Configuration configuration) throws InvalidCheckException
     {
-        this.name = jsonEntry.getName();
-        this.weight = jsonEntry.getWeight();
-        this.prompt = jsonEntry.getPrompt();
-        this.maxRange = jsonEntry.getMaxRange();
-        this.arbitraryFeedback = jsonEntry.isArbitraryFeedback();
+        super(jsonObject, configuration);
+        this.concurrentCompatible = false;
 
-        this.feedbackForUnweightedScoreBounds = new TreeMap<>();
-        // Map feedback minimum values to the same space as unweighted scores (i.e. 0 - 1)
-        for(FeedbackEntry fe : jsonEntry.getFeedbackEntries())
+        try
         {
-            double unweightedValue = (double) fe.getMinimumScore() / maxRange;
-            feedbackForUnweightedScoreBounds.put(unweightedValue, fe.getFeedback());
+            this.prompt = getOptionalElement(jsonObject, "prompt").get().getAsString();
+        } catch (NoSuchElementException noElem)
+        {
+            throw new InvalidCheckException("ManualCheck " + getName() + " requires a prompt to be used.");
         }
+
+
+        this.maxRange = getElementOrDefault(jsonObject, "maxRange", JsonElement::getAsInt, maxRange);
+        this.arbitraryFeedback = getElementOrDefault(jsonObject, "arbitraryFeedback",
+                JsonElement::getAsBoolean, arbitraryFeedback);
     }
 
     @Override
-    public void run(Solution solution)
+    public Collection<Class<? extends PreProcessor>> getPreProcessorTypes()
+    {
+        Collection<Class<? extends PreProcessor>> preProcessorTypes = new HashSet<>();
+
+        preProcessorTypes.add(JavaBatchExecutorPreProcessor.class);
+        preProcessorTypes.add(SourceInspectorPreProcessor.class);
+
+        return preProcessorTypes;
+    }
+
+    @Override
+    public void execute(Solution solution)
     {
         // Force clear past input to prevent state infection
         try
@@ -52,11 +65,39 @@ public class ManualCheck extends Check
             e.printStackTrace();
         }
 
+
         // Start check
         System.out.println("\nManual check " + name + " for Solution " + solution.getIdentifier());
         System.out.println(prompt);
+        generateCheckResultsTable().printTable();
 
+        // Process
+        processSolution(solution);
+    }
+
+    private TextTable generateCheckResultsTable()
+    {
+        String[] columnNames = {"Boundary", "(Normalized boundary)", "Mapped feedback"};
+
+        // Load results
+        String[][] entries = new String[feedbackForUnweightedScoreBounds.size()][3];
+        int i = 0;
+        for (double unweightedBound : feedbackForUnweightedScoreBounds.keySet())
+        {
+            entries[i][0] = ">=" + (maxRange * unweightedBound);
+            entries[i][1] = ">=" + unweightedBound;
+            entries[i][2] = feedbackForUnweightedScoreBounds.get(unweightedBound);
+            i++;
+        }
+
+        return new TextTable(columnNames, entries);
+    }
+
+    @Override
+    protected double generateUnweightedScore(Solution solution)
+    {
         // Calculate unweighted grade
+        double unweightedScore = 1.0; // Default to full score (in case no weight set ; manual feedback only mode)
         if(weight > 0)
         {
             System.out.print("Enter a value in the range 0 - " + maxRange);
@@ -65,28 +106,17 @@ public class ManualCheck extends Check
             System.out.println();
 
             int inputResult = getNumericInputResult();
-            double unweightedScore = (double) inputResult / maxRange;
-            unweightedScores.put(solution, unweightedScore);
-            System.out.println("Entered value [" + inputResult + "] (unweighted score of " + unweightedScore + " / 1.0)");
+            unweightedScore = (double) inputResult / maxRange;
+            System.out.println("Entered value [" + inputResult + "] " +
+                    "(unweighted score of " + unweightedScore + " / 1.0)");
         }
-        else
-        {
-            // Skip if no weight for check (check disabled or ungraded)
-            unweightedScores.put(solution, 1.0);
-        }
-
-        // Determine arbitrary feedback to add (if enabled)
-        if(arbitraryFeedback)
-        {
-            System.out.println("Enter feedback:");
-            String feedback = getStringInputResult();
-            arbitraryFeedbackPerSolution.put(solution, feedback);
-        }
-
+        return unweightedScore;
     }
 
     private String getStringInputResult()
     {
+        System.out.println("Enter feedback:");
+
         // Get input
         Scanner scanner = new Scanner(System.in);
 
@@ -97,8 +127,7 @@ public class ManualCheck extends Check
             return getStringInputResult();
         }
 
-        String input = scanner.next().trim();
-        scanner.close();
+        String input = scanner.nextLine().trim();
 
         if(input.isEmpty())
         {
@@ -109,8 +138,9 @@ public class ManualCheck extends Check
         System.out.println(input);
         System.out.println();
 
+        scanner.reset();
+
         // Check that result approved
-        System.out.println("Accept? (y / n)");
         if(!getAffirmation())
             return getStringInputResult();
 
@@ -119,22 +149,25 @@ public class ManualCheck extends Check
 
     private boolean getAffirmation()
     {
+        System.out.println("Accept? (y / n)");
+
         Scanner scanner = new Scanner(System.in);
 
         if(!scanner.hasNext())
         {
-            scanner.close();
             return getAffirmation();
         }
 
         String input = scanner.next().trim();
-        scanner.close();
+
+        scanner.reset();
 
         if(input.equalsIgnoreCase("y") || input.equalsIgnoreCase("yes"))
             return true;
         else if(input.equalsIgnoreCase("n") || input.equalsIgnoreCase("no"))
             return false;
 
+        System.err.println("Invalid confirmation.");
         return getAffirmation();
     }
 
@@ -147,12 +180,10 @@ public class ManualCheck extends Check
         {
             System.err.println("No input provided.");
             System.err.println("Please re-enter.");
-            scanner.close();
             return getNumericInputResult();
         }
 
         String input = scanner.next().trim();
-        scanner.close();
 
         if(input.isEmpty())
         {
@@ -192,43 +223,30 @@ public class ManualCheck extends Check
     }
 
     @Override
-    public String getFeedback(Solution solution)
+    protected String generateFeedback(double unweightedScore)
     {
         StringBuilder feedback = new StringBuilder();
 
         // Tiered feedback
-        String boundedFeedback = getBoundedFeedbackForScore(getUnweightedScore(solution));
+        String boundedFeedback = super.generateFeedback(unweightedScore);
         if(!boundedFeedback.isEmpty())
             feedback.append(boundedFeedback);
 
-        // Arbitrary feedback
-        String arbitraryFeedback = arbitraryFeedbackPerSolution.getOrDefault(solution, "");
-        if(!arbitraryFeedback.isEmpty())
+        // Determine arbitrary feedback to add (if enabled)
+        if(arbitraryFeedback)
         {
-            if(!feedback.toString().isEmpty())
-                feedback.append("\n");
-            feedback.append(arbitraryFeedback);
+            String arbitraryFeedback = getStringInputResult();
+            if(!arbitraryFeedback.isEmpty())
+            {
+                if(!feedback.toString().isEmpty())
+                    feedback.append("\n");
+                feedback.append(arbitraryFeedback);
+            }
         }
+
         return feedback.toString();
     }
 
-    private String getBoundedFeedbackForScore(double score)
-    {
-        Iterator<Double> keysInterator = feedbackForUnweightedScoreBounds.keySet().iterator();
-
-        double lastKey = -1;
-
-        // Assuming ascending order of TreeMap, get the key just below or equal to the actual score
-        while (keysInterator.hasNext()) {
-            double k = keysInterator.next();
-            if(score >= k)
-                lastKey = k;
-            else
-                break;
-        }
-
-        return feedbackForUnweightedScoreBounds.get(lastKey);
-    }
 
     @Override
     public String toString()
@@ -236,9 +254,7 @@ public class ManualCheck extends Check
         return "ManualCheck{" +
                 "prompt='" + prompt + '\'' +
                 ", maxRange=" + maxRange +
-                ", feedbackForUnweightedScoreBounds=" + feedbackForUnweightedScoreBounds +
-                ", weight=" + weight +
-                ", name='" + name + '\'' +
+                ", (" + super.toString() + ")" +
                 '}';
     }
 }

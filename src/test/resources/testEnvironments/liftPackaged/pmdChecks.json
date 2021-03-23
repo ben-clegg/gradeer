@@ -1,0 +1,41 @@
+[
+  {
+    "type": "PMDCheck",
+    "name": "AvoidReassigningParameters",
+    "weight": 1.0,
+    "feedbackValues": [
+      {"score": 0.0, "feedback":  "Your methods sometimes re-assign parameters. This harms readability."},
+      {"score": 1.0, "feedback":  "Your methods do not re-assign parameters."}
+    ]
+  },
+  {
+    "type": "PMDCheck",
+    "name": "EmptyIfStmt",
+    "weight": 0.5,
+    "feedbackValues": [
+      {"score": 1.0, "feedback": ""},
+      {"score": 0.0, "feedback": "Your code contains empty if statements. This should be avoided as it reduces readability."}
+    ],
+    "maxViolations": 2
+  },
+  {
+    "type": "PMDCheck",
+    "name": "UnusedPrivateField",
+    "weight": 0.3,
+    "feedbackValues": [
+      {"score": 1.0, "feedback": ""},
+      {"score": 0.0, "feedback": "Private fields (variables / constants) are defined but never used. This should generally be avoided."}
+    ],
+    "maxViolations": 3
+  },
+  {
+    "type": "PMDCheck",
+    "name": "UnusedPrivateMethod",
+    "weight": 0.3,
+    "feedbackValues": [
+      {"score": 1.0, "feedback": ""},
+      {"score": 0.0, "feedback": "Private methods are defined but never used. Unused code should be removed from a program to improve readability."}
+    ],
+    "maxViolations": 2
+  }
+]

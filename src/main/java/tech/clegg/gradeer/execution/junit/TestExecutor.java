@@ -3,21 +3,16 @@ package tech.clegg.gradeer.execution.junit;
 import tech.clegg.gradeer.configuration.Configuration;
 import tech.clegg.gradeer.execution.AntProcessResult;
 import tech.clegg.gradeer.execution.AntRunner;
-import tech.clegg.gradeer.results.io.FileWriter;
+import tech.clegg.gradeer.results.io.DelayedFileWriter;
 import tech.clegg.gradeer.subject.ClassPath;
 import tech.clegg.gradeer.solution.Solution;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import java.io.File;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Arrays;
 
 public class TestExecutor
 {
-    private static Logger logger = LogManager.getLogger(TestExecutor.class);
 
     private TestSuite testSuite;
     private Configuration configuration;
@@ -44,15 +39,17 @@ public class TestExecutor
             configuration.getTestOutputDir().toFile().mkdirs();
             Path output = Paths.get(configuration.getTestOutputDir() + File.separator + solution.getIdentifier());
 
-            FileWriter f = new FileWriter(true);
+            DelayedFileWriter f = new DelayedFileWriter(true);
             f.addLine("\n" + testSuite.getBaseName() + ":");
             f.addLine(antProcessResult.getJUnitMessage());
             f.write(output);
         }
-        System.out.println("Tests run: " + antProcessResult.getTestsRun() +
+        configuration.getLogFile().writeMessage(
+                "TestExecution [Solution " + solution.getIdentifier() +
+                " TestSuite: " + testSuite.getBaseName() + "] " +
+                " Tests run: " + antProcessResult.getTestsRun() +
                 " Failures: " + antProcessResult.getTestsFailures() +
                 " Errors: " + antProcessResult.getTestsErrors());
-        //logger.info(antProcessResult);
         return new TestResult(antProcessResult);
     }
 }

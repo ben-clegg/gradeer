@@ -1,9 +1,7 @@
 package tech.clegg.gradeer.auxiliaryprocesses;
 
 import tech.clegg.gradeer.configuration.Configuration;
-import tech.clegg.gradeer.execution.staticanalysis.pmd.PMDProcessResults;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -15,6 +13,7 @@ public class InspectionCommandProcess implements Runnable
 {
     private Configuration configuration;
     private Collection<Path> toInspect;
+    private Process process;
 
     public InspectionCommandProcess(Configuration configuration, Collection<Path> toInspect)
     {
@@ -27,7 +26,13 @@ public class InspectionCommandProcess implements Runnable
     {
         List<String> command = new ArrayList<>();
 
-        // Load PMD
+        // Do nothing if no inspection command
+        if(configuration.getInspectionCommand() == null)
+            return;
+        if(configuration.getInspectionCommand().isEmpty())
+            return;
+
+        // Add main inspection command
         command.add(configuration.getInspectionCommand());
 
         for (Path p : toInspect)
@@ -42,11 +47,20 @@ public class InspectionCommandProcess implements Runnable
         processBuilder.command(command);
         try
         {
-            Process process = processBuilder.start();
+            process = processBuilder.start();
         }
         catch (IOException ioEx)
         {
             ioEx.printStackTrace();
         }
+    }
+
+    public void stop()
+    {
+        if(process == null)
+            return;
+        if(!process.isAlive())
+            return;
+        process.destroy();
     }
 }

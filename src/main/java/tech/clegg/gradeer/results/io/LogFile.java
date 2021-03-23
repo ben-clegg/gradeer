@@ -2,7 +2,7 @@ package tech.clegg.gradeer.results.io;
 
 import java.nio.file.Path;
 
-public class LogFile extends FileWriter
+public class LogFile extends DelayedFileWriter
 {
     private Path location;
 
@@ -15,12 +15,11 @@ public class LogFile extends FileWriter
     {
         super(true);
         this.location = location;
-        writeMessage("Created logger " + System.currentTimeMillis());
     }
 
     public void writeMessage(String message)
     {
-        System.out.println("[Log] " + message);
+        //System.out.println("[Log] " + message);
         addLine(message);
         write(location);
     }

@@ -34,7 +34,7 @@ public class Environment
         loadEnvVars();
 
         // Check if any important paths are missing
-        exitOnMissingEnviroment();
+        exitOnMissingEnvironment();
     }
 
     private static void loadEnvVars()
@@ -43,7 +43,7 @@ public class Environment
             antExecutable = Paths.get(System.getenv("ANT_EXECUTABLE"));
     }
 
-    private static void exitOnMissingEnviroment()
+    private static void exitOnMissingEnvironment()
     {
         if(!pathExists(antExecutable))
         {

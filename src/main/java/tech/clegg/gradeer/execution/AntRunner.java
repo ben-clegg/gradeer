@@ -43,7 +43,7 @@ public class AntRunner
         command.add("-Dsrc.dir=" + solution.getDirectory());
         command.add("-Dclass.dir=" + solution.getDirectory());
 
-        logger.info(command);
+        logger.debug(command);
         return runAntProcess(command);
     }
 
@@ -53,7 +53,7 @@ public class AntRunner
         command.add("-Dsrc.dir=" + testDirectory);
         command.add("-Dclass.dir=" + testDirectory);
 
-        logger.info(command);
+        logger.debug(command);
         return runAntProcess(command);
     }
 
@@ -149,5 +149,10 @@ public class AntRunner
         }
 
         return res;
+    }
+
+    Configuration getConfiguration()
+    {
+        return config;
     }
 }

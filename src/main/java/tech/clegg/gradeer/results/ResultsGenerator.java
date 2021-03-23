@@ -1,14 +1,11 @@
 package tech.clegg.gradeer.results;
 
 import tech.clegg.gradeer.checks.Check;
-import tech.clegg.gradeer.checks.checkprocessing.AutoCheckProcessor;
 import tech.clegg.gradeer.checks.checkprocessing.CheckProcessor;
 import tech.clegg.gradeer.configuration.Configuration;
 import tech.clegg.gradeer.results.io.CSVWriter;
-import tech.clegg.gradeer.results.io.FileWriter;
+import tech.clegg.gradeer.results.io.DelayedFileWriter;
 import tech.clegg.gradeer.solution.Solution;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import java.io.File;
 import java.nio.file.Paths;
@@ -17,10 +14,8 @@ import java.util.stream.Collectors;
 
 public class ResultsGenerator implements Runnable
 {
-    private static final Logger logger = LogManager.getLogger(ResultsGenerator.class);
-
     private final Collection<Solution> studentSolutions;
-    private List<CheckProcessor> checkProcessors;
+    protected List<CheckProcessor> checkProcessors;
     private Configuration configuration;
 
     public ResultsGenerator(Collection<Solution> studentSolutions, List<CheckProcessor> checkProcessors, Configuration configuration)
@@ -45,24 +40,53 @@ public class ResultsGenerator implements Runnable
     @Override
     public void run()
     {
+        configuration.getTimer().split("Completed initialisation stage.");
         int solutionNumber = 1;
         for (Solution s : studentSolutions)
         {
             System.out.println("\nProcessing solution " + s.getIdentifier() +
                     " ( " + solutionNumber + " / " + studentSolutions.size() + " ) ");
-            for (CheckProcessor checkProcessor : checkProcessors)
-            {
-                checkProcessor.runChecks(s);
-            }
+
+            processSolution(s);
+
             solutionNumber++;
         }
 
         writeSolutionsFailingAllUnitTests();
-        writeIndividualCheckResults();
         writeCombinedCheckResults();
         writeGrades();
         writeFeedback();
         writeSplitResultsWithWeights();
+
+        // Write summary of solution flags
+        SolutionFlagWriter solutionFlagWriter = new SolutionFlagWriter(configuration);
+        solutionFlagWriter.write(studentSolutions);
+    }
+
+    /**
+     * Process the checks for an individual Solution.
+     * If resuming is enabled (default behaviour), the method
+     * first attempts to restore stored grading state (i.e. CheckResults) from existing files for the Solution.
+     * Next executes any checks that have no existing results.
+     * Finally writes the Collection of CheckResults for the Solution to a file to allow for future restoring.
+     * @param solution the Solution to process Checks for.
+     */
+    protected void processSolution(Solution solution)
+    {
+        CheckResultsStorage checkResultsStorage = new CheckResultsStorage(configuration);
+
+        // Attempt load of stored CheckResults for solution; allow for skipping
+        if(configuration.isCheckResultRecoveryEnabled())
+            checkResultsStorage.recoverCheckResults(solution, checkProcessors);
+
+        // Run Checks for solution
+        for (CheckProcessor checkProcessor : checkProcessors)
+        {
+            checkProcessor.runChecks(solution);
+        }
+
+        // Store CheckResults of solution
+        checkResultsStorage.storeCheckResults(solution);
     }
 
     private void writeSolutionsFailingAllUnitTests()
@@ -83,45 +107,14 @@ public class ResultsGenerator implements Runnable
         if(failAllUnitTests.isEmpty())
             return;
 
-        FileWriter f = new FileWriter();
+        DelayedFileWriter f = new DelayedFileWriter();
         for(Solution s : failAllUnitTests)
             f.addLine(s.getIdentifier());
         f.write(Paths.get(configuration.getOutputDir() + File.separator + "SolutionsFailingAllUnitTests"));
     }
 
-    private void writeIndividualCheckResults()
-    {
-        if(configuration.getCheckResultsDir() == null)
-            return;
-
-        configuration.getCheckResultsDir().toFile().mkdirs();
-
-        for (Solution s : studentSolutions)
-        {
-            // Individual file
-            FileWriter f = new FileWriter();
-            for (CheckProcessor checkProcessor : checkProcessors)
-            {
-                for (Check c : checkProcessor.getChecks())
-                {
-                    f.addLine(
-                            c.getClass().getSimpleName() +
-                            " - " +
-                            c.getName() +
-                            ": " +
-                            c.getWeightedScore(s) +
-                            " / " +
-                            c.getWeight()
-                    );
-                }
-            }
-
-            f.write(Paths.get(configuration.getCheckResultsDir() + File.separator + s.getIdentifier()));
-        }
-    }
-
     /**
-     * Creates a matrix of unweighted scores for each check on each solution
+     * Creates a matrix of unweighted scores for each check on each solution, stored as a CSV
      */
     private void writeCombinedCheckResults()
     {
@@ -142,7 +135,7 @@ public class ResultsGenerator implements Runnable
             row.add(s.getIdentifier());
             for (Check c : allChecks)
             {
-                row.add(String.valueOf(c.getUnweightedScore(s)));
+                row.add(String.valueOf(s.getCheckResult(c).getUnweightedScore()));
             }
             w.addEntry(row);
         }
@@ -160,41 +153,68 @@ public class ResultsGenerator implements Runnable
         {
             double grade = gradeGenerator.generateGrade(s);
 
-            String[] line = {s.getIdentifier(), String.valueOf(grade), "\"" + generateFeedback(s) + "\""};
+            String[] line = {s.getIdentifier(), String.valueOf(grade), generateFeedback(s)};
             gradeWriter.addEntry(Arrays.asList(line));
-            logger.info("Grade Generated: " + Arrays.toString(line));
+            System.out.println("Grade Generated for " + s.getIdentifier() + ": " + grade);
         }
         gradeWriter.write(Paths.get(configuration.getOutputDir() + File.separator + "AssignmentMarks.csv"));
     }
 
+    /**
+     * Generate the complete feedback text for a Solution.
+     * This uses the checkGroup of each Check to group outputs together. This can also generate summative grades for each part
+     * @param solution the Solution to generate the feedback text for.
+     * @return the Solution's feedback text block.
+     */
     private String generateFeedback(Solution solution)
     {
         StringBuilder sb = new StringBuilder();
 
+        Collection<Check> checks = new HashSet<>();
         for (CheckProcessor checkProcessor : checkProcessors)
+            checks.addAll(checkProcessor.getAllChecks());
+
+        Set<String> checkGroups = uniqueCheckGroups(checks);
+
+        for (String cg : checkGroups)
         {
-            for (Check c : checkProcessor.getChecks())
+            Collection<Check> checksInGroup = checks.stream().filter(c -> c.getCheckGroup().equals(cg))
+                    .collect(Collectors.toList());
+
+            if(cg.isEmpty())
+                sb.append("Other Criteria: ");
+            else
+                sb.append(cg).append(": ");
+
+            sb.append(GradeGenerator.generateGrade(solution, checksInGroup));
+            sb.append("\n");
+
+            for (Check c : checksInGroup)
             {
-                String feedback = c.getFeedback(solution);
+                String feedback = solution.getCheckResult(c).getFeedback();
                 if(!feedback.isEmpty())
-                    sb.append(feedback + "\n");
+                    sb.append(feedback).append("\n");
             }
+
+            sb.append("\n");
         }
 
         return sb.toString();
 
     }
 
+    private Set<String> uniqueCheckGroups(Collection<Check> checks)
+    {
+        return checks.stream().map(Check::getCheckGroup).collect(Collectors.toSet());
+    }
+
     private void writeFeedback()
     {
-        // TODO implement
-
         for (Solution s : studentSolutions)
         {
-            FileWriter file = new FileWriter();
+            DelayedFileWriter file = new DelayedFileWriter();
             file.addLine(generateFeedback(s));
             file.write(Paths.get(configuration.getOutputDir() + File.separator + "feedback" + File.separator + s.getIdentifier() + "_feedback.txt"));
-
         }
     }
 
@@ -245,8 +265,8 @@ public class ResultsGenerator implements Runnable
 
             for (Check c : allChecks)
             {
-                row.add(String.valueOf(c.getUnweightedScore(s)));
-                row.add(c.getFeedback(s));
+                row.add(String.valueOf(s.getCheckResult(c).getUnweightedScore()));
+                row.add(s.getCheckResult(c).getFeedback());
             }
 
             row.add(generateFeedback(s));
@@ -263,7 +283,7 @@ public class ResultsGenerator implements Runnable
     {
         List<Check> allChecks = new ArrayList<>();
         for (CheckProcessor checkProcessor : checkProcessors)
-            allChecks.addAll(checkProcessor.getChecks());
+            allChecks.addAll(checkProcessor.getAllChecks());
 
         return allChecks;
     }

@@ -1,14 +1,12 @@
 package tech.clegg.gradeer.subject.compilation;
 
+import tech.clegg.gradeer.solution.DefaultFlag;
+import tech.clegg.gradeer.subject.ClassPath;
 import tech.clegg.gradeer.configuration.Configuration;
 import tech.clegg.gradeer.execution.AntProcessResult;
 import tech.clegg.gradeer.execution.AntRunner;
-import tech.clegg.gradeer.results.io.FileWriter;
-import tech.clegg.gradeer.solution.Flag;
-import tech.clegg.gradeer.subject.ClassPath;
+import tech.clegg.gradeer.results.io.DelayedFileWriter;
 import tech.clegg.gradeer.solution.Solution;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import java.io.File;
 import java.nio.file.Path;
@@ -17,8 +15,6 @@ import java.util.*;
 
 public class JavaCompiler
 {
-    private static Logger logger = LogManager.getLogger(JavaCompiler.class);
-
     public ClassPath classPath;
     private Configuration configuration;
 
@@ -64,15 +60,15 @@ public class JavaCompiler
         // Report if uncompilable
         if (!result.compiled())
         {
-            FileWriter fileWriter = new FileWriter();
-            fileWriter.addLine(result.getErrorMessage());
+            DelayedFileWriter delayedFileWriter = new DelayedFileWriter();
+            delayedFileWriter.addLine(result.getErrorMessage());
 
             final Path uncompilableSolutionsDir = Paths.get(configuration.getOutputDir() + File.separator + "uncompilableSolutions");
             uncompilableSolutionsDir.toFile().mkdirs();
-            fileWriter.write(Paths.get(uncompilableSolutionsDir + File.separator + solutionToCompile.getIdentifier()));
+            delayedFileWriter.write(Paths.get(uncompilableSolutionsDir + File.separator + solutionToCompile.getIdentifier()));
 
             // Set flag for Solution
-            solutionToCompile.addFlag(Flag.UNCOMPILABLE);
+            solutionToCompile.addFlag(DefaultFlag.UNCOMPILABLE);
         }
 
         return result.compiled();
@@ -88,7 +84,6 @@ public class JavaCompiler
 
         AntRunner antRunner = new AntRunner(configuration, cp);
         AntProcessResult result = antRunner.compile(configuration.getTestsDir());
-        //logger.info(result);
     }
 
     public void compileDir(Path dir, Solution modelSolution)

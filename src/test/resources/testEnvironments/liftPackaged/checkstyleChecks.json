@@ -1,0 +1,37 @@
+[
+  {
+    "type": "CheckstyleCheck",
+    "name": "LineLength",
+    "weight": 1.0,
+    "feedbackValues": [
+      {"score": 0.0, "feedback":  "Some of your lines of code are too wide (over 100 characters)."},
+      {"score": 1.0, "feedback":  "Your lines of code are the correct width."}
+    ], 
+    "checkGroup": "Alternate Style checkGroup for test"
+  },
+  {
+    "type": "CheckstyleCheck",
+    "name": "TypeName",
+    "weight": 1.0,
+    "feedbackValues": [
+      {"score": 0.0, "feedback":  "One or more class names not in CamelCase."},
+      {"score": 1.0, "feedback":  "Class names use correct CamelCase."}
+    ]
+  },
+  {
+    "type": "CheckstyleCheck",
+    "name": "MemberName",
+    "feedbackValues": [
+      {"score": 0.0, "feedback":  "One or more class member (object) names not in camelCase."},
+      {"score": 1.0, "feedback":  "Class member (object) names use correct camelCase."}
+    ]
+  },
+  {
+    "type": "CheckstyleCheck",
+    "name": "MethodName",
+    "feedbackValues": [
+      {"score": 0.0, "feedback":  "One or more method names not in camelCase."},
+      {"score": 1.0, "feedback":  "Method names use correct camelCase."}
+    ]
+  }
+]

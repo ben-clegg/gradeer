@@ -8,9 +8,9 @@
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
     </properties>
-    <groupId>tech.clegg.gradeer</groupId>
+    <groupId>tech.anonymousname.gradeer</groupId>
     <artifactId>gradeer</artifactId>
-    <version>0.97</version>
+    <version>0.99a4</version>
     <packaging>jar</packaging>
     <url>https://github.com/ben-clegg/gradeer</url>
     <inceptionYear>2020</inceptionYear>
@@ -32,12 +32,12 @@
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-api</artifactId>
-            <version>2.13.0</version>
+            <version>2.13.3</version>
         </dependency>
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-core</artifactId>
-            <version>2.13.0</version>
+            <version>2.13.3</version>
         </dependency>
         <!-- https://mvnrepository.com/artifact/org.apache.commons/commons-lang3 -->
         <dependency>
@@ -51,13 +51,20 @@
             <artifactId>guava</artifactId>
             <version>28.2-jre</version>
         </dependency>
+        <!-- https://mvnrepository.com/artifact/com.massisframework/j-text-utils -->
+        <dependency>
+            <groupId>com.massisframework</groupId>
+            <artifactId>j-text-utils</artifactId>
+            <version>0.3.4</version>
+        </dependency>
+
 
         <!-- Test execution (for grading) -->
         <!-- https://mvnrepository.com/artifact/junit/junit -->
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>4.12</version>
+            <version>4.13.1</version>
         </dependency>
         <!-- https://mvnrepository.com/artifact/org.hamcrest/hamcrest-all -->
         <dependency>
@@ -141,6 +148,18 @@
                         </configuration>
                     </execution>
                 </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>2.22.2</version>
+                <configuration>
+                    <excludes>
+                        <exclude>**/testEnvironments/**/*.java</exclude>
+                        <exclude>**/testEnvironments/**/*.class</exclude>
+                    </excludes>
+                </configuration>
             </plugin>
 
         </plugins>

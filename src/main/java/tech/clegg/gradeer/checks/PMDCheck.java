@@ -1,62 +1,92 @@
 package tech.clegg.gradeer.checks;
 
-import tech.clegg.gradeer.checks.generation.json.StaticAnalysisCheckJSONEntry;
-import tech.clegg.gradeer.execution.staticanalysis.pmd.PMDViolation;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import tech.clegg.gradeer.checks.checkresults.CheckResult;
+import tech.clegg.gradeer.checks.exceptions.InvalidCheckException;
+import tech.clegg.gradeer.configuration.Configuration;
+import tech.clegg.gradeer.preprocessing.PMDPreProcessor;
+import tech.clegg.gradeer.preprocessing.PreProcessor;
+import tech.clegg.gradeer.preprocessing.staticanalysis.pmd.PMDProcessResults;
+import tech.clegg.gradeer.preprocessing.staticanalysis.pmd.PMDViolation;
+import tech.clegg.gradeer.solution.DefaultFlag;
 import tech.clegg.gradeer.solution.Solution;
 
 import java.util.Collection;
+import java.util.Collections;
 
 public class PMDCheck extends Check
 {
 
-    private int maximumViolations = 4;
-    private int minimumViolations = 0;
+    int minimumViolations = 0;
+    int maximumViolations = 4;
 
-    public PMDCheck(StaticAnalysisCheckJSONEntry json)
+    public PMDCheck(JsonObject jsonObject, Configuration configuration) throws InvalidCheckException
     {
-        super();
-        this.name = json.getName();
-        this.weight = json.getWeight();
-        this.feedbackCorrect = json.getFeedbackCorrect();
-        this.feedbackIncorrect = json.getFeedbackIncorrect();
-
-        if(json.getMaxViolations() >= 1)
-            maximumViolations = json.getMaxViolations();
-        if(json.getMinViolations() >= 0)
-            minimumViolations = json.getMinViolations();
+        super(jsonObject, configuration);
+        this.minimumViolations = getElementOrDefault(jsonObject, "minimumViolations",
+                JsonElement::getAsInt, minimumViolations);
+        this.maximumViolations = getElementOrDefault(jsonObject, "maximumViolations",
+                JsonElement::getAsInt, maximumViolations);
     }
 
     @Override
-    public void run(Solution solution)
+    protected String defaultCheckGroupForType()
     {
-        if(solution.getPmdProcessResults() == null)
-            return;
+        return "Code Style / Quality";
+    }
 
-        Collection<PMDViolation> violations = solution.getPmdProcessResults().getViolations(name);
+    @Override
+    public Collection<Class<? extends PreProcessor>> getPreProcessorTypes()
+    {
+        return Collections.singleton(PMDPreProcessor.class);
+    }
 
-        if(violations == null || violations.isEmpty())
+    @Override
+    public void execute(Solution solution)
+    {
+        // No PMD results exist
+        if(!solution.hasPreProcessorResultsOfType(PMDPreProcessor.class))
         {
-            unweightedScores.put(solution, 1.0);
+            System.err.println("No PMD process results for Solution " + solution.getIdentifier());
+            solution.addFlag(DefaultFlag.NO_PMD_RESULTS);
+            double score = 0.0;
+            solution.addCheckResult(new CheckResult(this, score, generateFeedback(score)));
             return;
         }
+
+        // Process as normal
+        processSolution(solution);
+    }
+
+    @Override
+    protected double generateUnweightedScore(Solution solution)
+    {
+        PMDProcessResults pmdResults = (PMDProcessResults) solution.getPreProcessorResultsOfType(PMDPreProcessor.class);
+        Collection<PMDViolation> violations = pmdResults.getViolations(name);
+
+        if(violations == null || violations.isEmpty())
+            return 1.0;
 
         int totalTrackedViolations = violations.size();
 
         // Derive score from maximum & minimum violations
         if(totalTrackedViolations >= maximumViolations)
-        {
-            unweightedScores.put(solution, 0.0);
-            return;
-        }
+            return 0.0;
         if(totalTrackedViolations <= minimumViolations)
-        {
-            unweightedScores.put(solution, 1.0);
-            return;
-        }
+            return 1.0;
 
         totalTrackedViolations -= minimumViolations;
-        double score = 1.0 - (double) totalTrackedViolations / (maximumViolations - minimumViolations);
-        unweightedScores.put(solution, score);
+        return (1.0 - ((double) totalTrackedViolations / (maximumViolations - minimumViolations)));
+    }
 
+    @Override
+    public String toString()
+    {
+        return "PMDCheck{" +
+                "maximumViolations=" + maximumViolations +
+                ", minimumViolations=" + minimumViolations +
+                ", (" + super.toString() + ")" +
+                '}';
     }
 }
