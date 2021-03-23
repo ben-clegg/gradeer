@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AnalysisUIOptions">
+    <option name="SCOPE_TYPE" value="3" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="8f5d8765-af70-45d2-8735-bf82b4d8315b" name="Default Changelist" comment="" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Class" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="ProjectId" id="1hJfeTsduqDNIdLvL7pHxreA6DF" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="ASKED_ADD_EXTERNAL_FILES" value="true" />
+    <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
+    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="aspect.path.notification.shown" value="true" />
+    <property name="project.structure.last.edited" value="Project" />
+    <property name="project.structure.proportion" value="0.0" />
+    <property name="project.structure.side.proportion" value="0.0" />
+    <property name="run.code.analysis.last.selected.profile" value="pProject Default" />
+    <property name="settings.editor.selected.configurable" value="reference.settingsdialog.IDE.editor.colors.Color Scheme Font" />
+  </component>
+  <component name="SvnConfiguration">
+    <configuration />
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="8f5d8765-af70-45d2-8735-bf82b4d8315b" name="Default Changelist" comment="" />
+      <created>1599734210178</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1599734210178</updated>
+      <workItem from="1599734211858" duration="312000" />
+      <workItem from="1599735372825" duration="153000" />
+      <workItem from="1599744175933" duration="5003000" />
+      <workItem from="1616498636987" duration="142000" />
+    </task>
+    <task id="LOCAL-00001" summary="Made build.xml support Java 11. &#10;Added Solution Flags">
+      <created>1599746747031</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1599746747031</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="2" />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="Made build.xml support Java 11. &#10;Added Solution Flags" />
+    <option name="LAST_COMMIT_MESSAGE" value="Made build.xml support Java 11. &#10;Added Solution Flags" />
+  </component>
+  <component name="WindowStateProjectService">
+    <state x="443" y="130" width="1034" height="849" key="SettingsEditor" timestamp="1616498713867">
+      <screen x="0" y="0" width="1920" height="1080" />
+    </state>
+    <state x="443" y="130" width="1034" height="849" key="SettingsEditor/1920.0.1920.1080/0.0.1920.1080@0.0.1920.1080" timestamp="1616498713867" />
+    <state x="675" y="328" width="569" height="453" key="git4idea.merge.GitPullDialog" timestamp="1616498734933">
+      <screen x="0" y="0" width="1920" height="1080" />
+    </state>
+    <state x="675" y="328" width="569" height="453" key="git4idea.merge.GitPullDialog/1920.0.1920.1080/0.0.1920.1080@0.0.1920.1080" timestamp="1616498734933" />
+  </component>
+</project>
