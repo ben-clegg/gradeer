@@ -1,0 +1,15 @@
+{
+  "studentSolutionsDirPath": "studentSolutions",
+  "modelSolutionsDirPath": "modelSolutions",
+  "testsDirPath": "testSuites",
+  "checkJSONs": ["manualChecks.json", "unittestChecks.json", "checkstyleChecks.json", "pmdChecks.json", "flagChecks.json"],
+  "perTestSuiteTimeout": 10,
+  "checkstyleXml": "checkstyle.xml",
+  "preManualJavaClassesToExecute": [{
+    "fullClassName" : "pack.Lift",
+    "args": [],
+    "additionalCPElems": [],
+    "waitAfterExecutionTime": 3
+  }],
+  "inspectionCommand": "codium"
+}
