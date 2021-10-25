@@ -1,7 +1,7 @@
 package tech.clegg.gradeer.execution.junit;
 
 import tech.clegg.gradeer.Gradeer;
-import tech.clegg.gradeer.TestGlobals;
+import tech.clegg.gradeer.GlobalsTest;
 import tech.clegg.gradeer.configuration.Configuration;
 import org.junit.jupiter.api.Test;
 
@@ -9,9 +9,9 @@ import java.util.ArrayList;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class TestTestExecutor
+class TestExecutorTest
 {
-    Configuration config = new Configuration(TestGlobals.JSON_CONFIG_LIFT);
+    Configuration config = new Configuration(GlobalsTest.JSON_CONFIG_LIFT);
     Gradeer gradeer = new Gradeer(config);
 
     @Test
@@ -19,7 +19,7 @@ class TestTestExecutor
     {
         gradeer.getEnabledTestSuites().forEach(t -> {
             TestExecutor testExecutor = new TestExecutor(t, config);
-            TestResult result = testExecutor.execute(new ArrayList<>(gradeer.getModelSolutions()).get(0));
+            TestSuiteResult result = testExecutor.execute(new ArrayList<>(gradeer.getModelSolutions()).get(0));
             System.out.println(result.toString());
             switch (t.getBaseName())
             {

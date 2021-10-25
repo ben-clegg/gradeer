@@ -1,6 +1,6 @@
 package tech.clegg.gradeer.configuration;
 
-import tech.clegg.gradeer.TestGlobals;
+import tech.clegg.gradeer.GlobalsTest;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
@@ -8,15 +8,15 @@ import java.nio.file.Paths;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class TestConfiguration
+class ConfigurationTest
 {
     @Test
     public void testGenerateConfigurationJSON()
     {
         try
         {
-            System.out.println(TestGlobals.JSON_CONFIG_LIFT);
-            ConfigurationJSON json = ConfigurationJSON.loadJSON(TestGlobals.JSON_CONFIG_LIFT);
+            System.out.println(GlobalsTest.JSON_CONFIG_LIFT);
+            ConfigurationJSON json = ConfigurationJSON.loadJSON(GlobalsTest.JSON_CONFIG_LIFT);
             System.out.println(json.rootDirPath);
             System.out.println(json.studentSolutionsDirPath);
             System.out.println(json.modelSolutionsDirPath);

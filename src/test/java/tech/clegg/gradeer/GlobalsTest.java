@@ -4,7 +4,7 @@ import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-public class TestGlobals
+public class GlobalsTest
 {
     public static final Path JSON_CONFIG_LIFT = Paths.get(System.getProperty("user.dir") + File.separator +
             "src" + File.separator +

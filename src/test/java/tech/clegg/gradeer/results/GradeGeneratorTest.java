@@ -3,7 +3,7 @@ package tech.clegg.gradeer.results;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import tech.clegg.gradeer.Gradeer;
-import tech.clegg.gradeer.TestGlobals;
+import tech.clegg.gradeer.GlobalsTest;
 import tech.clegg.gradeer.configuration.Configuration;
 import tech.clegg.gradeer.solution.Solution;
 
@@ -12,10 +12,10 @@ import java.util.NoSuchElementException;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class TestGradeGenerator
+public class GradeGeneratorTest
 {
 
-    static Configuration config = new Configuration(TestGlobals.JSON_CONFIG_GRADING_TEST_ENV);
+    static Configuration config = new Configuration(GlobalsTest.JSON_CONFIG_GRADING_TEST_ENV);
     static Gradeer gradeer = new Gradeer(config);
     static GradeGenerator gradeGenerator;
     static Collection<Solution> solutions;

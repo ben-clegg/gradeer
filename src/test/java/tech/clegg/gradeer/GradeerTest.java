@@ -13,9 +13,9 @@ import java.util.Collection;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class TestGradeer
+class GradeerTest
 {
-    Configuration config = new Configuration(TestGlobals.JSON_CONFIG_LIFT);
+    Configuration config = new Configuration(GlobalsTest.JSON_CONFIG_LIFT);
     Gradeer gradeer = new Gradeer(config);
 
     @Test
