@@ -85,28 +85,32 @@ public class CheckProcessor
             return;
         }
 
-        // Store checks that did not have restored CheckResults; i.e. are executed now
-        Collection<Check> currentlyExecutedChecks = new ArrayList<>();
+        // Pending checks (i.e. no results already exist)
+        Collection<Check> pendingChecks = pendingChecks(solution, getAllChecks());
 
         // Generate & run PreProcessors
         Collection<PreProcessor> preProcessors =
-                new PreProcessorGenerator(getAllChecks(), configuration)
+                new PreProcessorGenerator(pendingChecks, configuration)
                         .generate(solution);
         preProcessors.forEach(PreProcessor::start);
+
+
+        // Store checks that did not have restored CheckResults; i.e. are executed now
+        Collection<Check> currentlyExecutedChecks = new ArrayList<>();
 
         // Run individual Check groups, from highest priority to lowest
         List<Integer> priorityValues = new ArrayList<>(checkGroups.keySet());
         priorityValues.sort(Collections.reverseOrder());
         for (int p : priorityValues)
         {
+            Collection<Check> pendingChecksInGroup = pendingChecks(solution, checkGroups.get(p));
             currentlyExecutedChecks.addAll(
-                    runCheckGroup(solution, checkGroups.get(p))
+                    runCheckGroup(solution, pendingChecksInGroup)
             );
         }
 
         // Stop PreProcessors
         preProcessors.forEach(PreProcessor::stop);
-        // TODO Only execute PreProcessors while they are necessary
 
         // Restart ManualChecks if selected & just executed
         if(checkTypeIsPresent(ManualCheck.class, currentlyExecutedChecks))
@@ -146,6 +150,19 @@ public class CheckProcessor
     }
 
     /**
+     * Filter checks such that only checks which do not already have results for the solution remain
+     * @param solution the Solution to filter against
+     * @param checks the Checks to filter
+     * @return checks that do not yet have results for the solution
+     */
+    private Collection<Check> pendingChecks(Solution solution, Collection<Check> checks)
+    {
+        return checks.stream()
+                .filter(c -> !solution.hasCheckResult(c))
+                .collect(Collectors.toList());
+    }
+
+    /**
      *
      * @param solution
      * @param checks
@@ -153,11 +170,6 @@ public class CheckProcessor
      */
     private Collection<Check> runCheckGroup(Solution solution, Collection<Check> checks)
     {
-        // Determine which checks have not already been executed
-        Collection<Check> executedChecks = checks.stream()
-                .filter(c -> !solution.hasCheckResult(c))
-                .collect(Collectors.toList());
-
         // Run all checks procedurally if multithreading is disabled
         if(!configuration.isMultiThreadingEnabled())
         {
@@ -165,7 +177,7 @@ public class CheckProcessor
             {
                 c.run(solution);
             }
-            return executedChecks;
+            return checks;
         }
 
         // Split concurrent and non-concurrent checks
@@ -178,7 +190,7 @@ public class CheckProcessor
 
         concurrent.parallelStream().forEach(c -> c.run(solution));
         nonConcurrent.forEach(c -> c.run(solution));
-        return executedChecks;
+        return checks;
     }
 
     private boolean checkTypeIsPresent(Class<? extends Check> checkType)

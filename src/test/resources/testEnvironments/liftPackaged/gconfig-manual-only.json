@@ -7,7 +7,7 @@
   "checkstyleXml": "checkstyle.xml",
   "preManualJavaClassesToExecute": [{
     "fullClassName" : "pack.Lift",
-    "args": [],
+    "args": ["resources/grading/winequality-red.csv resources/grading/winequality-white.csv resources/grading/queries.txt"],
     "additionalCPElems": [],
     "waitAfterExecutionTime": 3
   }],

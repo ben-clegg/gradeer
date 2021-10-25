@@ -19,7 +19,7 @@ class TestExecutorTest
     {
         gradeer.getEnabledTestSuites().forEach(t -> {
             TestExecutor testExecutor = new TestExecutor(t, config);
-            TestSuiteResult result = testExecutor.execute(new ArrayList<>(gradeer.getModelSolutions()).get(0));
+            TestResult result = testExecutor.execute(new ArrayList<>(gradeer.getModelSolutions()).get(0));
             System.out.println(result.toString());
             switch (t.getBaseName())
             {
