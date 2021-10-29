@@ -2,23 +2,26 @@ package tech.clegg.gradeer;
 
 import tech.clegg.gradeer.auxiliaryprocesses.MergedSolutionWriter;
 import tech.clegg.gradeer.checks.Check;
-import tech.clegg.gradeer.checks.ManualCheck;
-import tech.clegg.gradeer.checks.TestSuiteCheck;
+import tech.clegg.gradeer.checks.UnitTestCheck;
 import tech.clegg.gradeer.checks.checkprocessing.CheckProcessor;
 import tech.clegg.gradeer.checks.checkprocessing.CheckValidator;
 import tech.clegg.gradeer.checks.generation.CheckGenerator;
-import tech.clegg.gradeer.checks.generation.FlagsEntry;
 import tech.clegg.gradeer.configuration.Configuration;
 import tech.clegg.gradeer.configuration.Environment;
 import tech.clegg.gradeer.configuration.cli.CLIOptions;
 import tech.clegg.gradeer.configuration.cli.CLIReader;
-import tech.clegg.gradeer.execution.junit.TestSuite;
-import tech.clegg.gradeer.execution.junit.TestSuiteLoader;
+import tech.clegg.gradeer.execution.testing.UnitTest;
+import tech.clegg.gradeer.execution.testing.junit.JUnit4TestEngine;
+import tech.clegg.gradeer.execution.testing.junit.JUnitTestSource;
+import tech.clegg.gradeer.execution.testing.junit.TestSuiteLoader;
+import tech.clegg.gradeer.input.TestSourceFile;
+import tech.clegg.gradeer.preprocessing.testing.UnitTestPreProcessor;
+import tech.clegg.gradeer.preprocessing.testing.UnitTestPreProcessorResults;
 import tech.clegg.gradeer.results.ResultsGenerator;
 import tech.clegg.gradeer.results.io.DelayedFileWriter;
 import tech.clegg.gradeer.solution.DefaultFlag;
 import tech.clegg.gradeer.subject.JavaSource;
-import tech.clegg.gradeer.subject.compilation.JavaCompiler;
+import tech.clegg.gradeer.compilation.JavaCompiler;
 import tech.clegg.gradeer.error.ErrorCode;
 import tech.clegg.gradeer.solution.Solution;
 
@@ -133,7 +136,7 @@ public class Gradeer
         System.out.println("Performing mutation analysis...");
 
         // Run automated checks on mutants
-        Collection<Check> autoChecks = checks.stream().filter(c -> c.getClass() == TestSuiteCheck.class)
+        Collection<Check> autoChecks = checks.stream().filter(c -> c.getClass() == UnitTestCheck.class)
                 .collect(Collectors.toList());
         // TODO filter by additional check types defined in config (e.g. style checking)
 
@@ -198,14 +201,15 @@ public class Gradeer
     private void loadTests(Collection<Check> checks)
     {
         // Get existing TestSuiteChecks to attach TestSuites to
-        Collection<TestSuiteCheck> testSuiteChecks = checks.stream()
-                .filter(c -> c.getClass().equals(TestSuiteCheck.class))
-                .map(c -> (TestSuiteCheck)c)
+        Collection<UnitTestCheck> unitTestChecks = checks.stream()
+                .filter(c -> c.getClass().equals(UnitTestCheck.class))
+                .map(c -> (UnitTestCheck)c)
                 .collect(Collectors.toList());
 
         // Load and compile tests
-        Collection<TestSuite> testSuites = new TestSuiteLoader(getConfiguration().getTestsDir()).getTestSuites();
-        System.out.println("Compiling " + testSuites.size() + " unit tests...");
+        // TODO Generify to accept other test engines / languages
+        Collection<JUnitTestSource> testSources = new TestSuiteLoader(getConfiguration().getTestsDir()).getTestSuites();
+        System.out.println("Compiling " + testSources.size() + " unit tests...");
         JavaCompiler compiler = JavaCompiler.createCompiler(getConfiguration());
         if(getModelSolutions().size() < 1)
             System.err.println("No compiled model solutions available.");
@@ -218,28 +222,42 @@ public class Gradeer
         }
         compiler.compileTests(modelSolution);
 
-        // Link compiled TestSuites to TestSuiteChecks
-        for (TestSuiteCheck c : testSuiteChecks)
+
+        // Populate configuration with test sources
+        for (TestSourceFile testSourceFile : testSources)
         {
-            c.loadTestSuite(testSuites);
-            if(!c.getTestSuite().isCompiled())
-                System.err.println("[WARNING] Test Suite " + c.getName() + " is not compiled!");
+            configuration.addTestSourceFile(JUnit4TestEngine.class, testSourceFile);
         }
 
+        // Execute test sources on model solution(s)
+        UnitTestPreProcessor unitTestPreProcessor = new UnitTestPreProcessor(modelSolution, configuration);
+        unitTestPreProcessor.start();
 
-        // Create default checks for unlinked TestSuites if enabled
-        if(configuration.isAutoGenerateTestSuiteChecks())
+        // Link tests to checks parsed from JSON
+        UnitTestPreProcessorResults preProcessorResults =
+                (UnitTestPreProcessorResults) modelSolution.getPreProcessorResultsOfType(UnitTestPreProcessor.class);
+        Collection<UnitTest> identifiedUnitTests = preProcessorResults.getExecutedUnitTests();
+        Collection<UnitTest> linkedUnitTests = new HashSet<>();
+        for (UnitTestCheck parsedCheck : unitTestChecks)
         {
-            Collection<TestSuite> unlinkedSuites = new HashSet<>(testSuites);
-            unlinkedSuites.removeAll(
-                    testSuiteChecks.stream()
-                    .map(TestSuiteCheck::getTestSuite)
-                    .filter(Objects::nonNull)
-                    .collect(Collectors.toSet())
-            );
+            Optional<UnitTest> matchingTest = identifiedUnitTests.stream()
+                    .filter(parsedCheck::matchesUnitTest)
+                    .findFirst();
+            if (matchingTest.isPresent())
+            {
+                parsedCheck.setUnitTest(matchingTest.get());
+                linkedUnitTests.add(matchingTest.get());
+            }
+        }
 
-            for (TestSuite t : unlinkedSuites)
-                checks.add(new TestSuiteCheck(t, configuration));
+        // Generate UnitTestChecks from unlinked tests
+        if (configuration.isAutoGenerateTestSuiteChecks())
+        {
+            // Identify tests that are not yet linked
+            Collection<UnitTest> unlinkedUnitTests = new HashSet<>(identifiedUnitTests);
+            unlinkedUnitTests.removeAll(linkedUnitTests);
+            // Create a check and add it to the checks collection
+            unlinkedUnitTests.forEach(t -> checks.add(new UnitTestCheck(t, configuration)));
         }
     }
 
@@ -368,11 +386,4 @@ public class Gradeer
         return checks;
     }
 
-    public Collection<TestSuite> getEnabledTestSuites()
-    {
-        return checks.stream()
-                .filter(c -> c instanceof TestSuiteCheck)
-                .map(c -> ((TestSuiteCheck) c).getTestSuite())
-                .collect(Collectors.toList());
-    }
 }

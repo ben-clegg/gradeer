@@ -1,4 +1,4 @@
-package tech.clegg.gradeer.execution.junit;
+package tech.clegg.gradeer.execution.testing.junit;
 
 import tech.clegg.gradeer.execution.AntProcessResult;
 

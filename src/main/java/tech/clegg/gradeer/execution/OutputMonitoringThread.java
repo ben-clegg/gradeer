@@ -10,7 +10,7 @@ public class OutputMonitoringThread extends Thread
     private final InputStream stdErr;
     private BufferedWriter fileWriter = null;
 
-    private final boolean printOutputToConsole = true; // TODO set from configuration
+    private final boolean PRINT_OUTPUT_TO_CONSOLE = true; // TODO set from configuration
 
     public OutputMonitoringThread(InputStream stdOut, InputStream stdErr, Path outputFile)
     {
@@ -60,7 +60,7 @@ public class OutputMonitoringThread extends Thread
 
     private void printLine(String line)
     {
-        if(!printOutputToConsole)
+        if(!PRINT_OUTPUT_TO_CONSOLE)
             return;
 
         System.out.println("[Solution Execution] " + line);

@@ -2,7 +2,7 @@
   "studentSolutionsDirPath": "studentSolutions",
   "modelSolutionsDirPath": "modelSolutions",
   "testsDirPath": "testSuites",
-  "checkJSONs": ["unittestChecks.json", "checkstyleChecks.json", "pmdChecks.json", "flagChecks.json"],
+  "checkJSONs": ["checkstyleChecks.json", "pmdChecks.json", "flagChecks.json"],
   "perTestSuiteTimeout": 120,
   "checkstyleXml": "checkstyle.xml"
 }

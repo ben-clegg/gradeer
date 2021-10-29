@@ -3,7 +3,7 @@ package tech.clegg.gradeer.execution;
 import tech.clegg.gradeer.configuration.Configuration;
 import tech.clegg.gradeer.configuration.Environment;
 import tech.clegg.gradeer.execution.java.ClassExecutionTemplate;
-import tech.clegg.gradeer.execution.junit.TestSuite;
+import tech.clegg.gradeer.execution.testing.junit.JUnitTestSource;
 import tech.clegg.gradeer.subject.ClassPath;
 import tech.clegg.gradeer.solution.Solution;
 import org.apache.logging.log4j.LogManager;
@@ -58,7 +58,7 @@ public class AntRunner
         return runAntProcess(command);
     }
 
-    public AntProcessResult runTest(TestSuite test, Solution solution)
+    public AntProcessResult runTest(JUnitTestSource test, Solution solution)
     {
         String packagePrefix = test.getPackage();
         if(!packagePrefix.isEmpty())

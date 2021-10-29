@@ -21,8 +21,12 @@ public class GradeGeneratorTest
     static Collection<Solution> solutions;
 
     @BeforeAll
-    public static void runGradeer()
+    public static void setup()
     {
+        // Reset
+        GlobalsTest.deleteOutputDir(GlobalsTest.JSON_CONFIG_GRADING_TEST_ENV);
+
+        // Run Gradeer
         solutions = gradeer.getStudentSolutions();
 
         ResultsGenerator resultsGenerator = gradeer.startEnvironment();
@@ -57,7 +61,7 @@ public class GradeGeneratorTest
                     .findFirst().get(); // methodA and methodC will produce faults
 
             double grade = gradeGenerator.generateGrade(solution);
-            assertEquals(50.0, grade, 0.00001);
+            assertEquals(40.0, grade, 0.00001);
 
         } catch (NoSuchElementException e) {
             fail("Solution not found");
@@ -74,7 +78,7 @@ public class GradeGeneratorTest
                     .findFirst().get(); // methodA and methodC will produce faults
 
             double grade = gradeGenerator.generateGrade(solution);
-            assertEquals(25.0, grade, 0.00001);
+            assertEquals(40, grade, 0.00001);
 
         } catch (NoSuchElementException e) {
             fail("Solution not found");
@@ -91,10 +95,24 @@ public class GradeGeneratorTest
                     .findFirst().get(); // Only methodC will produce faults
 
             double grade = gradeGenerator.generateGrade(solution);
-            assertEquals(75.0, grade, 0.00001);
+            assertEquals(80.0, grade, 0.00001);
 
         } catch (NoSuchElementException e) {
             fail("Solution not found");
         }
+    }
+
+    @Test
+    public void testMultipleSolutionsDifferentResults()
+    {
+        Solution correct = solutions.stream()
+                .filter(s -> s.getIdentifier().equals("correct"))
+                .findFirst().get();
+        assertEquals(100.0, gradeGenerator.generateGrade(correct), 0.00001);
+
+        Solution incorrectA = solutions.stream()
+                .filter(s -> s.getIdentifier().equals("incorrectA"))
+                .findFirst().get();
+        assertEquals(40.0, gradeGenerator.generateGrade(incorrectA), 0.00001);
     }
 }

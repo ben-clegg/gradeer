@@ -1,8 +1,12 @@
 package tech.clegg.gradeer;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Comparator;
+import java.util.stream.Stream;
 
 public class GlobalsTest
 {
@@ -21,4 +25,30 @@ public class GlobalsTest
             "testEnvironments" + File.separator +
             "gradingTestEnv" + File.separator +
             "gconfig-auto.json");
+
+    public static void deleteOutputDir(Path configJSONLocation)
+    {
+        Path outputDir = Paths.get(configJSONLocation.getParent() + File.separator + "output");
+        if (Files.isDirectory(outputDir))
+        {
+            try (Stream<Path> walk = Files.walk(outputDir))
+            {
+                walk
+                        .sorted(Comparator.reverseOrder())
+                        .forEach(path ->
+                        {
+                            try
+                            {
+                                Files.delete(path);
+                            } catch (IOException e)
+                            {
+                                e.printStackTrace();
+                            }
+                        });
+            } catch (IOException e)
+            {
+                e.printStackTrace();
+            }
+        }
+    }
 }

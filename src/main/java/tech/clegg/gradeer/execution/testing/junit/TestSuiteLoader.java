@@ -1,4 +1,4 @@
-package tech.clegg.gradeer.execution.junit;
+package tech.clegg.gradeer.execution.testing.junit;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -8,7 +8,7 @@ import java.util.stream.Collectors;
 
 public class TestSuiteLoader
 {
-    Collection<TestSuite> testSuites;
+    Collection<JUnitTestSource> testSuites;
 
     public TestSuiteLoader(Path testsDir)
     {
@@ -16,7 +16,7 @@ public class TestSuiteLoader
         {
             testSuites = Files.walk(testsDir)
                     .filter(p -> com.google.common.io.Files.getFileExtension(p.toString()).equals("java"))
-                    .map(p -> new TestSuite(p, testsDir)).collect(Collectors.toList());
+                    .map(p -> new JUnitTestSource(p, testsDir)).collect(Collectors.toList());
         }
         catch (IOException ioEx)
         {
@@ -30,10 +30,10 @@ public class TestSuiteLoader
     {
         testSuites = testSrcPaths.stream()
                 .filter(Files::exists)
-                .map(p -> new TestSuite(p, testsRootDir)).collect(Collectors.toList());
+                .map(p -> new JUnitTestSource(p, testsRootDir)).collect(Collectors.toList());
     }
 
-    public Collection<TestSuite> getTestSuites()
+    public Collection<JUnitTestSource> getTestSuites()
     {
         return testSuites;
     }

@@ -7,3 +7,4 @@ src/test/resources/testEnvironments/fitnessAssignment
 **/.idea/tasks.xml
 **/.idea/shelf
 src/test/resources/testEnvironments/*/output/**/*
+**/.idea/solarlint

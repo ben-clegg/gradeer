@@ -1,4 +1,4 @@
-package tech.clegg.gradeer.subject.compilation;
+package tech.clegg.gradeer.compilation;
 
 import tech.clegg.gradeer.solution.DefaultFlag;
 import tech.clegg.gradeer.subject.ClassPath;
@@ -96,5 +96,4 @@ public class JavaCompiler
         AntProcessResult result = antRunner.compile(dir);
         //logger.info(result);
     }
-
 }
