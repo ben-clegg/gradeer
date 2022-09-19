@@ -24,7 +24,7 @@ Ensure that you set the `ANT_EXECUTABLE` environment variable to the location of
 
 #### PMD
 
-In order to use PMD checks, [PMD](https://github.com/pmd/pmd/releases/tag/pmd_releases%2F6.24.0) must be installed. We officially support version 6.24.0, but newer versions may also work.
+In order to use PMD checks, [PMD](https://github.com/pmd/pmd/releases/tag/pmd_releases%2F6.49.0) must be installed. We officially support version 6.49.0, but newer versions may also work.
 
 You must also set the environment variable `GRADEER_PMD_LOCATION` to point to PMD's directory (which contains the `bin` and `lib` directories), e.g. `/home/username/Software/pmd-bin-6.24.0/`
 
