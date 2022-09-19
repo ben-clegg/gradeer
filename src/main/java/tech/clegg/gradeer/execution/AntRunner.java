@@ -58,21 +58,6 @@ public class AntRunner
         return runAntProcess(command);
     }
 
-    public AntProcessResult runTest(JUnitTestSource test, Solution solution)
-    {
-        String packagePrefix = test.getPackage();
-        if(!packagePrefix.isEmpty())
-            packagePrefix = packagePrefix + ".";
-        List<String> command = commonCommand("run-test");
-        command.add("-Dtest.class.name=" + packagePrefix + test.getBaseName());
-        command.add("-Dtest.class.dir=" + test.getClassFile().getParent().toString());
-        command.add("-Dsource.dir=" + solution.getDirectory());
-        command.add("-Dtest.dir=" + config.getTestsDir());
-        command.add("-Dtest.suite.timeout=" + config.getPerTestSuiteTimeout());
-
-        return runAntProcess(command);
-    }
-
     public AntProcessResult runJavaClass(ClassExecutionTemplate classExecutionTemplate)
     {
         List<String> command = commonCommand("run-class");
