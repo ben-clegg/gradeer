@@ -1,7 +1,6 @@
 package tech.clegg.gradeer.execution.java;
 
 import tech.clegg.gradeer.configuration.Configuration;
-import tech.clegg.gradeer.execution.SinglePrintingAntRunner;
 import tech.clegg.gradeer.solution.Solution;
 import tech.clegg.gradeer.subject.ClassPath;
 
@@ -13,17 +12,8 @@ public class JavaExecutionManager {
     private final JavaExecution javaExecution;
     private int waitAfterExecutionTime;
 
-    public JavaExecutionManager(SinglePrintingAntRunner antRunner, ClassExecutionTemplate classExecutionTemplate) {
-        this.javaExecution = new JavaExecution(antRunner, classExecutionTemplate);
-        this.waitAfterExecutionTime = classExecutionTemplate.getWaitAfterExecutionTime();
-    }
-
     public JavaExecutionManager(Configuration config, ClassExecutionTemplate classExecTemplate, Solution solution) {
-
         ClassPath classPath = initClassPath(config, classExecTemplate, solution);
-
-        SinglePrintingAntRunner antRunner = new SinglePrintingAntRunner(config, classPath, solution);
-        //this.javaExecution = new JavaExecution(antRunner, classExecTemplate);
         this.javaExecution = new JavaExecution(solution, classPath, classExecTemplate, config);
         this.waitAfterExecutionTime = classExecTemplate.getWaitAfterExecutionTime();
     }

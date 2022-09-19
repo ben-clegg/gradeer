@@ -1,13 +1,10 @@
 package tech.clegg.gradeer.execution.java;
 
-import tech.clegg.gradeer.results.io.DelayedFileWriter;
-import tech.clegg.gradeer.subject.ClassPath;
 import tech.clegg.gradeer.configuration.Configuration;
-import tech.clegg.gradeer.execution.SinglePrintingAntRunner;
+import tech.clegg.gradeer.results.io.DelayedFileWriter;
 import tech.clegg.gradeer.solution.Solution;
 
 import java.io.File;
-import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -33,24 +30,9 @@ public class JavaClassBatchExecutor
         if(configuration.getPreManualJavaClassesToExecute().isEmpty())
             return;
 
-        ClassPath classPath = new ClassPath();
-        classPath.add(solution.getDirectory());
-        if(configuration.getRuntimeDependenciesDir() != null && Files.exists(configuration.getRuntimeDependenciesDir()))
-            classPath.add(configuration.getRuntimeDependenciesDir());
-
-
         for (ClassExecutionTemplate cet : configuration.getPreManualJavaClassesToExecute())
         {
-            ClassPath execCP = new ClassPath(classPath);
-            if(cet.getAdditionalCPElems().length > 0)
-            {
-                for (String elem : cet.getAdditionalCPElems())
-                    execCP.add(Paths.get(elem));
-            }
-
-            // Make a single ant runner - allows for the process to be terminated
-            SinglePrintingAntRunner antRunner = new SinglePrintingAntRunner(configuration, execCP, solution);
-            javaExecutionManagers.add(new JavaExecutionManager(antRunner, cet));
+            javaExecutionManagers.add(new JavaExecutionManager(configuration, cet, solution));
         }
     }
 

@@ -4,7 +4,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import tech.clegg.gradeer.configuration.Configuration;
 import tech.clegg.gradeer.execution.OutputMonitoringThread;
-import tech.clegg.gradeer.execution.SinglePrintingAntRunner;
 import tech.clegg.gradeer.solution.Solution;
 import tech.clegg.gradeer.subject.ClassPath;
 
@@ -18,18 +17,12 @@ public class JavaExecution extends Thread {
 
     private final Logger logger = LogManager.getLogger(JavaExecution.class);
 
-    private SinglePrintingAntRunner antRunner = null;
     private final ClassExecutionTemplate classExecutionTemplate;
 
     private Process process;
-    private Solution solution;
-    private ClassPath classPath;
-    private Configuration configuration;
-
-    JavaExecution(SinglePrintingAntRunner antRunner, ClassExecutionTemplate classExecutionTemplate) {
-        this.antRunner = antRunner;
-        this.classExecutionTemplate = classExecutionTemplate;
-    }
+    private final Solution solution;
+    private final ClassPath classPath;
+    private final Configuration configuration;
 
     JavaExecution(
             Solution solution,
@@ -46,28 +39,24 @@ public class JavaExecution extends Thread {
     @Override
     public void run() {
         System.out.println("Executing " + classExecutionTemplate.getFullClassName());
-        if (antRunner != null) {
-            antRunner.runJavaClass(classExecutionTemplate);
-        } else {
-            try {
-                String[] command = generateCommand(classPath, classExecutionTemplate);
-                process = Runtime.getRuntime()
-                        .exec(command, new String[]{}, solution.getDirectory().toFile());
-                OutputMonitoringThread outputMonitoringThread = new OutputMonitoringThread(
-                        process.getInputStream(),
-                        process.getErrorStream(),
-                        Paths.get(configuration.getSolutionCapturedOutputDir() +
-                                File.separator + solution.getIdentifier() + "-output.txt")
-                );
-                outputMonitoringThread.start();
-                outputMonitoringThread.join();
-            } catch (IOException e) {
-                logger.error("Encountered error while running pre-manual class for solution {}",
-                        solution.getIdentifier(), e);
-            } catch (InterruptedException e) {
-                logger.error("Interrupted OutputMonitoringThread for solution {}",
-                        solution.getIdentifier(), e);
-            }
+        try {
+            String[] command = generateCommand(classPath, classExecutionTemplate);
+            process = Runtime.getRuntime()
+                    .exec(command, new String[]{}, solution.getDirectory().toFile());
+            OutputMonitoringThread outputMonitoringThread = new OutputMonitoringThread(
+                    process.getInputStream(),
+                    process.getErrorStream(),
+                    Paths.get(configuration.getSolutionCapturedOutputDir() +
+                            File.separator + solution.getIdentifier() + "-output.txt")
+            );
+            outputMonitoringThread.start();
+            outputMonitoringThread.join();
+        } catch (IOException e) {
+            logger.error("Encountered error while running pre-manual class for solution {}",
+                    solution.getIdentifier(), e);
+        } catch (InterruptedException e) {
+            logger.error("Interrupted OutputMonitoringThread for solution {}",
+                    solution.getIdentifier(), e);
         }
     }
 
@@ -89,7 +78,7 @@ public class JavaExecution extends Thread {
 
     @Override
     public void interrupt() {
-        antRunner.halt();
+        process.destroy();
         super.interrupt();
         try {
             this.join();
@@ -97,10 +86,5 @@ public class JavaExecution extends Thread {
         {
             e.printStackTrace();
         }
-    }
-
-    public SinglePrintingAntRunner getAntRunner()
-    {
-        return antRunner;
     }
 }
