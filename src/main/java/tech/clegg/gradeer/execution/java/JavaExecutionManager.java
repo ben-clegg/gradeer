@@ -23,7 +23,8 @@ public class JavaExecutionManager {
         ClassPath classPath = initClassPath(config, classExecTemplate, solution);
 
         SinglePrintingAntRunner antRunner = new SinglePrintingAntRunner(config, classPath, solution);
-        this.javaExecution = new JavaExecution(antRunner, classExecTemplate);
+        //this.javaExecution = new JavaExecution(antRunner, classExecTemplate);
+        this.javaExecution = new JavaExecution(solution, classPath, classExecTemplate, config);
         this.waitAfterExecutionTime = classExecTemplate.getWaitAfterExecutionTime();
     }
 

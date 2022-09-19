@@ -1,31 +1,97 @@
 package tech.clegg.gradeer.execution.java;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import tech.clegg.gradeer.configuration.Configuration;
+import tech.clegg.gradeer.execution.OutputMonitoringThread;
 import tech.clegg.gradeer.execution.SinglePrintingAntRunner;
+import tech.clegg.gradeer.solution.Solution;
+import tech.clegg.gradeer.subject.ClassPath;
+
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
 
 public class JavaExecution extends Thread {
-    private final SinglePrintingAntRunner antRunner;
+
+    private final Logger logger = LogManager.getLogger(JavaExecution.class);
+
+    private SinglePrintingAntRunner antRunner = null;
     private final ClassExecutionTemplate classExecutionTemplate;
 
     private Process process;
+    private Solution solution;
+    private ClassPath classPath;
+    private Configuration configuration;
 
     JavaExecution(SinglePrintingAntRunner antRunner, ClassExecutionTemplate classExecutionTemplate) {
         this.antRunner = antRunner;
         this.classExecutionTemplate = classExecutionTemplate;
     }
 
-    @Override
-    public void run() {
-        System.out.println("Executing " + classExecutionTemplate.getFullClassName());
-        antRunner.runJavaClass(classExecutionTemplate);
+    JavaExecution(
+            Solution solution,
+            ClassPath classPath,
+            ClassExecutionTemplate classExecutionTemplate,
+            Configuration configuration
+    ) {
+        this.solution = solution;
+        this.classPath = classPath;
+        this.classExecutionTemplate = classExecutionTemplate;
+        this.configuration = configuration;
     }
 
     @Override
-    public void interrupt()
-    {
+    public void run() {
+        System.out.println("Executing " + classExecutionTemplate.getFullClassName());
+        if (antRunner != null) {
+            antRunner.runJavaClass(classExecutionTemplate);
+        } else {
+            try {
+                String[] command = generateCommand(classPath, classExecutionTemplate);
+                process = Runtime.getRuntime()
+                        .exec(command, new String[]{}, solution.getDirectory().toFile());
+                OutputMonitoringThread outputMonitoringThread = new OutputMonitoringThread(
+                        process.getInputStream(),
+                        process.getErrorStream(),
+                        Paths.get(configuration.getSolutionCapturedOutputDir() +
+                                File.separator + solution.getIdentifier() + "-output.txt")
+                );
+                outputMonitoringThread.start();
+                outputMonitoringThread.join();
+            } catch (IOException e) {
+                logger.error("Encountered error while running pre-manual class for solution {}",
+                        solution.getIdentifier(), e);
+            } catch (InterruptedException e) {
+                logger.error("Interrupted OutputMonitoringThread for solution {}",
+                        solution.getIdentifier(), e);
+            }
+        }
+    }
+
+    private String[] generateCommand(
+            ClassPath classPath,
+            ClassExecutionTemplate classExecutionTemplate
+    ) {
+        List<String> command = new ArrayList<>();
+        command.add("java");
+        command.add(classExecutionTemplate.getFullClassName());
+
+        if (classPath != null && !classPath.isEmpty()) {
+            command.add("-cp");
+            command.add(classPath.toString());
+        }
+
+        return command.toArray(new String[0]);
+    }
+
+    @Override
+    public void interrupt() {
         antRunner.halt();
         super.interrupt();
-        try
-        {
+        try {
             this.join();
         } catch (InterruptedException e)
         {
