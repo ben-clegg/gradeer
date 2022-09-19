@@ -7,9 +7,15 @@ import tech.clegg.gradeer.Gradeer;
 import tech.clegg.gradeer.configuration.Configuration;
 import tech.clegg.gradeer.solution.Solution;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.Optional;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.fail;
 
 public class JavaExecutionManagerTest {
@@ -29,13 +35,27 @@ public class JavaExecutionManagerTest {
         ClassExecutionTemplate classExecutionTemplate = new ClassExecutionTemplate();
         classExecutionTemplate.setFullClassName("task.ExampleTask");
 
-        Optional<Solution> s = gradeer.getStudentSolutions().stream().findFirst();
-        if (s.isEmpty()) {
+        Optional<Solution> solution = gradeer.getStudentSolutions().stream()
+                .filter(s -> s.getDirectory().endsWith("correct"))
+                .findFirst();
+        if (solution.isEmpty()) {
             fail("Could not load solution");
         }
 
-        JavaExecutionManager execManager = new JavaExecutionManager(config, classExecutionTemplate, s.get());
+        JavaExecutionManager execManager = new JavaExecutionManager(config, classExecutionTemplate, solution.get());
         execManager.start();
         execManager.getJavaExecution().join(1000);
+
+        Path path = Paths.get(config.getSolutionCapturedOutputDir() +
+                File.separator + solution.get().getIdentifier() + "-output.txt");
+        try {
+            List<String> capturedOutput = Files.readAllLines(path);
+            assertThat(capturedOutput)
+                    .anyMatch(l -> l.contains("Running ExampleTask"))
+                    .anyMatch(l -> l.contains("resultA: 4"));
+        } catch (IOException e) {
+            e.printStackTrace();
+            fail("Could not open solution captured output file");
+        }
     }
 }
