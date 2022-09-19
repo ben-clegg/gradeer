@@ -1,0 +1,8 @@
+{
+  "studentSolutionsDirPath": "studentSolutions",
+  "modelSolutionsDirPath": "modelSolutions",
+  "testsDirPath": "testSuites",
+  "checkJSONs": [],
+  "perTestSuiteTimeout": 120,
+  "checkstyleXml": "checkstyle.xml"
+}

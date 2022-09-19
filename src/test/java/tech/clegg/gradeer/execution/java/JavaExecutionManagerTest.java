@@ -13,12 +13,12 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.fail;
 
 public class JavaExecutionManagerTest {
-    Configuration config = new Configuration(GlobalsTest.JSON_CONFIG_GRADING_TEST_ENV);
+    Configuration config = new Configuration(GlobalsTest.JSON_CONFIG_EXECUTABLE_TEST_ENV);
     Gradeer gradeer = new Gradeer(config);
 
     @BeforeAll
     static void setup() {
-        GlobalsTest.deleteOutputDir(GlobalsTest.JSON_CONFIG_LIFT);
+        GlobalsTest.deleteOutputDir(GlobalsTest.JSON_CONFIG_EXECUTABLE_TEST_ENV);
     }
 
     @Test

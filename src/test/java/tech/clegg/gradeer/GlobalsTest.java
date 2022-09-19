@@ -26,13 +26,17 @@ public class GlobalsTest
             "gradingTestEnv" + File.separator +
             "gconfig-auto.json");
 
-    public static void deleteOutputDir(Path configJSONLocation)
-    {
+    public static final Path JSON_CONFIG_EXECUTABLE_TEST_ENV = Paths.get(System.getProperty("user.dir") + File.separator + "src" + File.separator +
+            "test" + File.separator +
+            "resources" + File.separator +
+            "testEnvironments" + File.separator +
+            "executableTestEnv" + File.separator +
+            "gconfig-auto.json");
+
+    public static void deleteOutputDir(Path configJSONLocation) {
         Path outputDir = Paths.get(configJSONLocation.getParent() + File.separator + "output");
-        if (Files.isDirectory(outputDir))
-        {
-            try (Stream<Path> walk = Files.walk(outputDir))
-            {
+        if (Files.isDirectory(outputDir)) {
+            try (Stream<Path> walk = Files.walk(outputDir)) {
                 walk
                         .sorted(Comparator.reverseOrder())
                         .forEach(path ->
