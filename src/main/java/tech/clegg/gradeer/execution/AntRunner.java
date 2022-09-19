@@ -4,7 +4,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import tech.clegg.gradeer.configuration.Configuration;
 import tech.clegg.gradeer.configuration.Environment;
-import tech.clegg.gradeer.execution.java.ClassExecutionTemplate;
 import tech.clegg.gradeer.solution.Solution;
 import tech.clegg.gradeer.subject.ClassPath;
 
@@ -14,8 +13,6 @@ import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -54,28 +51,6 @@ public class AntRunner
         command.add("-Dclass.dir=" + testDirectory);
 
         logger.debug(command);
-        return runAntProcess(command);
-    }
-
-    public AntProcessResult runJavaClass(ClassExecutionTemplate classExecutionTemplate) {
-        List<String> command = commonCommand("run-class");
-        // Class name
-        command.add("-Djava.class.name=" + classExecutionTemplate.getFullClassName());
-
-        // Args
-        String[] execTemplateArgs = classExecutionTemplate.getArgs();
-        if (execTemplateArgs != null && execTemplateArgs.length > 0) {
-            StringBuilder args = new StringBuilder();
-            args.append("-Djava.class.exec.arg=");
-            Iterator<String> argIter = Arrays.asList(classExecutionTemplate.getArgs()).iterator();
-            while (argIter.hasNext()) {
-                args.append(argIter.next());
-                if (argIter.hasNext())
-                    args.append(" ");
-            }
-            command.add(args.toString());
-        }
-
         return runAntProcess(command);
     }
 
