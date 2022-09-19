@@ -17,13 +17,13 @@ public class JavaClassBatchExecutor
 {
     private final Solution solution;
     private final Configuration configuration;
-    private final Collection<JavaExecutor> javaExecutors;
+    private final Collection<JavaExecutionManager> javaExecutionManagers;
 
     public JavaClassBatchExecutor(Solution solution, Configuration configuration)
     {
         this.solution = solution;
         this.configuration = configuration;
-        this.javaExecutors = new ArrayList<>();
+        this.javaExecutionManagers = new ArrayList<>();
         init();
     }
 
@@ -50,7 +50,7 @@ public class JavaClassBatchExecutor
 
             // Make a single ant runner - allows for the process to be terminated
             SinglePrintingAntRunner antRunner = new SinglePrintingAntRunner(configuration, execCP, solution);
-            javaExecutors.add(new JavaExecutor(antRunner, cet));
+            javaExecutionManagers.add(new JavaExecutionManager(antRunner, cet));
         }
     }
 
@@ -58,13 +58,13 @@ public class JavaClassBatchExecutor
     {
         System.out.println("Running classes for solution " + solution.getIdentifier());
 
-        if(javaExecutors.isEmpty())
+        if(javaExecutionManagers.isEmpty())
         {
             System.err.println("No classes marked for execution in pre-processing! Skipping...");
             return;
         }
 
-        javaExecutors.forEach(JavaExecutor::start);
+        javaExecutionManagers.forEach(JavaExecutionManager::start);
 
     }
 
@@ -72,13 +72,13 @@ public class JavaClassBatchExecutor
     {
         System.out.println("Stopping executions of solution " + solution.getIdentifier());
 
-        if(javaExecutors.isEmpty())
+        if(javaExecutionManagers.isEmpty())
         {
             System.err.println("No classes marked for execution! Skipping...");
             return;
         }
 
-        for (JavaExecutor je : javaExecutors)
+        for (JavaExecutionManager je : javaExecutionManagers)
         {
             je.stop();
         }
