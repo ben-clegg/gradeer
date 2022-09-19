@@ -77,13 +77,14 @@
         <dependency>
             <groupId>com.puppycrawl.tools</groupId>
             <artifactId>checkstyle</artifactId>
-            <version>8.30</version>
+            <version>8.39</version>
         </dependency>
+
         <!-- https://mvnrepository.com/artifact/net.sourceforge.pmd/pmd-java -->
         <dependency>
             <groupId>net.sourceforge.pmd</groupId>
             <artifactId>pmd-java</artifactId>
-            <version>6.22.0</version>
+            <version>6.49.0</version>
         </dependency>
 
         <!-- Application testing -->
