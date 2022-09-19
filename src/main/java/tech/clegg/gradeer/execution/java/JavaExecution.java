@@ -2,20 +2,19 @@ package tech.clegg.gradeer.execution.java;
 
 import tech.clegg.gradeer.execution.SinglePrintingAntRunner;
 
-public class JavaExecution extends Thread
-{
+public class JavaExecution extends Thread {
     private final SinglePrintingAntRunner antRunner;
     private final ClassExecutionTemplate classExecutionTemplate;
 
-    JavaExecution(SinglePrintingAntRunner antRunner, ClassExecutionTemplate classExecutionTemplate)
-    {
+    private Process process;
+
+    JavaExecution(SinglePrintingAntRunner antRunner, ClassExecutionTemplate classExecutionTemplate) {
         this.antRunner = antRunner;
         this.classExecutionTemplate = classExecutionTemplate;
     }
 
     @Override
-    public void run()
-    {
+    public void run() {
         System.out.println("Executing " + classExecutionTemplate.getFullClassName());
         antRunner.runJavaClass(classExecutionTemplate);
     }

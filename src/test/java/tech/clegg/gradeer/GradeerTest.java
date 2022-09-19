@@ -1,26 +1,18 @@
 package tech.clegg.gradeer;
 
-import org.junit.BeforeClass;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import tech.clegg.gradeer.checks.Check;
 import tech.clegg.gradeer.checks.CheckstyleCheck;
 import tech.clegg.gradeer.checks.PMDCheck;
 import tech.clegg.gradeer.checks.UnitTestCheck;
 import tech.clegg.gradeer.configuration.Configuration;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
 import tech.clegg.gradeer.input.TestSourceFile;
 import tech.clegg.gradeer.solution.Solution;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Collection;
-import java.util.Comparator;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
 

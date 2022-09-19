@@ -1,13 +1,12 @@
 package tech.clegg.gradeer.execution;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import tech.clegg.gradeer.configuration.Configuration;
 import tech.clegg.gradeer.configuration.Environment;
 import tech.clegg.gradeer.execution.java.ClassExecutionTemplate;
-import tech.clegg.gradeer.execution.testing.junit.JUnitTestSource;
-import tech.clegg.gradeer.subject.ClassPath;
 import tech.clegg.gradeer.solution.Solution;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import tech.clegg.gradeer.subject.ClassPath;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -58,22 +57,20 @@ public class AntRunner
         return runAntProcess(command);
     }
 
-    public AntProcessResult runJavaClass(ClassExecutionTemplate classExecutionTemplate)
-    {
+    public AntProcessResult runJavaClass(ClassExecutionTemplate classExecutionTemplate) {
         List<String> command = commonCommand("run-class");
         // Class name
         command.add("-Djava.class.name=" + classExecutionTemplate.getFullClassName());
 
         // Args
-        if (classExecutionTemplate.getArgs().length > 0)
-        {
+        String[] execTemplateArgs = classExecutionTemplate.getArgs();
+        if (execTemplateArgs != null && execTemplateArgs.length > 0) {
             StringBuilder args = new StringBuilder();
             args.append("-Djava.class.exec.arg=");
             Iterator<String> argIter = Arrays.asList(classExecutionTemplate.getArgs()).iterator();
-            while (argIter.hasNext())
-            {
+            while (argIter.hasNext()) {
                 args.append(argIter.next());
-                if(argIter.hasNext())
+                if (argIter.hasNext())
                     args.append(" ");
             }
             command.add(args.toString());
