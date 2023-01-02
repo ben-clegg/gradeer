@@ -46,6 +46,7 @@ public class Lift {
     if (numRiders + numEntering <= capacity) {
       numRiders = numRiders + numEntering;
     } else {
+      // Fault - value removed
     }
   }
 

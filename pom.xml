@@ -5,12 +5,12 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <config.properties>gradeer.configuration.properties</config.properties>
-        <maven.compiler.source>1.8</maven.compiler.source>
-        <maven.compiler.target>1.8</maven.compiler.target>
+        <maven.compiler.source>15</maven.compiler.source>
+        <maven.compiler.target>15</maven.compiler.target>
     </properties>
     <groupId>tech.clegg.gradeer</groupId>
     <artifactId>gradeer</artifactId>
-    <version>0.99a5</version>
+    <version>1.00a1</version>
     <packaging>jar</packaging>
     <url>https://github.com/ben-clegg/gradeer</url>
     <inceptionYear>2020</inceptionYear>
@@ -100,6 +100,14 @@
             <version>RELEASE</version>
             <scope>compile</scope>
         </dependency>
+        <!-- https://mvnrepository.com/artifact/org.assertj/assertj-core -->
+        <dependency>
+            <groupId>org.assertj</groupId>
+            <artifactId>assertj-core</artifactId>
+            <version>RELEASE</version>
+            <scope>test</scope>
+        </dependency>
+
 
     </dependencies>
 
@@ -160,6 +168,14 @@
                         <exclude>**/testEnvironments/**/*.java</exclude>
                         <exclude>**/testEnvironments/**/*.class</exclude>
                     </excludes>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>11</source>
+                    <target>11</target>
                 </configuration>
             </plugin>
 

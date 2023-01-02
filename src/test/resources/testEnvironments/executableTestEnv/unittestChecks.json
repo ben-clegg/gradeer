@@ -1,0 +1,78 @@
+[
+  {
+    "type": "TestSuiteCheck",
+    "name": "TestAAndB",
+    "weight": 2
+  },
+  {
+    "type": "TestSuiteCheck",
+    "name": "TestMethodA",
+    "weight": 1.5,
+    "feedbackValues": [
+      {
+        "score": 0.0,
+        "feedback": "TestMethodA Incorrect"
+      },
+      {
+        "score": 1.0,
+        "feedback": "TestMethodA Correct"
+      }
+    ],
+    "flags": [
+      {
+        "score": 0.0,
+        "flags": [
+          "TestMethodAFail"
+        ]
+      },
+      {
+        "score": 1.0,
+        "flags": [
+          "TestMethodAPass"
+        ]
+      }
+    ]
+  },
+  {
+    "type": "TestSuiteCheck",
+    "name": "TestMethodB",
+    "weight": 4,
+    "feedbackValues": [
+      {
+        "score": 0.0,
+        "feedback": "TestMethodB Incorrect"
+      },
+      {
+        "score": 1.0,
+        "feedback": "TestMethodB Correct"
+      }
+    ],
+    "flags": [
+      {
+        "score": 0.0,
+        "flags": [
+          "TestMethodBFail"
+        ]
+      },
+      {
+        "score": 1.0,
+        "flags": []
+      }
+    ]
+  },
+  {
+    "type": "TestSuiteCheck",
+    "name": "TestMethodC",
+    "weight": 2.5,
+    "feedbackValues": [
+      {
+        "score": 0.0,
+        "feedback": "TestMethodC Incorrect"
+      },
+      {
+        "score": 1.0,
+        "feedback": "TestMethodC Correct"
+      }
+    ]
+  }
+]

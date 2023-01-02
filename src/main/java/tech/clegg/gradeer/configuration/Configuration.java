@@ -1,6 +1,8 @@
 package tech.clegg.gradeer.configuration;
 
 import com.google.gson.Gson;
+import tech.clegg.gradeer.execution.testing.TestEngine;
+import tech.clegg.gradeer.input.TestSourceFile;
 import tech.clegg.gradeer.timing.TimerService;
 import tech.clegg.gradeer.execution.java.ClassExecutionTemplate;
 import tech.clegg.gradeer.results.io.LogFile;
@@ -29,6 +31,7 @@ public class Configuration
     private Path testDependenciesDir;
     private Path sourceDependenciesDir;
 
+    private Map<Class<? extends TestEngine>, Collection<TestSourceFile>> testSourceFilesMap = new HashMap<>();
     private Path testOutputDir;
 
     private Path libDir;
@@ -104,7 +107,7 @@ public class Configuration
         modelSolutionsDir = loadLocalOrAbsolutePath(json.modelSolutionsDirPath);
 
         testsDir = loadLocalOrAbsolutePath(json.testsDirPath);
-        autoGenerateTestSuiteChecks = json.autoGenerateTestSuiteChecks;
+        autoGenerateTestSuiteChecks = json.autoGenerateUnitTestChecks;
 
         runtimeDependenciesDir = loadLocalOrAbsolutePath(json.runtimeDependenciesDirPath);
         testDependenciesDir = loadLocalOrAbsolutePath(json.testDependenciesDirPath);
@@ -386,6 +389,25 @@ public class Configuration
     {
         return removeInvalidChecks;
     }
+
+    public void addTestSourceFile(Class<? extends TestEngine> testEngineClass, TestSourceFile testSourceFile)
+    {
+        // Use existing collection for the TestEngine type if one exists
+        Collection<TestSourceFile> matchingTestSources = new HashSet<>();
+        if (testSourceFilesMap.containsKey(testEngineClass))
+            matchingTestSources = testSourceFilesMap.get(testEngineClass);
+
+        // Add the test
+        matchingTestSources.add(testSourceFile);
+
+        // Add to the map
+        testSourceFilesMap.put(testEngineClass, matchingTestSources);
+    }
+
+    public Map<Class<? extends TestEngine>, Collection<TestSourceFile>> getTestSourceFilesMap()
+    {
+        return testSourceFilesMap;
+    }
 }
 
 class ConfigurationJSON
@@ -394,7 +416,7 @@ class ConfigurationJSON
     String studentSolutionsDirPath;
     String modelSolutionsDirPath;
     String testsDirPath;
-    boolean autoGenerateTestSuiteChecks = false;
+    boolean autoGenerateUnitTestChecks = true;
     String runtimeDependenciesDirPath;
     String testDependenciesDirPath;
     String sourceDependenciesDirPath;

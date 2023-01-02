@@ -45,14 +45,14 @@ public class CheckProcessor
     public boolean failsAllUnitTests(Solution solution)
     {
         // Only fails if TestSuiteChecks are present
-        if(!checkTypeIsPresent(TestSuiteCheck.class))
+        if(!checkTypeIsPresent(UnitTestCheck.class))
             return false;
 
         // Doesn't fail if any unit test passes
         for (Check c : getAllChecks())
         {
             // Skip if not a unit test
-            if(!c.getClass().equals(TestSuiteCheck.class))
+            if(!c.getClass().equals(UnitTestCheck.class))
                 continue;
 
             CheckResult checkResult = solution.getCheckResult(c);

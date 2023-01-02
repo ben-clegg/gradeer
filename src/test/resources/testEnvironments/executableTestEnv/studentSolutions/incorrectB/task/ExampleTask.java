@@ -1,0 +1,32 @@
+package task;
+public class ExampleTask
+{
+    public int resultA = 0;
+    public int resultB = 0;
+
+    public static void main(String[] args) {
+        System.out.println("Running ExampleTask");
+        new ExampleTask();
+    }
+
+    public ExampleTask()
+    {
+        methodA();
+        methodB();
+    }
+
+    public void methodA()
+    {
+        resultA = 4;
+    }
+
+    public void methodB()
+    {
+        resultB = -1;
+    }
+
+    public int methodC()
+    {
+        return resultA + resultB;
+    }
+}

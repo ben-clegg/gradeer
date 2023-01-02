@@ -1,5 +1,6 @@
 package tech.clegg.gradeer.subject;
 
+import tech.clegg.gradeer.input.SourceFile;
 import tech.clegg.gradeer.solution.Solution;
 
 import java.io.File;
@@ -8,19 +9,45 @@ import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Objects;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
-public class JavaSource
+public class JavaSource implements SourceFile
 {
     Path javaFile;
+    private Path rootDir;
     Path classFile;
     String fullPackage;
     String baseName;
 
+    public static Collection<JavaSource> loadAllSourcesInRootDir(Path rootDir)
+    {
+        Collection<JavaSource> generated = new ArrayList<>();
+        try (Stream<Path> walk = Files.walk(rootDir))
+        {
+            Collection<Path> relevantPaths =
+                    walk
+                            .filter(p -> p.endsWith(".java"))
+                            .collect(Collectors.toList());
+            for (Path p : relevantPaths)
+            {
+                JavaSource js = new JavaSource(p, rootDir);
+                generated.add(js);
+            }
+        } catch (IOException e)
+        {
+            e.printStackTrace();
+        }
+        return generated;
+    }
+
     public JavaSource(Path javaSourcePath, Path rootDir)
     {
         javaFile = javaSourcePath;
+        this.rootDir = rootDir;
         classFile = Paths.get(javaFile.getParent().toString() + File.separator + getClassName());
         fullPackage = javaFile.toString().replace(rootDir.toString(), "")
                 .split("/" + getBaseName())[0]
@@ -151,6 +178,11 @@ public class JavaSource
 
         // Add new entry to new owner Solution
         newOwner.addSource(newJavaSource);
+    }
+
+    public Path getRootDir()
+    {
+        return rootDir;
     }
 
     @Override

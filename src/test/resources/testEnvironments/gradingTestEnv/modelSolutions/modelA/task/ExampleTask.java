@@ -8,6 +8,8 @@ public class ExampleTask
     {
         methodA();
         methodB();
+        System.out.println(resultA);
+        System.out.println(resultB);
     }
 
     public void methodA()
