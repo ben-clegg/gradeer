@@ -100,7 +100,6 @@ public class JavaCompiler
      * @return the result of the compilation
      */
     private JavaCompilerResult performCompilation(Path directory, ClassPath classPath) {
-        // FIXME Return a compilation result instead
         Set<Path> javaSources = Collections.emptySet();
         try {
             javaSources = getAllSourceFiles(directory);
