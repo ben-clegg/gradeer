@@ -12,15 +12,8 @@ Gradeer is compatible with JDK 1.8. We have also tested it with JDK 11; later ve
 
 #### Maven
 
-[Apache Maven](https://maven.apache.org/) is required to build and test Gradeer. We can confirm that version 3.6.0 can be used for this.  
-Ant can be installed by `sudo apt install maven` on Ubuntu.
-
-#### Apache Ant
-
-Gradeer uses [Apache Ant](https://ant.apache.org/) to compile and execute Java solutions. We have tested Gradeer with Ant 1.10.5.
-Ant can be installed by `sudo apt install ant` on Ubuntu.
-
-Ensure that you set the `ANT_EXECUTABLE` environment variable to the location of your installed ant binary, e.g. `/usr/share/ant/bin/ant`.
+[Apache Maven](https://maven.apache.org/) is required to build and test Gradeer.  
+Maven can be installed by `sudo apt install maven` on Ubuntu.
 
 #### PMD
 
@@ -70,11 +63,6 @@ Gradeer performs the following in the execution environment:
 - Run checks on model solution to identify and remove faulty checks (TestSuiteCheck_TestDummyB and TestSuiteCheck_TestDummyC are faulty). These are reported in the environment's `output` directory.
 - Run remaining checks on "students'" solutions.
 - Store grades and feedback in the environment's `output` directory.
-
-### build.xml
-The working directory where Gradeer is executed from (the repository's root directory in the above example) must contain build.xml.
-This file directs Ant in compiling and executing solutions and tests.
-This file can be modified to support different test configurations (e.g. JDK versions).
 
 ## Configuration
 
