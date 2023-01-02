@@ -2,17 +2,16 @@ package tech.clegg.gradeer.compilation;
 
 import tech.clegg.gradeer.configuration.Configuration;
 import tech.clegg.gradeer.configuration.Environment;
+import tech.clegg.gradeer.results.io.DelayedFileWriter;
+import tech.clegg.gradeer.solution.DefaultFlag;
 import tech.clegg.gradeer.solution.Solution;
 import tech.clegg.gradeer.subject.ClassPath;
 
+import java.io.File;
 import java.io.IOException;
-import java.nio.file.FileVisitResult;
-import java.nio.file.FileVisitor;
-import java.nio.file.Files;
-import java.nio.file.Path;
+import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.*;
-import java.util.concurrent.TimeUnit;
 
 public class JavaCompiler
 {
@@ -40,12 +39,12 @@ public class JavaCompiler
 
     /**
      * Compile a Solution
+     *
      * @param solutionToCompile the Solution to compile
      * @return true if the Solution compiled (or was already compiled), false if it did not
      */
-    public boolean compile(Solution solutionToCompile)
-    {
-        if(!configuration.isForceRecompilation()) {
+    public boolean compile(Solution solutionToCompile) {
+        if (!configuration.isForceRecompilation()) {
             if (solutionToCompile.isCompiled())
                 return true;
         }
@@ -55,15 +54,15 @@ public class JavaCompiler
 
         System.out.println("Compiling solution " + solutionToCompile.getIdentifier());
 
-        return performCompilation(solutionToCompile.getDirectory(), cp);
-        // FIXME Report if uncompilable
-        /*
-        if (!result.compiled())
-        {
-            DelayedFileWriter delayedFileWriter = new DelayedFileWriter();
-            delayedFileWriter.addLine(result.getErrorMessage());
+        JavaCompilerResult compilerResult = performCompilation(solutionToCompile.getDirectory(), cp);
 
-            final Path uncompilableSolutionsDir = Paths.get(configuration.getOutputDir() + File.separator + "uncompilableSolutions");
+        boolean compiled = compilerResult.isCompleted() && !compilerResult.hasError();
+
+        if (!compiled) {
+            DelayedFileWriter delayedFileWriter = new DelayedFileWriter();
+            delayedFileWriter.addLines(compilerResult.getErrorOutput());
+
+            final Path uncompilableSolutionsDir = Path.of(configuration.getOutputDir().toString(), "uncompilableSolutions");
             uncompilableSolutionsDir.toFile().mkdirs();
             delayedFileWriter.write(Paths.get(uncompilableSolutionsDir + File.separator + solutionToCompile.getIdentifier()));
 
@@ -71,9 +70,7 @@ public class JavaCompiler
             solutionToCompile.addFlag(DefaultFlag.UNCOMPILABLE);
         }
 
-        return result.compiled();
-
-         */
+        return compiled;
     }
 
     public void compileTests(Solution modelSolution)
@@ -100,9 +97,9 @@ public class JavaCompiler
      *
      * @param directory the directory containing the files to compile
      * @param classPath the classpath to use when compiling the java sources
-     * @return true if the compilation was successful, false otherwise
+     * @return the result of the compilation
      */
-    private boolean performCompilation(Path directory, ClassPath classPath) {
+    private JavaCompilerResult performCompilation(Path directory, ClassPath classPath) {
         // FIXME Return a compilation result instead
         Set<Path> javaSources = Collections.emptySet();
         try {
@@ -111,8 +108,7 @@ public class JavaCompiler
             e.printStackTrace();
         }
         if (javaSources.isEmpty()) {
-            System.err.println("No java sources in directory " + directory + ", aborting compile.");
-            return false;
+            return new JavaCompilerResult(new NoSuchElementException("No java sources in directory: " + directory));
         }
 
         classPath = new ClassPath(classPath);
@@ -138,18 +134,11 @@ public class JavaCompiler
         ProcessBuilder processBuilder = new ProcessBuilder(command);
         try {
             Process p = processBuilder.start();
-            boolean compileFinished = p.waitFor(60, TimeUnit.SECONDS);
-            if (!compileFinished) {
-                System.err.println("Did not finish compiling classes at " + directory);
-            }
-            Scanner s = new Scanner(p.getErrorStream()).useDelimiter("\\A");
-            String err = s.hasNext() ? s.next() : "";
-            System.err.println(err);
-            return compileFinished;
-        } catch (IOException | InterruptedException e) {
+            return new JavaCompilerResult(p);
+        } catch (IOException e) {
             e.printStackTrace();
             System.err.println("Failed to compile classes at " + directory);
-            return false;
+            return new JavaCompilerResult(e);
         }
     }
 
