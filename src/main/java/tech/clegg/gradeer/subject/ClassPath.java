@@ -2,7 +2,9 @@ package tech.clegg.gradeer.subject;
 
 import java.io.File;
 import java.nio.file.Path;
-import java.util.*;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Iterator;
 
 public class ClassPath extends HashSet<Path>
 {
@@ -25,6 +27,7 @@ public class ClassPath extends HashSet<Path>
 
     public String toString()
     {
+        this.remove(null); // Do not allow null classpath items
         StringBuilder sb = new StringBuilder();
         Iterator<Path> elemIter = this.iterator();
         while (elemIter.hasNext())
