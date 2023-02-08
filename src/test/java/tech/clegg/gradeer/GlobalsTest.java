@@ -18,6 +18,14 @@ public class GlobalsTest
             "liftPackaged" + File.separator +
             "gconfig-liftpackaged.json");
 
+    public static final Path JSON_CONFIG_LIFT_JUNIT4 = Paths.get(System.getProperty("user.dir") + File.separator +
+            "src" + File.separator +
+            "test" + File.separator +
+            "resources" + File.separator +
+            "testEnvironments" + File.separator +
+            "liftPackaged" + File.separator +
+            "gconfig-liftpackaged-junit4.json");
+
     public static final Path JSON_CONFIG_GRADING_TEST_ENV = Paths.get(System.getProperty("user.dir") + File.separator +
             "src" + File.separator +
             "test" + File.separator +
