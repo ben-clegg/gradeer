@@ -1,16 +1,22 @@
 package testpack;
 
 import pack.*;
-import org.junit.*;
-import static org.junit.Assert.*;
+import org.junit.jupiter.api.DisplayNameGeneration;
+import org.junit.jupiter.api.DisplayNameGenerator;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Timeout;
+import static org.junit.jupiter.api.Assertions.*;
 
+@DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
 public class TestDummyB {
-	@Test(timeout = 4000)
-	public void testAlwaysFails() throws Throwable {
+	@Timeout(4)
+	@Test
+	public void test_Always_Fails() throws Throwable {
 		fail();
 	}
-	@Test(timeout = 4000)
-	public void testAlwaysFails2() throws Throwable {
+	@Timeout(4)
+	@Test
+	public void test_Always_Fails2() throws Throwable {
 		fail();
 	}
 }
