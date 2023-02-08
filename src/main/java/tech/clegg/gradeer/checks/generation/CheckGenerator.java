@@ -62,24 +62,17 @@ public class CheckGenerator
                     continue;
                 }
 
+                @SuppressWarnings("unchecked")
                 Class<Check> clazz = (Class<Check>) Class.forName(Check.class.getPackage().getName() + "." + e.getAsJsonObject().get("type").getAsString());
 
                 Check c = clazz.getConstructor(JsonObject.class, Configuration.class).newInstance(e.getAsJsonObject(), configuration);
 
                 checks.add(c);
 
-            } catch (ClassNotFoundException | NoSuchMethodException ex)
+            } catch (ClassNotFoundException | NoSuchMethodException | IllegalAccessException | InstantiationException |
+                     InvocationTargetException ex)
             {
                 ex.printStackTrace();
-            } catch (IllegalAccessException illegalAccessException)
-            {
-                illegalAccessException.printStackTrace();
-            } catch (InstantiationException instantiationException)
-            {
-                instantiationException.printStackTrace();
-            } catch (InvocationTargetException invocationTargetException)
-            {
-                invocationTargetException.printStackTrace();
             }
         }
 

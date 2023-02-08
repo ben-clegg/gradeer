@@ -4,8 +4,7 @@ import org.junit.runner.Description;
 import org.junit.runner.notification.Failure;
 import org.junit.runner.notification.RunListener;
 import tech.clegg.gradeer.execution.testing.junit.JUnitTest;
-import tech.clegg.gradeer.preprocessing.PreProcessorResults;
-import tech.clegg.gradeer.preprocessing.testing.UnitTestPreProcessor;
+import tech.clegg.gradeer.execution.testing.junit.TestDescription;
 import tech.clegg.gradeer.preprocessing.testing.UnitTestPreProcessorResults;
 import tech.clegg.gradeer.preprocessing.testing.UnitTestResult;
 import tech.clegg.gradeer.solution.Solution;
@@ -20,12 +19,21 @@ public class JUnit4ResultStorageListener extends RunListener
         this.solution = solution;
     }
 
-    @Override
-    public void testFinished(Description description) throws Exception
+    private TestDescription toDescription(Description junit4description)
     {
-        super.testFinished(description);
+        TestDescription d = new TestDescription();
+        d.setDisplayName(junit4description.getDisplayName());
+        d.setMethodName(junit4description.getMethodName());
+        d.setClassName(junit4description.getClassName());
+        return d;
+    }
 
-        JUnitTest jUnitTest = new JUnitTest(description);
+    @Override
+    public void testFinished(Description junit4description) throws Exception
+    {
+        super.testFinished(junit4description);
+
+        JUnitTest jUnitTest = new JUnitTest(toDescription(junit4description));
         UnitTestResult unitTestResult =
                 new UnitTestResult(jUnitTest, UnitTestResult.UnitTestResultFlag.PASS, "");
         // TODO Include test explanations from tags (e.g. "@DisplayName")
@@ -36,7 +44,7 @@ public class JUnit4ResultStorageListener extends RunListener
     public void testFailure(Failure failure) throws Exception
     {
         super.testFailure(failure);
-        JUnitTest jUnitTest = new JUnitTest(failure.getDescription());
+        JUnitTest jUnitTest = new JUnitTest(toDescription(failure.getDescription()));
         UnitTestResult unitTestResult =
                 new UnitTestResult(jUnitTest, UnitTestResult.UnitTestResultFlag.FAIL, failure.getMessage());
         new UnitTestPreProcessorResults(unitTestResult).bindToSolution(solution);

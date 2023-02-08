@@ -115,8 +115,15 @@ public class JavaCompiler
         classPath.add(configuration.getRootDir());
         classPath.add(configuration.getSourceDependenciesDir());
         // TODO auto-load these from a directory (allows for arbitrary junit versions)
-        classPath.add(Path.of(Environment.getGradeerHomeDir().toString(), "jars", "junit-4.12.jar"));
-        classPath.add(Path.of(Environment.getGradeerHomeDir().toString(), "jars", "hamcrest-all-1.3.jar"));
+        if (configuration.getJUnitVersion().equals(Configuration.JUnitVersion.JUNIT5)) {
+            classPath.add(Path.of(Environment.getGradeerHomeDir().toString(), "jars", "junit-jupiter-5.9.2.jar"));
+            classPath.add(Path.of(Environment.getGradeerHomeDir().toString(), "jars", "junit-jupiter-api-5.9.2.jar"));
+            classPath.add(Path.of(Environment.getGradeerHomeDir().toString(), "jars", "junit-jupiter-engine-5.9.2.jar"));
+        } else {
+            classPath.add(Path.of(Environment.getGradeerHomeDir().toString(), "jars", "junit-4.12.jar"));
+            classPath.add(Path.of(Environment.getGradeerHomeDir().toString(), "jars", "hamcrest-all-1.3.jar"));
+        }
+
 
         List<String> command = new ArrayList<>();
         command.add("javac");
