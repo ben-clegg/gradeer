@@ -1,8 +1,8 @@
 {
   "studentSolutionsDirPath": "studentSolutions",
   "modelSolutionsDirPath": "modelSolutions",
-  "testsDirPath": "testSuites",
-  "junitVersion": "JUNIT5",
+  "testsDirPath": "testSuitesJUnit4",
+  "junitVersion": "JUNIT4",
   "checkJSONs": ["checkstyleChecks.json", "pmdChecks.json", "flagChecks.json"],
   "perTestSuiteTimeout": 120,
   "checkstyleXml": "checkstyle.xml"

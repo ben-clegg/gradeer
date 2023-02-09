@@ -1,18 +1,22 @@
 package tech.clegg.gradeer.execution.testing.junit;
 
+import org.junit.platform.launcher.Launcher;
+import org.junit.platform.launcher.LauncherDiscoveryRequest;
+import org.junit.platform.launcher.TestPlan;
+import org.junit.platform.launcher.core.LauncherDiscoveryRequestBuilder;
+import org.junit.platform.launcher.core.LauncherFactory;
+import org.junit.platform.launcher.listeners.SummaryGeneratingListener;
+import org.junit.platform.launcher.listeners.TestExecutionSummary;
 import org.junit.runner.JUnitCore;
 import tech.clegg.gradeer.configuration.Configuration;
 import tech.clegg.gradeer.execution.testing.TestEngine;
 import tech.clegg.gradeer.execution.testing.junit.resultstorage.JUnit4ResultStorageListener;
+import tech.clegg.gradeer.execution.testing.junit.resultstorage.JUnit5ResultStorageListener;
 import tech.clegg.gradeer.input.TestSourceFile;
-import tech.clegg.gradeer.preprocessing.testing.UnitTestPreProcessor;
-import tech.clegg.gradeer.preprocessing.testing.UnitTestPreProcessorResults;
-import tech.clegg.gradeer.preprocessing.testing.UnitTestResult;
 import tech.clegg.gradeer.solution.Solution;
 import tech.clegg.gradeer.subject.JavaSource;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.file.Files;
@@ -20,9 +24,11 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
 
-public class JUnit4TestEngine extends TestEngine
+import static org.junit.platform.engine.discovery.DiscoverySelectors.selectClass;
+
+public class JUnitTestEngine extends TestEngine
 {
-    public JUnit4TestEngine(Configuration configuration)
+    public JUnitTestEngine(Configuration configuration)
     {
         super(configuration);
     }
@@ -91,12 +97,28 @@ public class JUnit4TestEngine extends TestEngine
                     }
                 }
 
-                JUnitCore jUnitCore = new JUnitCore();
-                // Listener will populate the solution with results for each test
-                jUnitCore.addListener(new JUnit4ResultStorageListener(solutionUnderTest));
-                // Run the test class
-                jUnitCore.run(testClass);
-                // Ensure class is unloaded - likely not necessary
+                // JUnit 5
+                if (getConfiguration().getJUnitVersion().equals(Configuration.JUnitVersion.JUNIT5)) {
+                    LauncherDiscoveryRequest request = LauncherDiscoveryRequestBuilder.request()
+                            .selectors(selectClass(testClass))
+                            .build();
+                    Launcher launcher = LauncherFactory.create();
+                    SummaryGeneratingListener listener = new SummaryGeneratingListener();
+                    JUnit5ResultStorageListener myListener = new JUnit5ResultStorageListener(solutionUnderTest);
+                    launcher.registerTestExecutionListeners(listener);
+                    launcher.registerTestExecutionListeners(myListener);
+                    TestPlan testPlan = launcher.discover(request);
+                    launcher.execute(request);
+
+                    TestExecutionSummary summary = listener.getSummary();
+                } else {
+                    JUnitCore jUnitCore = new JUnitCore();
+                    // Listener will populate the solution with results for each test
+                    jUnitCore.addListener(new JUnit4ResultStorageListener(solutionUnderTest));
+                    // Run the test class
+                    jUnitCore.run(testClass);
+                }
+
                 testClass = null;
             }
 

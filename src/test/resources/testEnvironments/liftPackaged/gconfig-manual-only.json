@@ -2,6 +2,7 @@
   "studentSolutionsDirPath": "studentSolutions",
   "modelSolutionsDirPath": "modelSolutions",
   "testsDirPath": "testSuites",
+  "junitVersion": "JUNIT5",
   "checkJSONs": ["manualChecks.json"],
   "perTestSuiteTimeout": 120,
   "checkstyleXml": "checkstyle.xml",

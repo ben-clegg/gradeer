@@ -11,7 +11,7 @@ import tech.clegg.gradeer.configuration.Environment;
 import tech.clegg.gradeer.configuration.cli.CLIOptions;
 import tech.clegg.gradeer.configuration.cli.CLIReader;
 import tech.clegg.gradeer.execution.testing.UnitTest;
-import tech.clegg.gradeer.execution.testing.junit.JUnit4TestEngine;
+import tech.clegg.gradeer.execution.testing.junit.JUnitTestEngine;
 import tech.clegg.gradeer.execution.testing.junit.JUnitTestSource;
 import tech.clegg.gradeer.execution.testing.junit.TestSuiteLoader;
 import tech.clegg.gradeer.input.TestSourceFile;
@@ -226,7 +226,7 @@ public class Gradeer
         // Populate configuration with test sources
         for (TestSourceFile testSourceFile : testSources)
         {
-            configuration.addTestSourceFile(JUnit4TestEngine.class, testSourceFile);
+            configuration.addTestSourceFile(JUnitTestEngine.class, testSourceFile);
         }
 
         // Execute test sources on model solution(s)
