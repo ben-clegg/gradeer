@@ -1,11 +1,11 @@
 [
   {
-    "type": "TestSuiteCheck",
+    "type": "UnitTestCheck",
     "name": "TestAAndB",
     "weight": 2
   },
   {
-    "type": "TestSuiteCheck",
+    "type": "UnitTestCheck",
     "name": "TestMethodA",
     "weight": 1.5,
     "feedbackValues": [
@@ -18,7 +18,7 @@
     ]
   },
   {
-    "type": "TestSuiteCheck",
+    "type": "UnitTestCheck",
     "name": "TestMethodB",
     "weight": 4,
     "feedbackValues": [
@@ -31,7 +31,7 @@
     ]
   },
   {
-    "type": "TestSuiteCheck",
+    "type": "UnitTestCheck",
     "name": "TestMethodC",
     "weight": 2.5,
     "feedbackValues": [

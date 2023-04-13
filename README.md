@@ -60,7 +60,7 @@ java -jar target/gradeer-0.98b-jar-with-dependencies.jar -c src/test/resources/t
 Gradeer performs the following in the execution environment:
 - Load checks, model solution, and "students'" solutions.
 - Compile model and "students'" solutions.
-- Run checks on model solution to identify and remove faulty checks (TestSuiteCheck_TestDummyB and TestSuiteCheck_TestDummyC are faulty). These are reported in the environment's `output` directory.
+- Run checks on model solution to identify and remove faulty checks (`UnitTestCheck_TestDummyB` and `UnitTestCheck_TestDummyC` are faulty). These are reported in the environment's `output` directory.
 - Run remaining checks on "students'" solutions.
 - Store grades and feedback in the environment's `output` directory.
 
@@ -118,7 +118,7 @@ For example, the following would define a check for each currently implemented t
     "maxViolations": 2
   },
   {
-    "type": "TestSuiteCheck",
+    "type": "UnitTestCheck",
     "name": "TestLiftA",
     "weight": 8.0,
     "feedbackValues": [
