@@ -64,7 +64,7 @@ public class UnitTestCheck extends Check
 
         if(unitTest == null)
         {
-            System.err.println("TestSuiteCheck " + getName() + " has no defined UnitTest.");
+            System.err.println("UnitTestCheck " + getName() + " has no defined UnitTest.");
             solution.addCheckResult(generateCheckResult(0.0));
             return;
         }
@@ -132,7 +132,7 @@ public class UnitTestCheck extends Check
     @Override
     public String toString()
     {
-        return "TestSuiteCheck{" +
+        return "UnitTestCheck{" +
                 "testSuite=" + unitTest +
                 " (" + super.toString() + ")" +
                 '}';

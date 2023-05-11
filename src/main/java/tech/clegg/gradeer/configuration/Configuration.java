@@ -24,7 +24,7 @@ public class Configuration
     private Path modelSolutionsDir;
     private Path testsDir;
     private JUnitVersion junitVersion;
-    private boolean autoGenerateTestSuiteChecks = true;
+    private boolean autoGenerateUnitTestChecks = true;
 
     private Collection<Path> checkJSONs;
 
@@ -111,7 +111,7 @@ public class Configuration
 
         junitVersion = (json.junitVersion != null) ? JUnitVersion.valueOf(json.junitVersion) : JUnitVersion.JUNIT5;
 
-        autoGenerateTestSuiteChecks = json.autoGenerateUnitTestChecks;
+        autoGenerateUnitTestChecks = json.autoGenerateUnitTestChecks;
 
         runtimeDependenciesDir = loadLocalOrAbsolutePath(json.runtimeDependenciesDirPath);
         testDependenciesDir = loadLocalOrAbsolutePath(json.testDependenciesDirPath);
@@ -266,9 +266,9 @@ public class Configuration
         return junitVersion;
     }
 
-    public boolean isAutoGenerateTestSuiteChecks()
+    public boolean isAutoGenerateUnitTestChecks()
     {
-        return autoGenerateTestSuiteChecks;
+        return autoGenerateUnitTestChecks;
     }
 
     public Path getTestDependenciesDir()

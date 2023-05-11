@@ -108,7 +108,7 @@ public class Gradeer
         //  Load checks from JSON
         CheckGenerator checkGenerator = new CheckGenerator(configuration, modelSolutions);
         checks = checkGenerator.getChecks();
-        // For TestSuiteChecks, load TestSuites
+        // For UnitTestChecks, load TestSuites
         loadTests(checks);
 
         // Report & remove Checks that fail on a model solution
@@ -200,7 +200,7 @@ public class Gradeer
 
     private void loadTests(Collection<Check> checks)
     {
-        // Get existing TestSuiteChecks to attach TestSuites to
+        // Get existing UnitTestChecks to attach TestSuites to
         Collection<UnitTestCheck> unitTestChecks = checks.stream()
                 .filter(c -> c.getClass().equals(UnitTestCheck.class))
                 .map(c -> (UnitTestCheck)c)
@@ -251,7 +251,7 @@ public class Gradeer
         }
 
         // Generate UnitTestChecks from unlinked tests
-        if (configuration.isAutoGenerateTestSuiteChecks())
+        if (configuration.isAutoGenerateUnitTestChecks())
         {
             // Identify tests that are not yet linked
             Collection<UnitTest> unlinkedUnitTests = new HashSet<>(identifiedUnitTests);

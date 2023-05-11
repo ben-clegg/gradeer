@@ -44,7 +44,7 @@ public class CheckProcessor
      */
     public boolean failsAllUnitTests(Solution solution)
     {
-        // Only fails if TestSuiteChecks are present
+        // Only fails if UnitTestChecks are present
         if(!checkTypeIsPresent(UnitTestCheck.class))
             return false;
 
