@@ -68,6 +68,12 @@ public class JavaExecution extends Thread {
         command.add("java");
         command.add(classExecutionTemplate.getFullClassName());
 
+        String args[] = classExecutionTemplate.getArgs();
+        if (args.length > 0) {
+            for (String arg : args)
+                command.add(arg);
+        }
+
         if (classPath != null && !classPath.isEmpty()) {
             command.add("-cp");
             command.add(classPath.toString());
