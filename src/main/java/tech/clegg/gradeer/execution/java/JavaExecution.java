@@ -69,7 +69,7 @@ public class JavaExecution extends Thread {
         command.add(classExecutionTemplate.getFullClassName());
 
         String args[] = classExecutionTemplate.getArgs();
-        if (args.length > 0) {
+        if (args != null && args.length > 0) {
             for (String arg : args)
                 command.add(arg);
         }
