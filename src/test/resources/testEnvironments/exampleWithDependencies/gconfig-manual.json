@@ -1,0 +1,22 @@
+{
+  "studentSolutionsDirPath": "studentSolutions",
+  "outputDirPath": "studentSolutions-output",
+  "modelSolutionsDirPath": "modelSolutions",
+  "testsDirPath": "testSuites-mini",
+  "junitVersion": "JUNIT4",
+  "forceRecompilation": true,
+  "sourceDependenciesDirPath": "sourceDependencies",
+  "runtimeDependenciesDirPath": "runtimeDependencies",
+  "checkJSONs": ["manualChecks.json"],
+  "perTestSuiteTimeout": 5,
+  "tabWidth": 2,
+  "preManualJavaClassesToExecute": [
+    {
+      "fullClassName": "uk.ac.sheffield.Dashboard",
+      "args": ["resources/epl-2223-min.csv"],
+      "additionalCPElems": [""],
+      "waitAfterExecutionTime": 3
+    }
+  ],
+  "inspectionCommand": "atom"
+}

@@ -10,6 +10,14 @@ import java.util.stream.Stream;
 
 public class GlobalsTest
 {
+    public static final Path JSON_CONFIG_DEPENDENCIES = Paths.get(System.getProperty("user.dir") + File.separator +
+            "src" + File.separator +
+            "test" + File.separator +
+            "resources" + File.separator +
+            "testEnvironments" + File.separator +
+            "exampleWithDependencies" + File.separator +
+            "gconfig-manual.json");
+
     public static final Path JSON_CONFIG_LIFT = Paths.get(System.getProperty("user.dir") + File.separator +
             "src" + File.separator +
             "test" + File.separator +

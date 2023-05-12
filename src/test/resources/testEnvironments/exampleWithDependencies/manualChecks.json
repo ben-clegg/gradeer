@@ -1,0 +1,18 @@
+[
+  {
+    "type": "ManualCheck",
+    "name": "Quality of main implementation of tasks requested to implement",
+    "prompt": "Quality of main implementation of requested tasks (create an espresso, a double espresso and a soy latte objects):",
+    "weight": 1,
+    "maxRange": 10,
+    "feedbackValues": [
+      {"score": 1.0, "feedback": "Outstanding implementation of main method illustrating the tasks requested to implement."},
+      {"score": 0.8, "feedback": "Good implementation of main method illustrating the tasks requested to implement."},
+      {"score": 0.5, "feedback": "Average implementation of main method illustrating the tasks requested to implement."},
+      {"score": 0.0, "feedback": "Poor implementation of main method illustrating the tasks requested to implement."}
+    ],
+    "arbitraryFeedback": false, 
+    "priority": 30,
+    "checkGroup": "Implementation App main"
+  }
+]
