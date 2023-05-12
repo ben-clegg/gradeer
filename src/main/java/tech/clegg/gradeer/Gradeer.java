@@ -305,6 +305,12 @@ public class Gradeer
         studentSolutions = loadSolutions(configuration.getStudentSolutionsDir());
         System.out.println(studentSolutions.size() + " students' solutions loaded.");
 
+        for (Solution s : studentSolutions)
+        {
+            if(!s.isCompiled())
+                System.err.println("[SEVERE] Student solution '" + s.getIdentifier() + "' was not compiled.");
+        }
+
         // Filter solutions
         // Include
         if(!configuration.getIncludeSolutions().isEmpty())
@@ -330,7 +336,7 @@ public class Gradeer
         for (Solution m : modelSolutions)
         {
             if(!m.isCompiled())
-                System.err.println("[SEVERE] Model solution " + m.getIdentifier() + " was not compiled.");
+                System.err.println("[SEVERE] Model solution '" + m.getIdentifier() + "' was not compiled.");
         }
     }
 
