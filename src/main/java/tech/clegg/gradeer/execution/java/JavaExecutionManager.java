@@ -21,6 +21,7 @@ public class JavaExecutionManager {
     private ClassPath initClassPath(Configuration config, ClassExecutionTemplate classExecTemplate, Solution solution) {
         ClassPath classPath = new ClassPath();
         classPath.add(solution.getDirectory());
+        classPath.add(config.getSourceDependenciesDir());
         if (config.getRuntimeDependenciesDir() != null && Files.exists(config.getRuntimeDependenciesDir())) {
             classPath.add(config.getRuntimeDependenciesDir());
         }

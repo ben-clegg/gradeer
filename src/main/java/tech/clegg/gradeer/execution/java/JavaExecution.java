@@ -1,5 +1,7 @@
 package tech.clegg.gradeer.execution.java;
 
+import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import tech.clegg.gradeer.configuration.Configuration;
@@ -41,6 +43,7 @@ public class JavaExecution extends Thread {
         System.out.println("Executing " + classExecutionTemplate.getFullClassName());
         try {
             String[] command = generateCommand(classPath, classExecutionTemplate);
+            logger.debug("Java command: " + StringUtils.join(command, " "));
             process = Runtime.getRuntime()
                     .exec(command, new String[]{}, solution.getDirectory().toFile());
             OutputMonitoringThread outputMonitoringThread = new OutputMonitoringThread(
@@ -66,17 +69,18 @@ public class JavaExecution extends Thread {
     ) {
         List<String> command = new ArrayList<>();
         command.add("java");
+
+        if (classPath != null && !classPath.isEmpty()) {
+            command.add("-cp");
+            command.add(classPath.toString());
+        }
+
         command.add(classExecutionTemplate.getFullClassName());
 
         String args[] = classExecutionTemplate.getArgs();
         if (args != null && args.length > 0) {
             for (String arg : args)
                 command.add(arg);
-        }
-
-        if (classPath != null && !classPath.isEmpty()) {
-            command.add("-cp");
-            command.add(classPath.toString());
         }
 
         return command.toArray(new String[0]);

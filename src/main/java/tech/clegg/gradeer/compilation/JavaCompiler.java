@@ -32,6 +32,7 @@ public class JavaCompiler
     public static JavaCompiler createCompiler(Configuration configuration, Collection<Path> auxiliaryClassPathElements)
     {
         ClassPath cp = new ClassPath();
+        cp.add(configuration.getSourceDependenciesDir());
         cp.addAll(auxiliaryClassPathElements);
 
         return new JavaCompiler(cp, configuration);
