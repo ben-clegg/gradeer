@@ -65,6 +65,7 @@ public class Configuration
     private boolean forceRecompilation = false;
     private boolean multiThreadingEnabled = true;
     private boolean checkResultRecoveryEnabled = true;
+    private boolean waitForSolutionExecutionToFinishEnabled = false; // Set to true to wait for execution of solution to finish before starting manual marking
 
     private Collection<String> requiredClasses = new HashSet<>();
 
@@ -160,6 +161,7 @@ public class Configuration
         forceRecompilation = json.forceRecompilation;
         multiThreadingEnabled = json.multiThreadingEnabled;
         checkResultRecoveryEnabled = json.checkResultRecoveryEnabled;
+        waitForSolutionExecutionToFinishEnabled = json.waitForSolutionExecutionToFinishEnabled;
 
         loadRequiredClasses(json);
 
@@ -379,6 +381,11 @@ public class Configuration
         return checkResultRecoveryEnabled;
     }
 
+    public boolean isWaitForSolutionExecutionToFinishEnabled()
+    {
+        return waitForSolutionExecutionToFinishEnabled;
+    }
+
     public Collection<String> getRequiredClasses()
     {
         return requiredClasses;
@@ -455,6 +462,7 @@ class ConfigurationJSON
     boolean forceRecompilation = false;
     boolean multiThreadingEnabled = true;
     boolean checkResultRecoveryEnabled = true;
+    boolean waitForSolutionExecutionToFinishEnabled = false;
 
     String[] requiredClasses;
 

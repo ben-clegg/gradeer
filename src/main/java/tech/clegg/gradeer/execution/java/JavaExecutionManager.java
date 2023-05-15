@@ -12,10 +12,13 @@ public class JavaExecutionManager {
     private final JavaExecution javaExecution;
     private int waitAfterExecutionTime;
 
+    private boolean waitForSolutionExecutionToFinish;
+
     public JavaExecutionManager(Configuration config, ClassExecutionTemplate classExecTemplate, Solution solution) {
         ClassPath classPath = initClassPath(config, classExecTemplate, solution);
         this.javaExecution = new JavaExecution(solution, classPath, classExecTemplate, config);
         this.waitAfterExecutionTime = classExecTemplate.getWaitAfterExecutionTime();
+        this.waitForSolutionExecutionToFinish = config.isWaitForSolutionExecutionToFinishEnabled();
     }
 
     private ClassPath initClassPath(Configuration config, ClassExecutionTemplate classExecTemplate, Solution solution) {
@@ -36,11 +39,13 @@ public class JavaExecutionManager {
 
     public void start() {
         javaExecution.start();
-        try {
-            javaExecution.join();
-            TimeUnit.SECONDS.sleep(waitAfterExecutionTime);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+        if (waitForSolutionExecutionToFinish) {
+            try {
+                javaExecution.join();
+                TimeUnit.SECONDS.sleep(waitAfterExecutionTime);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
     }
 
