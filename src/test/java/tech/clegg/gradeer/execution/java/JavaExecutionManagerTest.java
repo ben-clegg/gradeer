@@ -58,4 +58,36 @@ public class JavaExecutionManagerTest {
             fail("Could not open solution captured output file");
         }
     }
+
+    @Test
+    void runsClassWithArguments() throws InterruptedException {
+        gradeer.startEnvironment();
+        List<ClassExecutionTemplate> preManualClassesToExecute = config.getPreManualJavaClassesToExecute();
+
+        ClassExecutionTemplate classExecutionTemplate = new ClassExecutionTemplate();
+        classExecutionTemplate.setFullClassName("task.ExampleTaskWithArg");
+        classExecutionTemplate.setArgs(new String[] { "Hello" } );
+        Optional<Solution> solution = gradeer.getStudentSolutions().stream()
+                .filter(s -> s.getDirectory().endsWith("correct"))
+                .findFirst();
+        if (solution.isEmpty()) {
+            fail("Could not load solution");
+        }
+
+        JavaExecutionManager execManager = new JavaExecutionManager(config, classExecutionTemplate, solution.get());
+        execManager.start();
+        execManager.getJavaExecution().join(1000);
+
+        Path path = Paths.get(config.getSolutionCapturedOutputDir() +
+                File.separator + solution.get().getIdentifier() + "-output.txt");
+        try {
+            List<String> capturedOutput = Files.readAllLines(path);
+            assertThat(capturedOutput)
+                    .anyMatch(l -> l.contains("Running ExampleTaskWithArg:Hello"))
+                    .anyMatch(l -> l.contains("input:Hello"));
+        } catch (IOException e) {
+            e.printStackTrace();
+            fail("Could not open solution captured output file");
+        }
+    }
 }

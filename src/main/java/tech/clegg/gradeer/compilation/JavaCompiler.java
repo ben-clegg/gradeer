@@ -32,6 +32,7 @@ public class JavaCompiler
     public static JavaCompiler createCompiler(Configuration configuration, Collection<Path> auxiliaryClassPathElements)
     {
         ClassPath cp = new ClassPath();
+        cp.add(configuration.getSourceDependenciesDir());
         cp.addAll(auxiliaryClassPathElements);
 
         return new JavaCompiler(cp, configuration);
@@ -120,7 +121,7 @@ public class JavaCompiler
             classPath.add(Path.of(Environment.getGradeerHomeDir().toString(), "jars", "junit-jupiter-api-5.9.2.jar"));
             classPath.add(Path.of(Environment.getGradeerHomeDir().toString(), "jars", "junit-jupiter-engine-5.9.2.jar"));
         } else {
-            classPath.add(Path.of(Environment.getGradeerHomeDir().toString(), "jars", "junit-4.12.jar"));
+            classPath.add(Path.of(Environment.getGradeerHomeDir().toString(), "jars", "junit-4.13.2.jar"));
             classPath.add(Path.of(Environment.getGradeerHomeDir().toString(), "jars", "hamcrest-all-1.3.jar"));
         }
 
