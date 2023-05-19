@@ -55,6 +55,7 @@ public class Configuration
     };
 
     private Path mergedSolutionsDir;
+    private String mergedSolutionsBlacklistPackage;
     private Path solutionCapturedOutputDir;
 
     private Path outputDir;
@@ -146,6 +147,10 @@ public class Configuration
         mergedSolutionsDir = Paths.get(outputDir + File.separator + "mergedSolutions");
         if(json.mergedSolutionsDirPath != null)
             mergedSolutionsDir = loadLocalOrAbsolutePath(json.mergedSolutionsDirPath);
+
+        mergedSolutionsBlacklistPackage = null;
+        if(json.mergedSolutionsBlacklistPackage != null)
+            mergedSolutionsBlacklistPackage = json.mergedSolutionsBlacklistPackage;
 
         solutionCapturedOutputDir = Paths.get(outputDir + File.separator + "solutionCapturedOutput");
         if(json.solutionCapturedOutputDirPath != null)
@@ -328,6 +333,11 @@ public class Configuration
         return mergedSolutionsDir;
     }
 
+    public String getMergedSolutionsBlacklistPackage()
+    {
+        return mergedSolutionsBlacklistPackage;
+    }
+
     public Path getSolutionCapturedOutputDir()
     {
         return solutionCapturedOutputDir;
@@ -453,6 +463,7 @@ class ConfigurationJSON
     String[] pmdRulesets;
 
     String mergedSolutionsDirPath;
+    String mergedSolutionsBlacklistPackage;
     String solutionCapturedOutputDirPath;
 
     ClassExecutionTemplate[] preManualJavaClassesToExecute;
