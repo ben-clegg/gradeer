@@ -213,6 +213,8 @@ public class Gradeer
         JavaCompiler compiler = JavaCompiler.createCompiler(getConfiguration());
         if(getModelSolutions().size() < 1)
             System.err.println("No compiled model solutions available.");
+        else
+            System.out.println("Compiled model solutions available: " + getModelSolutions().size());
         Solution modelSolution = new ArrayList<>(getModelSolutions()).get(0);
         if (getConfiguration().getTestDependenciesDir() != null &&
                 Files.exists(getConfiguration().getTestDependenciesDir()))
@@ -226,6 +228,7 @@ public class Gradeer
         // Populate configuration with test sources
         for (TestSourceFile testSourceFile : testSources)
         {
+            System.out.println("Adding test source file to configuration: " + testSourceFile.toString());
             configuration.addTestSourceFile(JUnitTestEngine.class, testSourceFile);
         }
 

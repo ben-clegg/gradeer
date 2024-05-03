@@ -76,13 +76,22 @@ public class JavaCompiler
 
     public void compileTests(Solution modelSolution)
     {
+        System.out.println("Compiling tests against model solution " + modelSolution.getIdentifier());
         ClassPath cp = new ClassPath(classPath);
         cp.add(modelSolution.getDirectory());
         cp.add(configuration.getTestsDir());
         cp.add(configuration.getSourceDependenciesDir());
         cp.add(configuration.getTestDependenciesDir());
 
-        performCompilation(configuration.getTestsDir(), cp);
+        System.out.println("*** Starting compilation:");
+        System.out.println("    | Tests dir: " + configuration.getTestsDir());
+        System.out.println("    | Classpath: " + cp);
+        JavaCompilerResult result = performCompilation(configuration.getTestsDir(), cp);
+        System.out.println("*** Compilation completed: " + result.isCompleted());
+        if (! result.isCompleted()) {
+            System.err.println("*** Compilation had error: " + result.hasError());
+            result.getErrorOutput().forEach(System.err::println);
+        }
     }
 
     public void compileDir(Path dir, Solution modelSolution) {
@@ -105,6 +114,7 @@ public class JavaCompiler
         try {
             javaSources = getAllSourceFiles(directory);
         } catch (IOException e) {
+            System.err.println("Failed to read source files from directory: " + directory);
             e.printStackTrace();
         }
         if (javaSources.isEmpty()) {
@@ -143,8 +153,8 @@ public class JavaCompiler
             Process p = processBuilder.start();
             return new JavaCompilerResult(p);
         } catch (IOException e) {
-            e.printStackTrace();
             System.err.println("Failed to compile classes at " + directory);
+            e.printStackTrace();
             return new JavaCompilerResult(e);
         }
     }

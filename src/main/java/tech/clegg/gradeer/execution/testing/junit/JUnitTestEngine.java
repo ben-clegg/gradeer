@@ -124,6 +124,7 @@ public class JUnitTestEngine extends TestEngine
 
         } catch (ClassNotFoundException | IOException e)
         {
+            System.err.println("Class cannot be found or read when executing test " + ((JUnitTestSource) testSource).getBaseName());
             e.printStackTrace();
         }
     }
